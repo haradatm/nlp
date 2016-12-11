@@ -286,7 +286,7 @@ if __name__ == "__main__":
     # ミニバッチサイズ
     minibatch = args.batchsize
 
-    model_dir = '.'
+    model_dir = args.output
 
     x_train, t_train, vocab, inv_vocab = load_comparable_data(args.train)
     x_test,  t_test,  vocab, inv_vocab = load_comparable_data(args.test,  vocab=vocab, inv_vocab=inv_vocab)
