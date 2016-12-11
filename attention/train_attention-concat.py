@@ -218,8 +218,6 @@ class MyATT(chainer.Chain):
             e = F.tanh(self.embedy(y))
             c, h = self.h3(c, h, self.w5(e))
 
-            # ct = mk_ct(gh_list, h, train=train)
-
             exp_list = []
             sum_e = Variable(xp.zeros((batch_size, 1), dtype=np.float32), volatile=not train)
             for j in xrange(len(fw_list)):
