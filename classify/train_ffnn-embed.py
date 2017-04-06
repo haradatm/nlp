@@ -143,38 +143,31 @@ def load_data(path):
     return X, Y, labels, vocab
 
 
-class MySPP(Chain):
-    def __init__(self, input_channel, output_channel, width, n_units, n_label, n_vocab):
-        super(MySPP, self).__init__(
-            embed=L.EmbedID(n_vocab, width),
-            conv1=L.Convolution2D(input_channel, output_channel, (3, width), pad=0),
-            conv2=L.Convolution2D(input_channel, output_channel, (4, width), pad=0),
-            conv3=L.Convolution2D(input_channel, output_channel, (5, width), pad=0),
-            fc4=L.Linear(output_channel * 3 * 3, n_units),
-            fc5=L.Linear(n_units, n_label)
+class MyFFNN(Chain):
+    def __init__(self, n_vocab, n_dim, n_units, n_label):
+        super(MyFFNN, self).__init__(
+            embed=L.EmbedID(n_vocab, n_dim),
+            l1=L.Linear(n_dim, n_units),
+            l2=L.Linear(n_units, n_units),
+            l3=L.Linear(n_units, n_units),
+            l4=L.Linear(n_units, n_label)
         )
-        self.input_channel = input_channel
-        self.width = width
 
     def __call__(self, x, t, train=True):
-        # (nsample, channel, height, width) の4次元テンソルに変換
-        x = self.embed(x).reshape((x.shape[0], self.input_channel, x.shape[1], self.width))
+        x = self.embed(x)
         y = self.forward(x, train=train)
         return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
 
     def forward(self, x, train=True):
-        h1 = F.spatial_pyramid_pooling_2d(F.relu(self.conv1(x)), 2, F.MaxPooling2D)
-        h2 = F.spatial_pyramid_pooling_2d(F.relu(self.conv2(x)), 2, F.MaxPooling2D)
-        h3 = F.spatial_pyramid_pooling_2d(F.relu(self.conv3(x)), 2, F.MaxPooling2D)
+        x = F.sum(x, axis=1)
 
-        # Convolution + Pooling を行った結果を結合する
-        concat = F.concat((h1, h2, h3), axis=1)
-
-        # 結合した結果に Dropout をかける
-        h4 = F.dropout(F.tanh(self.fc4(concat)), ratio=0.5, train=train)
+        # Dopout をかける
+        h1 = F.dropout(F.relu(self.l1(x)),  ratio=0.5, train=train)
+        h2 = F.dropout(F.relu(self.l2(h1)), ratio=0.5, train=train)
+        h3 = F.dropout(F.relu(self.l2(h2)), ratio=0.5, train=train)
 
         # Dropout の結果を結合する
-        y = self.fc5(h4)
+        y = self.l4(h3)
 
         return y
 
@@ -182,15 +175,15 @@ class MySPP(Chain):
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Chainer example: MySPP')
-    parser.add_argument('--train',           default='',  type=unicode, help='training file (.txt)')
-    parser.add_argument('--test',            default='',  type=unicode, help='evaluating file (.txt)')
-    # parser.add_argument('--w2v',       '-w', default='',  type=unicode, help='word2vec model file (.bin)')
-    parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--epoch',     '-e', default=25,  type=int, help='number of epochs to learn')
-    parser.add_argument('--unit',      '-u', default=300, type=int, help='number of output channels')
-    parser.add_argument('--batchsize', '-b', default=100, type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-spp3-embed',  type=str, help='output directory')
+    parser = ArgumentParser(description='Chainer example: MyFFNN')
+    parser.add_argument('--train',           default='',   type=unicode, help='training file (.txt)')
+    parser.add_argument('--test',            default='',   type=unicode, help='evaluating file (.txt)')
+    # parser.add_argument('--w2v',       '-w', default='',   type=unicode, help='word2vec model file (.bin)')
+    parser.add_argument('--gpu',       '-g', default=-1,   type=int, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--epoch',     '-e', default=25,   type=int, help='number of epochs to learn')
+    parser.add_argument('--unit',      '-u', default=1000, type=int, help='number of output channels')
+    parser.add_argument('--batchsize', '-b', default=100,  type=int, help='learning batchsize size')
+    parser.add_argument('--output',    '-o', default='model-ffnn-embed', type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -223,18 +216,10 @@ if __name__ == '__main__':
     X = xp.asarray(X, dtype=np.int32)
     y = xp.asarray(y, dtype=np.int32)
 
-    n_sample = X.shape[0]
-    height   = X.shape[1]
-    # width    = X.shape[2]
-    width    = 300
+    # n_dim = X.shape[2]
+    n_dim = 300
     n_label = len(labels)
     n_vocab = len(vocab)
-
-    input_channel = 1
-    output_channel = 50
-
-    # (nsample, channel, height, width) の4次元テンソルに変換
-    # X = X.reshape((n_sample, input_channel, height, width))
 
     # トレーニングデータとテストデータに分割
     from sklearn.model_selection import train_test_split
@@ -244,17 +229,17 @@ if __name__ == '__main__':
     N_test = len(X_test)
 
     print('# gpu: {}'.format(args.gpu))
-    print('# embedding dim: {}, vocab {}'.format(width, n_vocab))
+    print('# embedding dim: {}, vocab {}'.format(n_dim, n_vocab))
     print('# epoch: {}'.format(n_epoch))
     print('# batchsize: {}'.format(batchsize))
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data height: {}, width: {}, labels: {}'.format(height, width, n_label))
+    print('# data height: {}, width: {}, labels: {}'.format(X.shape[1], n_vocab, n_label))
     sys.stdout.flush()
 
-    # Prepare CNN
-    model = MySPP(input_channel, output_channel, width, n_units, n_label, n_vocab)
+    # Prepare FFNN model
+    model = MyFFNN(n_vocab, n_dim, n_units, n_label)
 
     if args.gpu >= 0:
         model.to_gpu()
