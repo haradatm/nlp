@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: Convolutional Neural Networks for Sentence Classification
+"""Chainer example: Recurrent Convolutional Neural Networks for Sentence Classification
 
-http://emnlp2014.org/papers/pdf/EMNLP2014181.pdf
+http://ai2-s2-pdfs.s3.amazonaws.com/eba3/6ac75bf22edf9a1bfd33244d459c75b98305.pdf
 
 """
 

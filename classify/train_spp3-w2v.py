@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: Convolutional Neural Networks for Sentence Classification
+"""Chainer example: Convolutional Neural Networks with SPP for Sentence Classification
 
 http://emnlp2014.org/papers/pdf/EMNLP2014181.pdf
+https://arxiv.org/pdf/1406.4729v4.pdf
 
 """
 
