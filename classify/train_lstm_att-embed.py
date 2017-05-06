@@ -49,62 +49,12 @@ UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
 
 
-def load_w2v_model(path):
-
-    # with open(path, 'rb') as f:
-    #     w2i = {}
-    #     i2w = {}
-    #
-    #     n_vocab, n_units = map(int, f.readline().split())
-    #     w = np.empty((n_vocab, n_units), dtype=np.float32)
-    #
-    #     for i in xrange(n_vocab):
-    #         word = ''
-    #         while True:
-    #             ch = f.read(1)
-    #             if ch == ' ': break
-    #             word += ch
-    #
-    #         try:
-    #             w2i[unicode(word)] = i
-    #             i2w[i] = unicode(word)
-    #
-    #         except RuntimeError:
-    #             logging.error('Error unicode(): %s', word)
-    #             w2i[word] = i
-    #             i2w[i] = word
-    #
-    #         w[i] = np.zeros(n_units)
-    #         for j in xrange(n_units):
-    #             w[i][j] = struct.unpack('f', f.read(struct.calcsize('f')))[0]
-    #
-    #         # ベクトルを正規化する
-    #         vlen = np.linalg.norm(w[i], 2)
-    #         w[i] /= vlen
-    #
-    #         # 改行を strip する
-    #         assert f.read(1) == '\n'
-    # return w, w2i, i2w
-
-    # from gensim.models import word2vec
-    # return word2vec.Word2Vec.load_word2vec_format(path, binary=True)
-
-    from gensim.models import KeyedVectors
-    return KeyedVectors.load_word2vec_format(path, binary=True)
-
-
-def seeded_vector(w2v, seed_string):
-    once = xp.random.RandomState(hash(seed_string) & 0xffffffff)
-    return (once.rand(w2v.vector_size) - 0.5) / w2v.vector_size
-
-
-def load_data(path, w2v):
+def load_data(path):
     X, Y = [], []
     labels = {}
+    vocab = {}
 
     max_len = 0
-
-    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
@@ -115,7 +65,7 @@ def load_data(path, w2v):
         if line == u'':
             continue
 
-        # line = line.replace(u'. . .', u'…')
+        line = line.replace(u'. . .', u'…')
 
         cols = line.split(u'\t')
         if len(cols) < 2:
@@ -125,19 +75,18 @@ def load_data(path, w2v):
         label = cols[0]
         text  = cols[1]
 
-        tokens = text.split(' ')
+        # tokens = text.split(' ')
 
         vec = []
         for token in tokens:
             try:
-                vec.append(w2v[token])
+                vec.append(vocab[token])
             except KeyError:
-                sys.stderr.write('unk: {}\n'.format(token))
-                vec.append(UNK_VEC)
+                vocab[token] = len(vocab)
+                vec.append(vocab[token])
 
         if len(vec) > max_len:
             max_len = len(vec)
-
         X.append(vec)
 
         if label not in labels:
@@ -146,17 +95,18 @@ def load_data(path, w2v):
 
     f.close()
 
-    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
+    vocab[PAD_TOKEN] = len(vocab)
     for vec in X:
-        pad = [PAD_VEC for _ in range(max_len - len(vec))]
+        pad = [vocab[PAD_TOKEN] for _ in range(max_len - len(vec))]
         vec.extend(pad)
 
-    return X, Y, labels
+    return X, Y, labels, vocab
 
 
 class MyATT(Chain):
-    def __init__(self, n_dim, n_label):
+    def __init__(self, n_vocab, n_dim, n_label):
         super(MyATT, self).__init__(
+            embed=L.EmbedID(n_vocab, n_dim),
             fwd=L.GRU(50, n_inputs=n_dim),
             bwd=L.GRU(50, n_inputs=n_dim),
             fc0=L.Linear(100, 100),
@@ -166,6 +116,7 @@ class MyATT(Chain):
         self.uw = (xp.random.rand(1, 100).astype(np.float32) - 0.5) / 100
 
     def __call__(self, x, t, train=True):
+        x = self.embed(x)
         y = self.forward(x, train=train)
         return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
 
@@ -227,12 +178,12 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Chainer example: MyATT')
     parser.add_argument('--train',           default='',  type=unicode, help='training file (.txt)')
     parser.add_argument('--test',            default='',  type=unicode, help='evaluating file (.txt)')
-    parser.add_argument('--w2v',       '-w', default='',  type=unicode, help='word2vec model file (.bin)')
+    # parser.add_argument('--w2v',       '-w', default='',  type=unicode, help='word2vec model file (.bin)')
     parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--epoch',     '-e', default=25,  type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=100, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=100, type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-gru_att-w2v',  type=str, help='output directory')
+    parser.add_argument('--output',    '-o', default='model-gru_att-embed',  type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -255,18 +206,20 @@ if __name__ == '__main__':
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
 
-    print('# loading word2vec model: {}'.format(args.w2v))
-    sys.stdout.flush()
-    model = load_w2v_model(args.w2v)
-    n_vocab = len(model.vocab)
+    # print('# loading word2vec model: {}'.format(args.w2v))
+    # sys.stdout.flush()
+    # model = load_w2v_model(args.w2v)
+    # n_vocab = len(model.vocab)
 
     # データの読み込み
-    X, y, labels = load_data(args.train, w2v=model)
-    X = xp.asarray(X, dtype=np.float32)
+    X, y, labels, vocab = load_data(args.train)
+    X = xp.asarray(X, dtype=np.int32)
     y = xp.asarray(y, dtype=np.int32)
 
-    n_dim = X.shape[2]
+    # n_dim = X.shape[2]
+    n_dim = 300
     n_label = len(labels)
+    n_vocab = len(vocab)
 
     # トレーニングデータとテストデータに分割
     from sklearn.model_selection import train_test_split
@@ -282,11 +235,11 @@ if __name__ == '__main__':
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data height: {}, width: {}, labels: {}'.format(X.shape[1], X.shape[2], n_label))
+    print('# data height: {}, width: {}, labels: {}'.format(X.shape[1], n_vocab, n_label))
     sys.stdout.flush()
 
     # Prepare LSTM-ATT model
-    model = MyATT(n_dim, n_label)
+    model = MyATT(n_vocab, n_dim, n_label)
 
     if args.gpu >= 0:
         model.to_gpu()
