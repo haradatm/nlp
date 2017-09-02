@@ -98,12 +98,9 @@ def seeded_vector(w2v, seed_string):
     return (once.rand(w2v.vector_size) - 0.5) / w2v.vector_size
 
 
-def load_data(path, w2v):
+def load_data(path, w2v, labels={}):
     X, Y = [], []
-    labels = {}
-
     max_len = 0
-
     UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
 
     f = open(path, 'rU')
@@ -115,7 +112,7 @@ def load_data(path, w2v):
         if line == u'':
             continue
 
-        # line = line.replace(u'. . .', u'…')
+        line = line.replace(u'. . .', u'…')
 
         cols = line.split(u'\t')
         if len(cols) < 2:
@@ -261,17 +258,31 @@ if __name__ == '__main__':
     n_vocab = len(model.vocab)
 
     # データの読み込み
-    X, y, labels = load_data(args.train, w2v=model)
-    X = xp.asarray(X, dtype=np.float32)
-    y = xp.asarray(y, dtype=np.int32)
+    if not args.test:
+        # トレーニング+テストデータ
+        X, y, labels = load_data(args.train, w2v=model)
+        X = xp.asarray(X, dtype=np.float32)
+        y = xp.asarray(y, dtype=np.int32)
 
-    n_dim = X.shape[2]
+        # トレーニングデータとテストデータに分割
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10)
+
+    else:
+        # トレーニングデータ
+        X, y, labels = load_data(args.train, w2v=model)
+        X_train = xp.asarray(X, dtype=np.float32)
+        y_train = xp.asarray(y, dtype=np.int32)
+
+        # テストデータ
+        X, y, labels = load_data(args.test, w2v=model, labels=labels)
+        X_test = xp.asarray(X, dtype=np.float32)
+        y_test = xp.asarray(y, dtype=np.int32)
+
+    width   = X_train.shape[1]
+    n_dim   = X_train.shape[2]
     n_label = len(labels)
 
-    # トレーニングデータとテストデータに分割
-    from sklearn.model_selection import train_test_split
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=123)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10)
     N = len(X_train)
     N_test = len(X_test)
 
@@ -282,7 +293,7 @@ if __name__ == '__main__':
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data height: {}, width: {}, labels: {}'.format(X.shape[1], X.shape[2], n_label))
+    print('# data width: {}, labels: {}'.format(width, n_label))
     sys.stdout.flush()
 
     # Prepare LSTM-ATT model
@@ -395,8 +406,7 @@ if __name__ == '__main__':
         # 精度と誤差をグラフ描画
         if True:
             ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
-            # ylim2 = [min(train_accuracy + test_accuracy), max(train_accuracy + test_accuracy)]
-            ylim2 = [0.4, 1.0]
+            ylim2 = [0.5, 1.0]
 
             # グラフ左
             plt.figure(figsize=(10, 10))
@@ -429,7 +439,7 @@ if __name__ == '__main__':
             plt.legend(['test accuracy'], loc="upper left")
             plt.title('Loss and accuracy of test.')
 
-            plt.savefig('{}.png'.format(model_dir))
+            plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
             # plt.show()
 
         cur_at = now

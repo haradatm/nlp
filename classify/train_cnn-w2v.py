@@ -86,25 +86,30 @@ def load_w2v_model(path):
     #         assert f.read(1) == '\n'
     # return w, w2i, i2w
 
-    from gensim.models import word2vec
-    return word2vec.Word2Vec.load_word2vec_format(path, binary=True)
+    from gensim.models import KeyedVectors
+    return KeyedVectors.load_word2vec_format(path, binary=True)
 
 
-def load_data(path, w2v):
-    X_data, Y = [], []
-    labels = {}
+def seeded_vector(w2v, seed_string):
+    once = xp.random.RandomState(hash(seed_string) & 0xffffffff)
+    return (once.rand(w2v.vector_size) - 0.5) / w2v.vector_size
 
-    X = []
+
+def load_data(path, w2v, labels={}):
+    X, Y = [], []
     max_len = 0
+    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
-        # if i >= 10:
+        # if i >= 100:
         #     break
 
         line = unicode(line).strip()
         if line == u'':
             continue
+
+        line = line.replace(u'. . .', u'…')
 
         cols = line.split(u'\t')
         if len(cols) < 2:
@@ -112,7 +117,7 @@ def load_data(path, w2v):
             continue
 
         label = cols[0]
-        text  = cols[1]
+        text = cols[1]
 
         tokens = text.split(' ')
 
@@ -122,10 +127,11 @@ def load_data(path, w2v):
                 vec.append(w2v[token])
             except KeyError:
                 sys.stderr.write('unk: {}\n'.format(token))
-                vec.append(w2v.seeded_vector(UNK_TOKEN))
+                vec.append(UNK_VEC)
 
         if len(vec) > max_len:
             max_len = len(vec)
+
         X.append(vec)
 
         if label not in labels:
@@ -134,8 +140,9 @@ def load_data(path, w2v):
 
     f.close()
 
+    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
     for vec in X:
-        pad = [w2v.seeded_vector(PAD_TOKEN) for _ in range(max_len - len(vec))]
+        pad = [PAD_VEC for _ in range(max_len - len(vec))]
         vec.extend(pad)
 
     return X, Y, labels
@@ -213,26 +220,44 @@ if __name__ == '__main__':
     model = load_w2v_model(args.w2v)
     n_vocab = len(model.vocab)
 
-    # データの読み込み
-    X, y, labels = load_data(args.train, w2v=model)
-    X = xp.asarray(X, dtype=np.float32)
-    y = xp.asarray(y, dtype=np.int32)
-
-    n_sample = X.shape[0]
-    height   = X.shape[1]
-    width    = X.shape[2]
-    n_label = len(labels)
-
     input_channel = 1
     output_channel = args.unit
 
-    # (nsample, channel, height, width) の4次元テンソルに変換
-    X = X.reshape((n_sample, input_channel, height, width))
+    # データの読み込み
+    if not args.test:
+        # トレーニング+テストデータ
+        X, y, labels = load_data(args.train, w2v=model)
+        X = xp.asarray(X, dtype=np.float32)
+        y = xp.asarray(y, dtype=np.int32)
 
-    # トレーニングデータとテストデータに分割
-    from sklearn.model_selection import train_test_split
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=123)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10)
+        # (nsample, channel, height, width) の4次元テンソルに変換
+        X = X.reshape((X.shape[0], input_channel, X.shape[1], X.shape[2]))
+
+        # トレーニングデータとテストデータに分割
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10)
+
+    else:
+        # トレーニングデータ
+        X, y, labels = load_data(args.train, w2v=model)
+        X_train = xp.asarray(X, dtype=np.float32)
+        y_train = xp.asarray(y, dtype=np.int32)
+
+        # (nsample, channel, height, width) の4次元テンソルに変換
+        X_train = X_train.reshape((X_train.shape[0], input_channel, X_train.shape[1], X_train.shape[2]))
+
+        # テストデータ
+        X, y, labels = load_data(args.test, w2v=model, labels=labels)
+        X_test = xp.asarray(X, dtype=np.float32)
+        y_test = xp.asarray(y, dtype=np.int32)
+
+        # (nsample, channel, height, width) の4次元テンソルに変換
+        X_test = X_test.reshape((X_test.shape[0], input_channel, X_test.shape[1], X_test.shape[2]))
+
+    height   = X_train.shape[2]
+    width    = X_train.shape[3]
+    n_label = len(labels)
+
     N = len(X_train)
     N_test = len(X_test)
 
@@ -356,7 +381,7 @@ if __name__ == '__main__':
         # 精度と誤差をグラフ描画
         if True:
             ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
-            ylim2 = [min(train_accuracy + test_accuracy), max(train_accuracy + test_accuracy)]
+            ylim2 = [0.5, 1.0]
 
             # グラフ左
             plt.figure(figsize=(10, 10))
@@ -389,7 +414,7 @@ if __name__ == '__main__':
             plt.legend(['test accuracy'], loc="upper left")
             plt.title('Loss and accuracy of test.')
 
-            plt.savefig('{}.png'.format(model_dir))
+            plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
             # plt.show()
 
         cur_at = now

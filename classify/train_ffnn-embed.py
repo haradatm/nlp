@@ -90,13 +90,16 @@ def load_w2v_model(path):
     return word2vec.Word2Vec.load_word2vec_format(path, binary=True)
 
 
-def load_data(path):
-    X_data, Y = [], []
-    labels = {}
-    vocab = {}
-
-    X = []
+def load_data(path, labels={}, vocab={}):
+    X, Y = [], []
     max_len = 0
+
+    if len(vocab) > 0:
+        train = False
+    else:
+        train = True
+        vocab[UNK_TOKEN] = len(vocab)
+        vocab[PAD_TOKEN] = len(vocab)
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
@@ -106,6 +109,8 @@ def load_data(path):
         line = unicode(line).strip()
         if line == u'':
             continue
+
+        line = line.replace(u'. . .', u'…')
 
         cols = line.split(u'\t')
         if len(cols) < 2:
@@ -122,11 +127,16 @@ def load_data(path):
             try:
                 vec.append(vocab[token])
             except KeyError:
-                vocab[token] = len(vocab)
-                vec.append(vocab[token])
+                if train:
+                    vocab[token] = len(vocab)
+                    vec.append(vocab[token])
+                else:
+                    sys.stderr.write('unk: {}\n'.format(token))
+                    vec.append(vocab[UNK_TOKEN])
 
         if len(vec) > max_len:
             max_len = len(vec)
+
         X.append(vec)
 
         if label not in labels:
@@ -135,7 +145,6 @@ def load_data(path):
 
     f.close()
 
-    vocab[PAD_TOKEN] = len(vocab)
     for vec in X:
         pad = [vocab[PAD_TOKEN] for _ in range(max_len - len(vec))]
         vec.extend(pad)
@@ -150,6 +159,7 @@ class MyFFNN(Chain):
             l1=L.Linear(n_dim, n_units),
             l2=L.Linear(n_units, n_units),
             l3=L.Linear(n_units, n_units),
+            lx=L.Linear(n_dim, n_units),
             l4=L.Linear(n_units, n_label)
         )
 
@@ -159,12 +169,13 @@ class MyFFNN(Chain):
         return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
 
     def forward(self, x, train=True):
-        x = F.sum(x, axis=1)
+        x = F.average(x, axis=1)
 
         # Dopout をかける
         h1 = F.dropout(F.relu(self.l1(x)),  ratio=0.5, train=train)
         h2 = F.dropout(F.relu(self.l2(h1)), ratio=0.5, train=train)
-        h3 = F.dropout(F.relu(self.l2(h2)), ratio=0.5, train=train)
+        h3 = F.dropout(F.relu(self.l3(h2) + self.lx(x)), ratio=0.5, train=train)
+        # h3 = F.dropout(F.relu(F.concat((self.l3(h2), x), axis=1)), ratio=0.5, train=train)
 
         # Dropout の結果を結合する
         y = self.l4(h3)
@@ -183,7 +194,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch',     '-e', default=25,   type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=1000, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=100,  type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-ffnn-embed', type=str, help='output directory')
+    parser.add_argument('--output',    '-o', default='model-ffnn2-embed', type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -212,19 +223,33 @@ if __name__ == '__main__':
     # n_vocab = len(model.vocab)
 
     # データの読み込み
-    X, y, labels, vocab = load_data(args.train)
-    X = xp.asarray(X, dtype=np.int32)
-    y = xp.asarray(y, dtype=np.int32)
+    if not args.test:
+        # トレーニング+テストデータ
+        X, y, labels, vocab = load_data(args.train)
+        X = xp.asarray(X, dtype=np.int32)
+        y = xp.asarray(y, dtype=np.int32)
 
-    # n_dim = X.shape[2]
+        # トレーニングデータとテストデータに分割
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10)
+
+    else:
+        # トレーニングデータ
+        X, y, labels, vocab = load_data(args.train)
+        X_train = xp.asarray(X, dtype=np.int32)
+        y_train = xp.asarray(y, dtype=np.int32)
+
+        # テストデータ
+        X, y, labels, vocab = load_data(args.test, labels=labels, vocab=vocab)
+        X_test = xp.asarray(X, dtype=np.int32)
+        y_test = xp.asarray(y, dtype=np.int32)
+
     n_dim = 300
     n_label = len(labels)
     n_vocab = len(vocab)
+    height = X_train.shape[1]
+    width = n_dim
 
-    # トレーニングデータとテストデータに分割
-    from sklearn.model_selection import train_test_split
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=123)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10)
     N = len(X_train)
     N_test = len(X_test)
 
@@ -235,7 +260,7 @@ if __name__ == '__main__':
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data height: {}, width: {}, labels: {}'.format(X.shape[1], n_vocab, n_label))
+    print('# data height: {}, width: {}, labels: {}'.format(height, width, n_label))
     sys.stdout.flush()
 
     # Prepare FFNN model
@@ -348,7 +373,7 @@ if __name__ == '__main__':
         # 精度と誤差をグラフ描画
         if True:
             ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
-            ylim2 = [min(train_accuracy + test_accuracy), max(train_accuracy + test_accuracy)]
+            ylim2 = [0.5, 1.0]
 
             # グラフ左
             plt.figure(figsize=(10, 10))
@@ -381,7 +406,7 @@ if __name__ == '__main__':
             plt.legend(['test accuracy'], loc="upper left")
             plt.title('Loss and accuracy of test.')
 
-            plt.savefig('{}.png'.format(model_dir))
+            plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
             # plt.show()
 
         cur_at = now
