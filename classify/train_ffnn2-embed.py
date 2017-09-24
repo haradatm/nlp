@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: LSTM Neural Networks with Attention Mechanizm for Sentence Classification
+"""Chainer example: Feed Forward Neural Networks for Sentence Classification
 
 http://
 
@@ -15,7 +15,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #print sys.getdefaultencoding()
 
-import re, math
+import re
 import logging
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -47,69 +47,22 @@ BOS_TOKEN = '<s>'
 EOS_TOKEN = '</s>'
 UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
-UNK_VEC = None
-PAD_VEC = None
 
 
-def load_w2v_model(path):
-
-    # with open(path, 'rb') as f:
-    #     w2i = {}
-    #     i2w = {}
-    #
-    #     n_vocab, n_units = map(int, f.readline().split())
-    #     w = np.empty((n_vocab, n_units), dtype=np.float32)
-    #
-    #     for i in xrange(n_vocab):
-    #         word = ''
-    #         while True:
-    #             ch = f.read(1)
-    #             if ch == ' ': break
-    #             word += ch
-    #
-    #         try:
-    #             w2i[unicode(word)] = i
-    #             i2w[i] = unicode(word)
-    #
-    #         except RuntimeError:
-    #             logging.error('Error unicode(): %s', word)
-    #             w2i[word] = i
-    #             i2w[i] = word
-    #
-    #         w[i] = np.zeros(n_units)
-    #         for j in xrange(n_units):
-    #             w[i][j] = struct.unpack('f', f.read(struct.calcsize('f')))[0]
-    #
-    #         # ベクトルを正規化する
-    #         vlen = np.linalg.norm(w[i], 2)
-    #         w[i] /= vlen
-    #
-    #         # 改行を strip する
-    #         assert f.read(1) == '\n'
-    # return w, w2i, i2w
-
-    from gensim.models import KeyedVectors
-    w2v = KeyedVectors.load_word2vec_format(path, binary=True)
-
-    global UNK_VEC, PAD_VEC
-    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
-    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
-
-    return w2v
-
-
-def seeded_vector(w2v, seed_string):
-    once = xp.random.RandomState(hash(seed_string) & 0xffffffff)
-    return (once.rand(w2v.vector_size) - 0.5) / w2v.vector_size
-
-
-def load_data(path, w2v, labels={}):
+def load_data(path, labels={}, vocab={}):
     X, Y = [], []
     max_len = 0
 
+    if len(vocab) > 0:
+        train = False
+    else:
+        train = True
+        vocab[UNK_TOKEN] = len(vocab)
+        vocab[PAD_TOKEN] = len(vocab)
+
     f = open(path, 'rU')
     for i, line in enumerate(f):
-        # if i >= 100:
+        # if i >= 10:
         #     break
 
         line = unicode(line).strip()
@@ -131,10 +84,14 @@ def load_data(path, w2v, labels={}):
         vec = []
         for token in tokens:
             try:
-                vec.append(w2v[token])
+                vec.append(vocab[token])
             except KeyError:
-                sys.stderr.write('unk: {}\n'.format(token))
-                vec.append(UNK_VEC)
+                if train:
+                    vocab[token] = len(vocab)
+                    vec.append(vocab[token])
+                else:
+                    sys.stderr.write('unk: {}\n'.format(token))
+                    vec.append(vocab[UNK_TOKEN])
 
         if len(vec) > max_len:
             max_len = len(vec)
@@ -148,10 +105,10 @@ def load_data(path, w2v, labels={}):
     f.close()
 
     # for vec in X:
-    #     pad = [PAD_VEC for _ in range(max_len - len(vec))]
+    #     pad = [vocab[PAD_TOKEN] for _ in range(max_len - len(vec))]
     #     vec.extend(pad)
 
-    return X, Y, labels
+    return X, Y, labels, vocab
 
 
 def batch(generator, batch_size):
@@ -189,69 +146,33 @@ def fill_batch(batch, padding, min_height=1):
     return [x + [padding] * (max_len - len(x) + 1) for x in batch]
 
 
-class MyATT(Chain):
-    def __init__(self, n_dim, n_label):
-        super(MyATT, self).__init__(
-            fwd=L.GRU(50, n_inputs=n_dim),
-            bwd=L.GRU(50, n_inputs=n_dim),
-            fc0=L.Linear(100, 100),
-            fc1=L.Linear(100, 100),
-            fc2=L.Linear(100, 100),
+class MyFFNN(Chain):
+    def __init__(self, n_vocab, n_dim, n_units, n_label):
+        super(MyFFNN, self).__init__(
+            embed=L.EmbedID(n_vocab, n_dim),
+            l1=L.Linear(n_dim, n_units),
+            l2=L.Linear(n_units, n_units),
+            l3=L.Linear(n_units, n_units),
+            lx=L.Linear(n_dim, n_units),
+            l4=L.Linear(n_units, n_label)
         )
-        self.uw = (xp.random.rand(1, 100).astype(np.float32) - 0.5) / 100
 
     def __call__(self, x, t, train=True):
+        x = self.embed(x)
         y = self.forward(x, train=train)
         return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
 
     def forward(self, x, train=True):
-        # x:  50x300
-        # uw: 1x100
-        uw = F.tanh(self.fc0(Variable(self.uw, volatile=not train)))
+        x = F.average(x, axis=1)
 
-        h1_list = []    # h1: 50x50
-        # c1 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        h1 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        for i in six.moves.range(x.shape[1]):
-            # c1, h1 = self.fwd(c1, h1, x[:, i, :])
-            h1 = self.fwd(h1, x[:, i, :])
-            h1_list.append(h1)
+        # Dopout をかける
+        h1 = F.dropout(F.relu(self.l1(x)),  ratio=0.5, train=train)
+        h2 = F.dropout(F.relu(self.l2(h1)), ratio=0.5, train=train)
+        h3 = F.dropout(F.relu(self.l3(h2) + self.lx(x)), ratio=0.5, train=train)
+        # h3 = F.dropout(F.relu(F.concat((self.l3(h2), x), axis=1)), ratio=0.5, train=train)
 
-        h2_list = []    # h2: 50x50
-        # c2 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        h2 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        for i in reversed(six.moves.range(x.shape[1])):
-            # c2, h2 = self.bwd(c2, h2, x[:, i, :])
-            h2 = self.bwd(h2, x[:, i, :])
-            h2_list.append(h2)
-
-        hi_list = []    # h: 50x100
-        for i in six.moves.range(x.shape[1]):
-            hi = F.concat((h1_list[i], h2_list[i]), axis=1)
-            hi_list.append(hi)
-
-        ui_list = []    # u: 50x100
-        for i in six.moves.range(x.shape[1]):
-            ui = F.tanh(self.fc1(hi_list[i]))
-            ui_list.append(ui)
-
-        sim_list = []   # sim: 50x1
-        for i in six.moves.range(x.shape[1]):
-            sim = F.batch_matmul(F.broadcast_to(uw, (x.shape[0], 100)), ui_list[i], transa=True)
-            sim_list.append(F.reshape(sim, (x.shape[0], 1)))
-
-        alpha_list = [] # alpah: 50x1
-        alpha_mat = F.softmax(F.concat(sim_list, axis=1))
-        for i in six.moves.range(x.shape[1]):
-            alpha = F.reshape(alpha_mat[:, i], (x.shape[0], 1))
-            alpha_list.append(alpha)
-
-        # s: 50x100
-        si = Variable(xp.zeros((x.shape[0], 100), dtype=np.float32), volatile=not train)
-        for i in six.moves.range(x.shape[1]):
-            si += F.reshape(F.batch_matmul(hi_list[i], alpha_list[i]), (x.shape[0], 100))
-
-        y = self.fc2(si)
+        # Dropout の結果を結合する
+        y = self.l4(h3)
 
         return y
 
@@ -259,15 +180,15 @@ class MyATT(Chain):
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Chainer example: MyATT')
-    parser.add_argument('--train',           default='',  type=unicode, help='training file (.txt)')
-    parser.add_argument('--test',            default='',  type=unicode, help='evaluating file (.txt)')
-    parser.add_argument('--w2v',       '-w', default='',  type=unicode, help='word2vec model file (.bin)')
-    parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--epoch',     '-e', default=25,  type=int, help='number of epochs to learn')
-    parser.add_argument('--unit',      '-u', default=100, type=int, help='number of output channels')
-    parser.add_argument('--batchsize', '-b', default=100, type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-gru_att-w2v-sort',  type=str, help='output directory')
+    parser = ArgumentParser(description='Chainer example: MyFFNN')
+    parser.add_argument('--train',           default='',   type=unicode, help='training file (.txt)')
+    parser.add_argument('--test',            default='',   type=unicode, help='evaluating file (.txt)')
+    # parser.add_argument('--w2v',       '-w', default='',   type=unicode, help='word2vec model file (.bin)')
+    parser.add_argument('--gpu',       '-g', default=-1,   type=int, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--epoch',     '-e', default=25,   type=int, help='number of epochs to learn')
+    parser.add_argument('--unit',      '-u', default=1000, type=int, help='number of output channels')
+    parser.add_argument('--batchsize', '-b', default=100,  type=int, help='learning batchsize size')
+    parser.add_argument('--output',    '-o', default='model-ffnn2-embed-sort', type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -290,14 +211,15 @@ if __name__ == '__main__':
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
 
-    print('# loading word2vec model: {}'.format(args.w2v))
-    sys.stdout.flush()
-    w2v = load_w2v_model(args.w2v)
+    # print('# loading word2vec model: {}'.format(args.w2v))
+    # sys.stdout.flush()
+    # model = load_w2v_model(args.w2v)
+    # n_vocab = len(model.vocab)
 
     # データの読み込み
     if not args.test:
         # トレーニング+テストデータ
-        X, y, labels = load_data(args.train, w2v=w2v)
+        X, y, labels, vocab = load_data(args.train)
 
         # トレーニングデータとテストデータに分割
         from sklearn.model_selection import train_test_split
@@ -305,16 +227,16 @@ if __name__ == '__main__':
 
     else:
         # トレーニングデータ
-        X_train, y_train, labels = load_data(args.train, w2v=w2v)
+        X_train, y_train, labels, vocab = load_data(args.train)
 
         # テストデータ
-        X_test, y_test, labels = load_data(args.test, w2v=w2v, labels=labels)
+        X_test, y_test, labels, vocab = load_data(args.test, labels=labels, vocab=vocab)
 
-    n_dim   = w2v.vector_size
-    n_vocab = len(w2v.vocab)
+    n_dim   = 300
+    n_vocab = len(vocab)
     n_label = len(labels)
-    height  = len(X_train[0])
-    width   = n_dim
+    # height  = len(X_train[0])
+    # width   = n_dim
 
     N = len(X_train)
     N_test = len(X_test)
@@ -326,11 +248,11 @@ if __name__ == '__main__':
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data min height: {}, width: {}, labels: {}'.format(height, width, n_label))
+    print('# data labels: {}'.format(n_label))
     sys.stdout.flush()
 
-    # Prepare LSTM-ATT model
-    model = MyATT(n_dim, n_label)
+    # Prepare FFNN model
+    model = MyFFNN(n_vocab, n_dim, n_units, n_label)
 
     if args.gpu >= 0:
         model.to_gpu()
@@ -372,12 +294,12 @@ if __name__ == '__main__':
 
         # training
         for x_batch, t_batch in sorted_gen:
-            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+            x_batch = fill_batch(x_batch, vocab[PAD_TOKEN], min_height=5)
 
             # N 個の順番をランダムに並び替える
             perm = np.random.permutation(len(x_batch))
-            x = Variable(xp.asarray(x_batch, dtype=np.float32)[perm], volatile='off')
-            t = Variable(xp.asarray(t_batch, dtype=np.int32)[perm],   volatile='off')
+            x = Variable(xp.asarray(x_batch, dtype=np.int32)[perm], volatile='off')
+            t = Variable(xp.asarray(t_batch, dtype=np.int32)[perm], volatile='off')
 
             # 勾配を初期化
             model.cleargrads()
@@ -412,10 +334,10 @@ if __name__ == '__main__':
 
         # evaluation
         for x_batch, t_batch in sorted_gen:
-            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+            x_batch = fill_batch(x_batch, vocab[PAD_TOKEN], min_height=5)
 
-            x = Variable(xp.asarray(x_batch, dtype=np.float32), volatile='on')
-            t = Variable(xp.asarray(t_batch, dtype=np.int32),   volatile='on')
+            x = Variable(xp.asarray(x_batch, dtype=np.int32), volatile='on')
+            t = Variable(xp.asarray(t_batch, dtype=np.int32), volatile='on')
 
             # 順伝播させて誤差と精度を算出
             loss, accuracy = model(x, t, train=False)

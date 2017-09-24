@@ -47,6 +47,8 @@ BOS_TOKEN = '<s>'
 EOS_TOKEN = '</s>'
 UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
+UNK_VEC = None
+PAD_VEC = None
 
 
 def load_w2v_model(path):
@@ -87,7 +89,13 @@ def load_w2v_model(path):
     # return w, w2i, i2w
 
     from gensim.models import KeyedVectors
-    return KeyedVectors.load_word2vec_format(path, binary=True)
+    w2v = KeyedVectors.load_word2vec_format(path, binary=True)
+
+    global UNK_VEC, PAD_VEC
+    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
+    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
+
+    return w2v
 
 
 def seeded_vector(w2v, seed_string):
@@ -98,7 +106,6 @@ def seeded_vector(w2v, seed_string):
 def load_data(path, w2v, labels={}):
     X, Y = [], []
     max_len = 0
-    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
@@ -149,7 +156,6 @@ class MyFFNN(Chain):
             l1=L.Linear(n_dim, n_units),
             l2=L.Linear(n_units, n_units),
             l3=L.Linear(n_units, n_units),
-            lx=L.Linear(n_dim, n_units),
             l4=L.Linear(n_units, n_label)
         )
 
@@ -160,8 +166,7 @@ class MyFFNN(Chain):
     def forward(self, x, train=True):
         h1 = F.dropout(F.relu(self.l1(x)),  ratio=0.5, train=train)
         h2 = F.dropout(F.relu(self.l2(h1)), ratio=0.5, train=train)
-        h3 = F.dropout(F.relu(self.l3(h2) + self.lx(x)), ratio=0.5, train=train)
-        # h3 = F.dropout(F.relu(F.concat((self.l3(h2), x), axis=1)), ratio=0.5, train=train)
+        h3 = F.dropout(F.relu(self.l3(h2)), ratio=0.5, train=train)
 
         # Dropout の結果を結合する
         y = self.l4(h3)
@@ -180,7 +185,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch',     '-e', default=25,   type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=1000, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=100,  type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-ffnn2-w2v',  type=str, help='output directory')
+    parser.add_argument('--output',    '-o', default='model-ffnn-w2v-nosort',  type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -205,15 +210,12 @@ if __name__ == '__main__':
 
     print('# loading word2vec model: {}'.format(args.w2v))
     sys.stdout.flush()
-    model = load_w2v_model(args.w2v)
-    n_vocab = len(model.vocab)
+    w2v = load_w2v_model(args.w2v)
 
     # データの読み込み
     if not args.test:
         # トレーニング+テストデータ
-        X, y, labels = load_data(args.train, w2v=model)
-        X = xp.asarray(X, dtype=np.float32)
-        y = xp.asarray(y, dtype=np.int32)
+        X, y, labels = load_data(args.train, w2v=w2v)
 
         # トレーニングデータとテストデータに分割
         from sklearn.model_selection import train_test_split
@@ -221,17 +223,16 @@ if __name__ == '__main__':
 
     else:
         # トレーニングデータ
-        X, y, labels = load_data(args.train, w2v=model)
-        X_train = xp.asarray(X, dtype=np.float32)
-        y_train = xp.asarray(y, dtype=np.int32)
+        X_train, y_train, labels = load_data(args.train, w2v=w2v)
 
         # テストデータ
-        X, y, labels = load_data(args.test, w2v=model, labels=labels)
-        X_test = xp.asarray(X, dtype=np.float32)
-        y_test = xp.asarray(y, dtype=np.int32)
+        X_test, y_test, labels = load_data(args.test, w2v=w2v, labels=labels)
 
-    n_dim = X_train.shape[1]
+    n_dim   = w2v.vector_size
+    n_vocab = len(w2v.vocab)
     n_label = len(labels)
+    # height  = len(X_train[0])
+    # width   = n_dim
 
     N = len(X_train)
     N_test = len(X_test)
@@ -291,8 +292,8 @@ if __name__ == '__main__':
         perm = np.random.permutation(N)
         for i in six.moves.range(0, N, batchsize):
 
-            x = Variable(X_train[perm[i:i + batchsize]], volatile='off')
-            t = Variable(y_train[perm[i:i + batchsize]], volatile='off')
+            x = Variable(xp.asarray(X_train, dtype=np.float32)[perm[i:i + batchsize]], volatile='off')
+            t = Variable(xp.asarray(y_train, dtype=np.int32)  [perm[i:i + batchsize]], volatile='off')
 
             # 勾配を初期化
             model.cleargrads()
@@ -325,8 +326,8 @@ if __name__ == '__main__':
         K = 0
         for i in six.moves.range(0, N_test, batchsize):
 
-            x = Variable(X_test[i:i + batchsize], volatile='on')
-            t = Variable(y_test[i:i + batchsize], volatile='on')
+            x = Variable(xp.asarray(X_test, dtype=np.float32)[i:i + batchsize], volatile='on')
+            t = Variable(xp.asarray(y_test, dtype=np.int32)  [i:i + batchsize], volatile='on')
 
             # 順伝播させて誤差と精度を算出
             loss, accuracy = model(x, t, train=False)

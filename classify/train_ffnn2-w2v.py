@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: LSTM Neural Networks with Attention Mechanizm for Sentence Classification
+"""Chainer example: Feed Forward Neural Networks for Sentence Classification
 
 http://
 
@@ -15,7 +15,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 #print sys.getdefaultencoding()
 
-import re, math
+import re
 import logging
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -139,7 +139,7 @@ def load_data(path, w2v, labels={}):
         if len(vec) > max_len:
             max_len = len(vec)
 
-        X.append(vec)
+        X.append(np.average(xp.asarray(vec, dtype=np.float32), axis=0))
 
         if label not in labels:
             labels[label] = len(labels)
@@ -147,111 +147,31 @@ def load_data(path, w2v, labels={}):
 
     f.close()
 
-    # for vec in X:
-    #     pad = [PAD_VEC for _ in range(max_len - len(vec))]
-    #     vec.extend(pad)
-
     return X, Y, labels
 
 
-def batch(generator, batch_size):
-    batch = []
-    for line in generator:
-        batch.append(line)
-        if len(batch) == batch_size:
-            yield batch
-            batch = []
-    if batch:
-        yield batch
-
-
-def batch_tuple(generator, batch_size):
-    batch = []
-    for line in generator:
-        batch.append(line)
-        if len(batch) == batch_size:
-            yield tuple(list(x) for x in zip(*batch))
-            batch = []
-    if batch:
-        yield tuple(list(x) for x in zip(*batch))
-
-
-def sorted_parallel(generator1, generator2, pooling, order=0):
-    gen1 = batch(generator1, pooling)
-    gen2 = batch(generator2, pooling)
-    for batch1, batch2 in zip(gen1, gen2):
-        for x in sorted(zip(batch1, batch2), key=lambda x: len(x[order])):
-            yield x
-
-
-def fill_batch(batch, padding, min_height=1):
-    max_len = max([len(x) for x in batch] + [min_height])
-    return [x + [padding] * (max_len - len(x) + 1) for x in batch]
-
-
-class MyATT(Chain):
-    def __init__(self, n_dim, n_label):
-        super(MyATT, self).__init__(
-            fwd=L.GRU(50, n_inputs=n_dim),
-            bwd=L.GRU(50, n_inputs=n_dim),
-            fc0=L.Linear(100, 100),
-            fc1=L.Linear(100, 100),
-            fc2=L.Linear(100, 100),
+class MyFFNN(Chain):
+    def __init__(self, n_dim, n_units, n_label):
+        super(MyFFNN, self).__init__(
+            l1=L.Linear(n_dim, n_units),
+            l2=L.Linear(n_units, n_units),
+            l3=L.Linear(n_units, n_units),
+            lx=L.Linear(n_dim, n_units),
+            l4=L.Linear(n_units, n_label)
         )
-        self.uw = (xp.random.rand(1, 100).astype(np.float32) - 0.5) / 100
 
     def __call__(self, x, t, train=True):
         y = self.forward(x, train=train)
         return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
 
     def forward(self, x, train=True):
-        # x:  50x300
-        # uw: 1x100
-        uw = F.tanh(self.fc0(Variable(self.uw, volatile=not train)))
+        h1 = F.dropout(F.relu(self.l1(x)),  ratio=0.5, train=train)
+        h2 = F.dropout(F.relu(self.l2(h1)), ratio=0.5, train=train)
+        h3 = F.dropout(F.relu(self.l3(h2) + self.lx(x)), ratio=0.5, train=train)
+        # h3 = F.dropout(F.relu(F.concat((self.l3(h2), x), axis=1)), ratio=0.5, train=train)
 
-        h1_list = []    # h1: 50x50
-        # c1 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        h1 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        for i in six.moves.range(x.shape[1]):
-            # c1, h1 = self.fwd(c1, h1, x[:, i, :])
-            h1 = self.fwd(h1, x[:, i, :])
-            h1_list.append(h1)
-
-        h2_list = []    # h2: 50x50
-        # c2 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        h2 = Variable(xp.zeros((x.shape[0], 50), dtype=np.float32), volatile=not train)
-        for i in reversed(six.moves.range(x.shape[1])):
-            # c2, h2 = self.bwd(c2, h2, x[:, i, :])
-            h2 = self.bwd(h2, x[:, i, :])
-            h2_list.append(h2)
-
-        hi_list = []    # h: 50x100
-        for i in six.moves.range(x.shape[1]):
-            hi = F.concat((h1_list[i], h2_list[i]), axis=1)
-            hi_list.append(hi)
-
-        ui_list = []    # u: 50x100
-        for i in six.moves.range(x.shape[1]):
-            ui = F.tanh(self.fc1(hi_list[i]))
-            ui_list.append(ui)
-
-        sim_list = []   # sim: 50x1
-        for i in six.moves.range(x.shape[1]):
-            sim = F.batch_matmul(F.broadcast_to(uw, (x.shape[0], 100)), ui_list[i], transa=True)
-            sim_list.append(F.reshape(sim, (x.shape[0], 1)))
-
-        alpha_list = [] # alpah: 50x1
-        alpha_mat = F.softmax(F.concat(sim_list, axis=1))
-        for i in six.moves.range(x.shape[1]):
-            alpha = F.reshape(alpha_mat[:, i], (x.shape[0], 1))
-            alpha_list.append(alpha)
-
-        # s: 50x100
-        si = Variable(xp.zeros((x.shape[0], 100), dtype=np.float32), volatile=not train)
-        for i in six.moves.range(x.shape[1]):
-            si += F.reshape(F.batch_matmul(hi_list[i], alpha_list[i]), (x.shape[0], 100))
-
-        y = self.fc2(si)
+        # Dropout の結果を結合する
+        y = self.l4(h3)
 
         return y
 
@@ -259,15 +179,15 @@ class MyATT(Chain):
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Chainer example: MyATT')
-    parser.add_argument('--train',           default='',  type=unicode, help='training file (.txt)')
-    parser.add_argument('--test',            default='',  type=unicode, help='evaluating file (.txt)')
-    parser.add_argument('--w2v',       '-w', default='',  type=unicode, help='word2vec model file (.bin)')
-    parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--epoch',     '-e', default=25,  type=int, help='number of epochs to learn')
-    parser.add_argument('--unit',      '-u', default=100, type=int, help='number of output channels')
-    parser.add_argument('--batchsize', '-b', default=100, type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-gru_att-w2v-sort',  type=str, help='output directory')
+    parser = ArgumentParser(description='Chainer example: MyFFNN')
+    parser.add_argument('--train',           default='',   type=unicode, help='training file (.txt)')
+    parser.add_argument('--test',            default='',   type=unicode, help='evaluating file (.txt)')
+    parser.add_argument('--w2v',       '-w', default='',   type=unicode, help='word2vec model file (.bin)')
+    parser.add_argument('--gpu',       '-g', default=-1,   type=int, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--epoch',     '-e', default=25,   type=int, help='number of epochs to learn')
+    parser.add_argument('--unit',      '-u', default=1000, type=int, help='number of output channels')
+    parser.add_argument('--batchsize', '-b', default=100,  type=int, help='learning batchsize size')
+    parser.add_argument('--output',    '-o', default='model-ffnn2-w2v-nosort',  type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -313,8 +233,8 @@ if __name__ == '__main__':
     n_dim   = w2v.vector_size
     n_vocab = len(w2v.vocab)
     n_label = len(labels)
-    height  = len(X_train[0])
-    width   = n_dim
+    # height  = len(X_train[0])
+    # width   = n_dim
 
     N = len(X_train)
     N_test = len(X_test)
@@ -326,11 +246,11 @@ if __name__ == '__main__':
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data min height: {}, width: {}, labels: {}'.format(height, width, n_label))
+    print('# data labels: {}'.format(n_label))
     sys.stdout.flush()
 
-    # Prepare LSTM-ATT model
-    model = MyATT(n_dim, n_label)
+    # Prepare FFNN model
+    model = MyFFNN(n_dim, n_units, n_label)
 
     if args.gpu >= 0:
         model.to_gpu()
@@ -364,20 +284,17 @@ if __name__ == '__main__':
         print('epoch {:} / {:}'.format(epoch, n_epoch))
         sys.stdout.flush()
 
-        # sorted_gen = batch_tuple(sorted_parallel(X_train, y_train, 100 * batchsize), batchsize)
-        sorted_gen = batch_tuple(sorted_parallel(X_train, y_train, N), batchsize)
         sum_train_loss = 0.
         sum_train_accuracy = 0.
         K = 0
 
         # training
-        for x_batch, t_batch in sorted_gen:
-            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+        # N 個の順番をランダムに並び替える
+        perm = np.random.permutation(N)
+        for i in six.moves.range(0, N, batchsize):
 
-            # N 個の順番をランダムに並び替える
-            perm = np.random.permutation(len(x_batch))
-            x = Variable(xp.asarray(x_batch, dtype=np.float32)[perm], volatile='off')
-            t = Variable(xp.asarray(t_batch, dtype=np.int32)[perm],   volatile='off')
+            x = Variable(xp.asarray(X_train, dtype=np.float32)[perm[i:i + batchsize]], volatile='off')
+            t = Variable(xp.asarray(y_train, dtype=np.int32)  [perm[i:i + batchsize]], volatile='off')
 
             # 勾配を初期化
             model.cleargrads()
@@ -404,18 +321,15 @@ if __name__ == '__main__':
         sys.stdout.flush()
         cur_at = now
 
-        # sorted_gen = batch_tuple(sorted_parallel(X_test, y_test, 100 * batchsize), batchsize)
-        sorted_gen = batch_tuple(sorted_parallel(X_test, y_test, N_test), batchsize)
         sum_test_loss = 0.
         sum_test_accuracy = 0.
         K = 0
 
         # evaluation
-        for x_batch, t_batch in sorted_gen:
-            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+        for i in six.moves.range(0, N_test, batchsize):
 
-            x = Variable(xp.asarray(x_batch, dtype=np.float32), volatile='on')
-            t = Variable(xp.asarray(t_batch, dtype=np.int32),   volatile='on')
+            x = Variable(xp.asarray(X_test, dtype=np.float32)[i:i + batchsize], volatile='on')
+            t = Variable(xp.asarray(y_test, dtype=np.int32)  [i:i + batchsize], volatile='on')
 
             # 順伝播させて誤差と精度を算出
             loss, accuracy = model(x, t, train=False)
