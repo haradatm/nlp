@@ -47,6 +47,8 @@ BOS_TOKEN = '<s>'
 EOS_TOKEN = '</s>'
 UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
+UNK_VEC = None
+PAD_VEC = None
 
 
 def load_w2v_model(path):
@@ -86,11 +88,14 @@ def load_w2v_model(path):
     #         assert f.read(1) == '\n'
     # return w, w2i, i2w
 
-    # from gensim.models import word2vec
-    # return word2vec.Word2Vec.load_word2vec_format(path, binary=True)
-
     from gensim.models import KeyedVectors
-    return KeyedVectors.load_word2vec_format(path, binary=True)
+    w2v = KeyedVectors.load_word2vec_format(path, binary=True)
+
+    global UNK_VEC, PAD_VEC
+    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
+    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
+
+    return w2v
 
 
 def seeded_vector(w2v, seed_string):
@@ -100,8 +105,6 @@ def seeded_vector(w2v, seed_string):
 
 def load_data(path, w2v, labels={}):
     X, Y = [], []
-    max_len = 0
-    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
 
     max_len_words = 0
     max_len_sents = 0
@@ -156,14 +159,13 @@ def load_data(path, w2v, labels={}):
 
     f.close()
 
-    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
-    for sent_vec in X:
-        for word_vec in sent_vec:
-            pad = [PAD_VEC for _ in range(max_len_words - len(word_vec))]
-            word_vec.extend(pad)
-
-        pad = [[PAD_VEC for _ in range(max_len_words)] for _ in range(max_len_sents - len(sent_vec))]
-        sent_vec.extend(pad)
+    # for sent_vec in X:
+    #     for word_vec in sent_vec:
+    #         pad = [PAD_VEC for _ in range(max_len_words - len(word_vec))]
+    #         word_vec.extend(pad)
+    #
+    #     pad = [[PAD_VEC for _ in range(max_len_words)] for _ in range(max_len_sents - len(sent_vec))]
+    #     sent_vec.extend(pad)
 
     return X, Y, labels
 
@@ -203,6 +205,53 @@ def sent_splitter(text):
         ret.append(u''.join(buff).strip())
 
     return ret
+
+
+def batch(generator, batch_size):
+    batch = []
+    for line in generator:
+        batch.append(line)
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+def batch_tuple(generator, batch_size):
+    batch = []
+    for line in generator:
+        batch.append(line)
+        if len(batch) == batch_size:
+            yield tuple(list(x) for x in zip(*batch))
+            batch = []
+    if batch:
+        yield tuple(list(x) for x in zip(*batch))
+
+
+def sorted_parallel(generator1, generator2, pooling, order=0):
+    gen1 = batch(generator1, pooling)
+    gen2 = batch(generator2, pooling)
+    # for batch1, batch2 in zip(gen1, gen2):
+    #     for x in sorted(zip(batch1, batch2), key=lambda x: len(x[order])):
+    #         yield x
+    for batch1, batch2 in zip(gen1, gen2):
+        for x1 in sorted(zip(batch1, batch2), key=lambda x1: (len(x1[order]), max([len(x2) for x2 in x1[order]]))):
+            yield x1
+
+
+def fill_batch(batch, padding, min_height=1):
+    # max_len = max([len(x) for x in batch] + [min_height])
+    # return [x + [padding] * (max_len - len(x) + 1) for x in batch]
+    max_len_sents = max([len(x) for x in batch] + [min_height])
+    max_len_words = max([max(len(x1) for x1 in x2) for x2 in batch] + [min_height])
+    for sents in batch:
+        for words in sents:
+            vec = [padding] * (max_len_words - len(words))
+            words.extend(vec)
+        vec = [[padding] * max_len_words] * (max_len_sents - len(sents))
+        sents.extend(vec)
+    return batch
 
 
 class MyHATT(Chain):
@@ -342,7 +391,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch',     '-e', default=25,  type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=100, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=100, type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-gru_hatt-w2v',  type=str, help='output directory')
+    parser.add_argument('--output',    '-o', default='model-gru_hatt-w2v-sort',  type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -367,15 +416,12 @@ if __name__ == '__main__':
 
     print('# loading word2vec model: {}'.format(args.w2v))
     sys.stdout.flush()
-    model = load_w2v_model(args.w2v)
-    n_vocab = len(model.vocab)
+    w2v = load_w2v_model(args.w2v)
 
     # データの読み込み
     if not args.test:
         # トレーニング+テストデータ
-        X, y, labels = load_data(args.train, w2v=model)
-        X = xp.asarray(X, dtype=np.float32)
-        y = xp.asarray(y, dtype=np.int32)
+        X, y, labels = load_data(args.train, w2v=w2v)
 
         # トレーニングデータとテストデータに分割
         from sklearn.model_selection import train_test_split
@@ -383,19 +429,16 @@ if __name__ == '__main__':
 
     else:
         # トレーニングデータ
-        X, y, labels = load_data(args.train, w2v=model)
-        X_train = xp.asarray(X, dtype=np.float32)
-        y_train = xp.asarray(y, dtype=np.int32)
+        X_train, y_train, labels = load_data(args.train, w2v=w2v)
 
         # テストデータ
-        X, y, labels = load_data(args.test, w2v=model, labels=labels)
-        X_test = xp.asarray(X, dtype=np.float32)
-        y_test = xp.asarray(y, dtype=np.int32)
+        X_test, y_test, labels = load_data(args.test, w2v=w2v, labels=labels)
 
-    hight   = X_train.shape[1]
-    width   = X_train.shape[2]
-    n_dim   = X_train.shape[3]
+    n_dim   = w2v.vector_size
+    n_vocab = len(w2v.vocab)
     n_label = len(labels)
+    height  = len(X_train[0])
+    width   = len(X_train[0][0])
 
     N = len(X_train)
     N_test = len(X_test)
@@ -407,7 +450,7 @@ if __name__ == '__main__':
     print('# input channel: {}'.format(1))
     print('# output channel: {}'.format(n_units))
     print('# train: {}, test: {}'.format(N, N_test))
-    print('# data hight: {}, width: {}, dims: {}, labels: {}'.format(hight, width, n_dim, n_label))
+    print('# data min height: {}, width: {}, labels: {}'.format(height, width, n_label))
     sys.stdout.flush()
 
     # Prepare LSTM model
@@ -445,19 +488,20 @@ if __name__ == '__main__':
         print('epoch {:} / {:}'.format(epoch, n_epoch))
         sys.stdout.flush()
 
-        # sorted_gen = batch(sorted_parallel(X_train, y_train, N * batchsize), batchsize)
+        # sorted_gen = batch_tuple(sorted_parallel(X_train, y_train, 100 * batchsize), batchsize)
+        sorted_gen = batch_tuple(sorted_parallel(X_train, y_train, N), batchsize)
         sum_train_loss = 0.
         sum_train_accuracy = 0.
         K = 0
 
         # training
-        # N 個の順番をランダムに並び替える
-        perm = np.random.permutation(N)
-        for i in six.moves.range(0, N, batchsize):
-            x = Variable(X_train[perm[i:i + batchsize]], volatile='off')
-            t = Variable(y_train[perm[i:i + batchsize]], volatile='off')
-            # x = Variable(xp.asarray([X_train[perm[i]]], dtype=np.float32), volatile='off')
-            # t = Variable(xp.asarray([y_train[perm[i]]], dtype=np.int32),   volatile='off')
+        for x_batch, t_batch in sorted_gen:
+            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+
+            # N 個の順番をランダムに並び替える
+            perm = np.random.permutation(len(x_batch))
+            x = Variable(xp.asarray(x_batch, dtype=np.float32)[perm], volatile='off')
+            t = Variable(xp.asarray(t_batch, dtype=np.int32)[perm],   volatile='off')
 
             # 勾配を初期化
             model.cleargrads()
@@ -484,15 +528,18 @@ if __name__ == '__main__':
         sys.stdout.flush()
         cur_at = now
 
-        # evaluation
+        # sorted_gen = batch_tuple(sorted_parallel(X_test, y_test, 100 * batchsize), batchsize)
+        sorted_gen = batch_tuple(sorted_parallel(X_test, y_test, N_test), batchsize)
         sum_test_loss = 0.
         sum_test_accuracy = 0.
         K = 0
-        for i in six.moves.range(0, N_test, batchsize):
-            x = Variable(X_test[i:i + batchsize], volatile='on')
-            t = Variable(y_test[i:i + batchsize], volatile='on')
-            # x = Variable(xp.asarray([X_test[i]], dtype=np.float32), volatile='on')
-            # t = Variable(xp.asarray([y_test[i]], dtype=np.int32),   volatile='on')
+
+        # evaluation
+        for x_batch, t_batch in sorted_gen:
+            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+
+            x = Variable(xp.asarray(x_batch, dtype=np.float32), volatile='on')
+            t = Variable(xp.asarray(t_batch, dtype=np.int32),   volatile='on')
 
             # 順伝播させて誤差と精度を算出
             loss, accuracy = model(x, t, train=False)
