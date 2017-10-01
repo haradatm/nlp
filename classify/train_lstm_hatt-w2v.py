@@ -106,8 +106,8 @@ def seeded_vector(w2v, seed_string):
 def load_data(path, w2v, labels={}):
     X, Y = [], []
 
-    max_len_words = 0
-    max_len_sents = 0
+    # max_len_words = 0
+    # max_len_sents = 0
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
@@ -143,13 +143,13 @@ def load_data(path, w2v, labels={}):
                     sys.stderr.write('unk: {}\n'.format(token))
                     word_vec.append(UNK_VEC)
 
-            if len(word_vec) > max_len_words:
-                max_len_words = len(word_vec)
+            # if len(word_vec) > max_len_words:
+            #     max_len_words = len(word_vec)
 
             sent_vec.append(word_vec)
 
-        if len(sent_vec) > max_len_sents:
-            max_len_sents = len(sent_vec)
+        # if len(sent_vec) > max_len_sents:
+        #     max_len_sents = len(sent_vec)
 
         X.append(sent_vec)
 
@@ -242,7 +242,7 @@ def sorted_parallel(generator1, generator2, pooling, order=0):
 
 def fill_batch(batch, padding, min_height=1):
     # max_len = max([len(x) for x in batch] + [min_height])
-    # return [x + [padding] * (max_len - len(x) + 1) for x in batch]
+    # return [x + [padding] * (max_len - len(x)) for x in batch]
     max_len_sents = max([len(x) for x in batch] + [min_height])
     max_len_words = max([max(len(x1) for x1 in x2) for x2 in batch] + [min_height])
     for sents in batch:
@@ -391,7 +391,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch',     '-e', default=25,  type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=100, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=100, type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-gru_hatt-w2v-sort',  type=str, help='output directory')
+    parser.add_argument('--output',    '-o', default='model-lstm_hatt-w2v',  type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
@@ -496,7 +496,7 @@ if __name__ == '__main__':
 
         # training
         for x_batch, t_batch in sorted_gen:
-            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+            x_batch = fill_batch(x_batch, PAD_VEC)
 
             # N 個の順番をランダムに並び替える
             perm = np.random.permutation(len(x_batch))
@@ -536,7 +536,7 @@ if __name__ == '__main__':
 
         # evaluation
         for x_batch, t_batch in sorted_gen:
-            x_batch = fill_batch(x_batch, PAD_VEC, min_height=5)
+            x_batch = fill_batch(x_batch, PAD_VEC)
 
             x = Variable(xp.asarray(x_batch, dtype=np.float32), volatile='on')
             t = Variable(xp.asarray(t_batch, dtype=np.int32),   volatile='on')

@@ -49,47 +49,6 @@ UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
 
 
-def load_w2v_model(path):
-
-    # with open(path, 'rb') as f:
-    #     w2i = {}
-    #     i2w = {}
-    #
-    #     n_vocab, n_units = map(int, f.readline().split())
-    #     w = np.empty((n_vocab, n_units), dtype=np.float32)
-    #
-    #     for i in xrange(n_vocab):
-    #         word = ''
-    #         while True:
-    #             ch = f.read(1)
-    #             if ch == ' ': break
-    #             word += ch
-    #
-    #         try:
-    #             w2i[unicode(word)] = i
-    #             i2w[i] = unicode(word)
-    #
-    #         except RuntimeError:
-    #             logging.error('Error unicode(): %s', word)
-    #             w2i[word] = i
-    #             i2w[i] = word
-    #
-    #         w[i] = np.zeros(n_units)
-    #         for j in xrange(n_units):
-    #             w[i][j] = struct.unpack('f', f.read(struct.calcsize('f')))[0]
-    #
-    #         # ベクトルを正規化する
-    #         vlen = np.linalg.norm(w[i], 2)
-    #         w[i] /= vlen
-    #
-    #         # 改行を strip する
-    #         assert f.read(1) == '\n'
-    # return w, w2i, i2w
-
-    from gensim.models import word2vec
-    return word2vec.Word2Vec.load_word2vec_format(path, binary=True)
-
-
 def load_data(path, labels={}, vocab={}):
     X, Y = [], []
     max_len = 0
@@ -262,17 +221,17 @@ if __name__ == '__main__':
         # (nsample, channel, height, width) の4次元テンソルに変換
         # X_test = X_test.reshape((X_test.shape[0], input_channel, X_test.shape[1], X_test.shape[2]))
 
-    n_dim = 300
-    n_label = len(labels)
+    n_dim   = 300
     n_vocab = len(vocab)
-    height = X_train.shape[1]
-    width  = n_dim
+    n_label = len(labels)
+    height  = X_train.shape[1]
+    width   = n_dim
 
     N = len(X_train)
     N_test = len(X_test)
 
     print('# gpu: {}'.format(args.gpu))
-    print('# embedding dim: {}, vocab {}'.format(width, n_vocab))
+    print('# embedding dim: {}, vocab {}'.format(n_dim, n_vocab))
     print('# epoch: {}'.format(n_epoch))
     print('# batchsize: {}'.format(batchsize))
     print('# input channel: {}'.format(1))

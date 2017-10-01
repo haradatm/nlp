@@ -47,6 +47,8 @@ BOS_TOKEN = '<s>'
 EOS_TOKEN = '</s>'
 UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
+UNK_VEC = None
+PAD_VEC = None
 
 
 def load_w2v_model(path):
@@ -87,7 +89,13 @@ def load_w2v_model(path):
     # return w, w2i, i2w
 
     from gensim.models import KeyedVectors
-    return KeyedVectors.load_word2vec_format(path, binary=True)
+    w2v = KeyedVectors.load_word2vec_format(path, binary=True)
+
+    global UNK_VEC, PAD_VEC
+    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
+    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
+
+    return w2v
 
 
 def seeded_vector(w2v, seed_string):
@@ -98,7 +106,6 @@ def seeded_vector(w2v, seed_string):
 def load_data(path, w2v, labels={}):
     X, Y = [], []
     max_len = 0
-    UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
@@ -140,7 +147,6 @@ def load_data(path, w2v, labels={}):
 
     f.close()
 
-    PAD_VEC = seeded_vector(w2v, PAD_TOKEN)
     for vec in X:
         pad = [PAD_VEC for _ in range(max_len - len(vec))]
         vec.extend(pad)
@@ -217,8 +223,7 @@ if __name__ == '__main__':
 
     print('# loading word2vec model: {}'.format(args.w2v))
     sys.stdout.flush()
-    model = load_w2v_model(args.w2v)
-    n_vocab = len(model.vocab)
+    w2v = load_w2v_model(args.w2v)
 
     input_channel = 1
     output_channel = args.unit
@@ -226,7 +231,7 @@ if __name__ == '__main__':
     # データの読み込み
     if not args.test:
         # トレーニング+テストデータ
-        X, y, labels = load_data(args.train, w2v=model)
+        X, y, labels = load_data(args.train, w2v=w2v)
         X = xp.asarray(X, dtype=np.float32)
         y = xp.asarray(y, dtype=np.int32)
 
@@ -239,7 +244,7 @@ if __name__ == '__main__':
 
     else:
         # トレーニングデータ
-        X, y, labels = load_data(args.train, w2v=model)
+        X, y, labels = load_data(args.train, w2v=w2v)
         X_train = xp.asarray(X, dtype=np.float32)
         y_train = xp.asarray(y, dtype=np.int32)
 
@@ -247,22 +252,24 @@ if __name__ == '__main__':
         X_train = X_train.reshape((X_train.shape[0], input_channel, X_train.shape[1], X_train.shape[2]))
 
         # テストデータ
-        X, y, labels = load_data(args.test, w2v=model, labels=labels)
+        X, y, labels = load_data(args.test, w2v=w2v, labels=labels)
         X_test = xp.asarray(X, dtype=np.float32)
         y_test = xp.asarray(y, dtype=np.int32)
 
         # (nsample, channel, height, width) の4次元テンソルに変換
         X_test = X_test.reshape((X_test.shape[0], input_channel, X_test.shape[1], X_test.shape[2]))
 
-    height   = X_train.shape[2]
-    width    = X_train.shape[3]
+    n_dim   = w2v.vector_size
+    n_vocab = len(w2v.vocab)
     n_label = len(labels)
+    height  = X_train.shape[2]
+    width   = X_train.shape[3]
 
     N = len(X_train)
     N_test = len(X_test)
 
     print('# gpu: {}'.format(args.gpu))
-    print('# embedding dim: {}, vocab {}'.format(width, n_vocab))
+    print('# embedding dim: {}, vocab {}'.format(n_dim, n_vocab))
     print('# epoch: {}'.format(n_epoch))
     print('# batchsize: {}'.format(batchsize))
     print('# input channel: {}'.format(1))

@@ -105,7 +105,7 @@ def seeded_vector(w2v, seed_string):
 
 def load_data(path, w2v, labels={}):
     X, Y = [], []
-    max_len = 0
+    # max_len = 0
 
     f = open(path, 'rU')
     for i, line in enumerate(f):
@@ -136,8 +136,8 @@ def load_data(path, w2v, labels={}):
                 sys.stderr.write('unk: {}\n'.format(token))
                 vec.append(UNK_VEC)
 
-        if len(vec) > max_len:
-            max_len = len(vec)
+        # if len(vec) > max_len:
+        #     max_len = len(vec)
 
         X.append(np.average(xp.asarray(vec, dtype=np.float32), axis=0))
 
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch',     '-e', default=25,   type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=1000, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=100,  type=int, help='learning batchsize size')
-    parser.add_argument('--output',    '-o', default='model-ffnn2-w2v-nosort',  type=str, help='output directory')
+    parser.add_argument('--output',    '-o', default='model-ffnn2-w2v',  type=str, help='output directory')
     args = parser.parse_args()
 
     if args.gpu >= 0:
