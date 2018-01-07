@@ -181,14 +181,20 @@ if __name__ == '__main__':
     parser.add_argument('--docs',    default='', type=str, help='document data file (.txt)')
     parser.add_argument('--queries', default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',   default='', type=str, help='query relevance file (.qrel)')
-    parser.add_argument('--type',    default='w2v', choices=['tfidf', 'bm25', 'w2v'], help='type of vectorizer')
+    parser.add_argument('--type',    default='bm25', choices=['tfidf', 'bm25', 'w2v'], help='type of vectorizer')
     parser.add_argument('--K', default=1000, type=int, help='number of evaluations')
     args = parser.parse_args()
 
     # データの読み込み
     docs, doc_labels = load_data(args.docs)
 
-    confidence = 0.6
+    # データの読み込み
+    queries, que_labels = load_data(args.queries)
+
+    # 正解データの読み込み
+    qrels = load_qrels(args.qrels)
+
+    # confidence = 0.6
 
     # ベクトライザの定義
     import importlib
@@ -198,10 +204,7 @@ if __name__ == '__main__':
     # データのベクトル化
     vector = vectorizer.fit_transform(np.array(docs))
 
-    # データの読み込み
-    queries, que_labels = load_data(args.queries)
-
-    results_que, results_doc = [], []
+    sim_doc_labels = []
     for idx, text in enumerate(queries):
 
         item = vectorizer.transform(np.array([text]))
@@ -211,19 +214,11 @@ if __name__ == '__main__':
 
         # sort in descending order
         similarities_idx = similarities.argsort()[0][-1:-1001:-1]
+        sim_doc_labels.append([doc_labels[x] for x in similarities_idx])
 
-        sim_idx = similarities_idx[0]
-        # logger.debug('{}\t{}\t{:.6f}\t{}'.format(que_labels[idx], doc_labels[sim_idx], similarities[0][sim_idx], docs[sim_idx]))
-        sys.stdout.flush()
+    acc_map = mean_average_precision(que_labels, sim_doc_labels, qrels, k=args.K)
+    acc_ndcg = n_discount_cumulative_count(que_labels, sim_doc_labels, qrels, k=args.K)
 
-        results_que.append(que_labels[idx])
-        results_doc.append([doc_labels[x] for x in similarities_idx])
-
-    # 正解データの読み込み
-    qrels = load_qrels(args.qrels)
-
-    acc_map = mean_average_precision(results_que, results_doc, qrels, k=args.K)
-    acc_ndcg = n_discount_cumulative_count(results_que, results_doc, qrels, k=args.K)
     print('map@{:}={:.6f}\tndcg@{}={:.6f}'.format(args.K, acc_map, args.K, acc_ndcg))
 
 logger.info('time spent: {:.6f} sec\n'.format(time.time() - start_time))
