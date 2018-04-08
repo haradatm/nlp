@@ -7,7 +7,7 @@
 In addition, please add the project folder to PYTHONPATH and `conca install` the following packages:
 - `networkx`
 
-**Usage**
+### Usage ###
 
 ***Command line***
 - extract triple: `python triples3.py --input test.txt 2> log-triples3.txt 1> output-triples3.txt`
