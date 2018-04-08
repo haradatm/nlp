@@ -182,7 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('--queries', default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',   default='', type=str, help='query relevance file (.qrel)')
     parser.add_argument('--type',    default='bm25', choices=['tfidf', 'bm25', 'w2v'], help='type of vectorizer')
-    parser.add_argument('--K', default=1000, type=int, help='number of evaluations')
+    parser.add_argument('--K', default=20, type=int, help='number of evaluations')
     args = parser.parse_args()
 
     # データの読み込み
@@ -204,17 +204,22 @@ if __name__ == '__main__':
     # データのベクトル化
     vector = vectorizer.fit_transform(np.array(docs))
 
-    sim_doc_labels = []
-    for idx, text in enumerate(queries):
+    with open('results-{:}.txt'.format(args.type), 'w') as f:
 
-        item = vectorizer.transform(np.array([text]))
+        sim_doc_labels = []
+        for idx, text in enumerate(queries):
 
-        # calculate cosine similarities
-        similarities = cosine_similarity(item, vector)
+            item = vectorizer.transform(np.array([text]))
 
-        # sort in descending order
-        similarities_idx = similarities.argsort()[0][-1:-1001:-1]
-        sim_doc_labels.append([doc_labels[x] for x in similarities_idx])
+            # calculate cosine similarities
+            similarities = cosine_similarity(item, vector)
+
+            for i, j in enumerate(similarities.argsort()[0][::-1]):
+                f.write("{}\tQ0\t{}\t{}\t{:.6f}\tSTANDARD\n".format(que_labels[idx], doc_labels[j], i, similarities[0][j]))
+
+            # sort in descending order
+            similarities_idx = similarities.argsort()[0][-1:-1001:-1]
+            sim_doc_labels.append([doc_labels[x] for x in similarities_idx])
 
     acc_map = mean_average_precision(que_labels, sim_doc_labels, qrels, k=args.K)
     acc_ndcg = n_discount_cumulative_count(que_labels, sim_doc_labels, qrels, k=args.K)

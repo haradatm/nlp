@@ -40,7 +40,8 @@ def seeded_vector(w2v, seed_string):
 
 
 from gensim.models import KeyedVectors
-w2v_model_path = 'models/nfc_train_w2v.bin'
+# w2v_model_path = 'models/nfc_train_w2v.bin'
+w2v_model_path = 'models/nfcorpus-all_w2v.bin'
 
 
 def load_w2v_model(filename):
