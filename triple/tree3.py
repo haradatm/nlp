@@ -326,65 +326,6 @@ def parse_cabocha(str):
     return ret
 
 
-def merge_chunk(chunk, edge=False):
-    forms = []
-    # bases = []
-    cases = []
-
-    # ノードラベルは,助詞以外の品詞と述語
-    if not edge:
-        i = 0
-        while True:
-            if i >= len(chunk.form):
-                break
-
-            # 名詞の連続は連結する (最大 N個まで連結)
-            N = 5
-            if chunk.pos1[i] == '名詞':
-                word = chunk.form[i]
-                i += 1
-                k = 1
-                for j in range(i, len(chunk.form)):
-                    if k >= N:
-                        break
-                    if chunk.pos1[j] == '名詞':
-                        word += chunk.form[j]
-                        i += 1
-                        k += 1
-                    else:
-                        break
-
-                forms.append(word)
-                continue
-
-            # 動詞,サ変名詞は終止形にして後続をスキップ
-            if chunk.pos1[i] == '動詞' or chunk.pos2[i] == 'サ変接続':
-                # forms.append(chunk.form[i])
-                # i += 1
-                # continue
-                forms.append(chunk.base[i])
-                break
-
-            # # 格助詞および連体形「の」は除外する
-            # if chunk.case[i] != 'ガ格' and \
-            #     chunk.case[i] != 'ニ格' and \
-            #     chunk.case[i] != 'ヲ格' and \
-            #     chunk.case[i] != '連体化「の」':
-            #     forms.append(chunk.form[i])
-            if chunk.case[i] == '':
-                forms.append(chunk.form[i])
-            i += 1
-
-        return '-'.join(forms)
-
-    # エッジラベルは,格助詞
-    else:
-        for i in range(len(chunk.case)):
-            cases.append(chunk.case[i])
-        label = ''.join(cases)
-        return ' ' if label == '' else label
-
-
 # ノードラベルは,助詞以外の品詞と述語
 def merge_node_label(chunk):
     label = []
@@ -534,7 +475,7 @@ def draw_tree(chunks, d=0, s=0, p=0):
     for e in dot.get_edge_list():
         e.set_label(e.get_attributes()['weight'])
     dot.set_label('{:}'.format(text))
-    dot.write_png('graph_d{:03d}_s{:03d}-p{:03d}.png'.format(d+1, s+1, p+1), prog='dot')
+    dot.write_png('graph_d{:03d}-s{:03d}-p{:03d}.png'.format(d+1, s+1, p+1), prog='dot')
 
     return
 
