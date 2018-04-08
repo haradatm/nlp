@@ -130,7 +130,7 @@ def split(text):
     patterns = r'(' \
            r'(?:.*?)' \
            r'(?:' \
-               r'[！？。．…・；ｗ♪→←]+[！？。．…・；ｗ♪→←]*' \
+               r'[！？。．…；ｗ♪→←]+[！？。．…；ｗ♪→←]*' \
                r'|' \
                r'＜ｅｏｓ＞' \
            r')' \
@@ -226,6 +226,8 @@ def parse_cabocha(str):
 
             # if morph[MCB_POS2] == '句点' or morph[MCB_POS2] == '読点':
             #     continue
+            if morph[MCB_FORM] in ['。', '．', '、', '，']:
+                continue
 
             # 文節 (表層,読み,品詞,その他の素性)
             if len(chunk.form) > 0:
@@ -253,12 +255,17 @@ def parse_cabocha(str):
             chunk.pos4.append(morph[MCB_POS4])
 
             # 格, 項
+            # if morph[MCB_POS2] == '格助詞' \
+            #         or morph[MCB_POS2] == '係助詞' \
+            #         or morph[MCB_POS2] == '接続助詞' \
+            #         or morph[MCB_POS2] == '副詞化' \
+            #         or morph[MCB_POS2] == '並立助詞' \
+            #         or morph[MCB_POS2] == '連体化':
             if morph[MCB_POS2] == '格助詞' \
                     or morph[MCB_POS2] == '係助詞' \
                     or morph[MCB_POS2] == '接続助詞' \
                     or morph[MCB_POS2] == '副詞化' \
-                    or morph[MCB_POS2] == '並立助詞' \
-                    or morph[MCB_POS2] == '連体化':
+                    or morph[MCB_POS2] == '並立助詞':
 
                 # ガ格
                 if morph[MCB_FORM] == 'が':
@@ -290,11 +297,12 @@ def parse_cabocha(str):
                     chunk.argment.append('')
                     if len(chunk.argment) >= 2:
                         chunk.argment[-2] = 'ハ格'
-                # 連体化「の」
-                elif morph[MCB_FORM] == 'の' and morph[MCB_POS2] == '連体化' and len(chunk.pos1) >= 2 and chunk.pos1[-2] == '名詞' and chunk.pos2[-2] != '代名詞':
-                    chunk.case.append('連体化「の」')
-                    chunk.argment.append('')
-                    chunk.argment[-2] = '連体化「の」'
+                # # 連体化「の」
+                # elif morph[MCB_FORM] == 'の' and morph[MCB_POS2] == '連体化' and len(chunk.pos1) >= 2 and chunk.pos1[-2] == '名詞' and chunk.pos2[-2] != '代名詞':
+                #     chunk.case.append('連体化「の」')
+                #     chunk.argment.append('')
+                #     chunk.argment[-2] = '連体化「の」'
+
                 else:
                     chunk.case.append('')
                     chunk.argment.append('')
@@ -318,6 +326,86 @@ def parse_cabocha(str):
     return ret
 
 
+# ノードラベルは,助詞以外の品詞と述語
+def merge_node_label(chunk):
+    label = []
+    i = 0
+
+    while True:
+        if i >= len(chunk.form):
+            break
+
+        # 名詞の連続は連結する (最大 N個まで連結)
+        N = 5
+        if chunk.pos1[i] == '名詞':
+            word = chunk.form[i]
+            i += 1
+            k = 1
+            for j in range(i, len(chunk.form)):
+                if k >= N:
+                    break
+                if chunk.pos1[j] == '名詞':
+                    word += chunk.form[j]
+                    i += 1
+                    k += 1
+                else:
+                    break
+
+            label.append(word)
+            continue
+
+        # 動詞,サ変名詞は終止形にして後続をスキップ
+        if chunk.pos1[i] == '動詞' or chunk.pos2[i] == 'サ変接続':
+            if len(chunk.pos1) > i+1 and chunk.pos1[i+1] == '助動詞' and chunk.pos4[i+1] == '特殊・ナイ':
+                label.append(chunk.form[i])
+                label.append(chunk.base[i+1])
+            else:
+                label.append(chunk.base[i])
+            break
+
+        # # 格助詞および連体形「の」は除外する
+        # if chunk.case[i] != 'ガ格' and \
+        #     chunk.case[i] != 'ニ格' and \
+        #     chunk.case[i] != 'ヲ格' and \
+        #     chunk.case[i] != '連体化「の」':
+        #     label.append(chunk.form[i])
+        if chunk.case[i] == '':
+            label.append(chunk.form[i])
+        i += 1
+
+    return '-'.join(label).strip()
+
+
+def print_pa(chunks, d=0, s=0, p=0):
+
+    for i in range(len(chunks)):
+
+        if '述語' in chunks[i].predicate:
+            predicates = [merge_node_label(chunks[i])]
+            subjects, objects, others = [], [], []
+
+            for j in range(0, i):
+                if chunks[j].to == (i + 1):
+                    chunk = chunks[j]
+                    cases = [x for x in chunk.case if x != '']
+                    if len(cases) > 0:
+                        label = merge_node_label(chunk)
+                        if cases[0] == 'ガ格' or cases[0] == 'ハ格':
+                            subjects.append(label)
+                        elif cases[0] == 'ヲ格':
+                            objects.append(label)
+                        else:
+                            others.append(label)
+
+            print('[d{:03d}-s{:03d}-p{:03d}]\tsubject={:}\tpredicate={:}\tobject={:}\tothers={:}'.format(
+                d+1, s+1, p+1,
+                ','.join(subjects),
+                ','.join(predicates),
+                ','.join(objects),
+                ','.join(others),
+            ))
+
+
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
@@ -336,21 +424,20 @@ if __name__ == '__main__':
             text = args.text.strip()
             documents.append(text)
     else:
-        text = '望遠鏡で泳ぐ少女の姿を見た。彼は本屋で本を買った。'
+        text = '彼は本屋で本を買った。私は太郎のように泳げない。'
         documents.append(text)
 
-    for document in documents:
+    for i, document in enumerate(documents):
         sentences = split(cleans(document))
 
-        for i, text in enumerate(sentences):
-            text = re.sub(r'[。、．，.,]', '', text)
+        for j, text in enumerate(sentences):
             cb = parse_cabocha(text)
 
             logger.info('=====================')
             logger.info(text)
             logger.info('=====================')
 
-            for j, chunks in enumerate(cb):
+            for k, chunks in enumerate(cb):
                 logger.info('----- CaboCha   -----')
                 for chunk in chunks:
                     logger.info('{}\t{}\t{}\t{}\t{}'.format(
@@ -363,32 +450,6 @@ if __name__ == '__main__':
                 logger.info('---------------------')
 
                 logger.info('----- PA -----')
-                top = 0
-                for k in range(len(chunks)):
-                    if '述語' in chunks[k].predicate:
-                        top = k + 1
-                        subject = []
-                        predicate = [u'-'.join(chunks[k].base)]
-                        object = []
-                        others = []
-
-                        for l in range(0, k):
-                            if chunks[l].to == (k + 1):
-                                chunk = chunks[l]
-                                cases = [x for x in chunk.case if x != '']
-                                if len(cases) > 0:
-                                    if cases[0] == 'ガ格' or cases[0] == 'ハ格':
-                                        subject.append(u'-'.join(chunk.base))
-                                    elif cases[0] == 'ヲ格':
-                                        object.append('-'.join(chunk.base))
-                                    else:
-                                        others.append('-'.join(chunk.base))
-
-                        print('subject={:}, predicate={:}, object={:}, others={:}'.format(
-                            ' '.join(subject),
-                            ' '.join(predicate),
-                            ' '.join(object),
-                            ' '.join(others),
-                        ))
+                print_pa(chunks, d=i, s=j, p=k)
 
     sys.stderr.write('time spent: {}\n'.format(time.time() - start_time))

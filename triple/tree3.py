@@ -130,7 +130,7 @@ def split(text):
     patterns = r'(' \
            r'(?:.*?)' \
            r'(?:' \
-               r'[！？。．…・；ｗ♪→←]+[！？。．…・；ｗ♪→←]*' \
+               r'[！？。．…；ｗ♪→←]+[！？。．…；ｗ♪→←]*' \
                r'|' \
                r'＜ｅｏｓ＞' \
            r')' \
@@ -226,6 +226,8 @@ def parse_cabocha(str):
 
             # if morph[MCB_POS2] == '句点' or morph[MCB_POS2] == '読点':
             #     continue
+            if morph[MCB_FORM] in ['。', '．', '、', '，']:
+                continue
 
             # 文節 (表層,読み,品詞,その他の素性)
             if len(chunk.form) > 0:
@@ -253,12 +255,17 @@ def parse_cabocha(str):
             chunk.pos4.append(morph[MCB_POS4])
 
             # 格, 項
+            # if morph[MCB_POS2] == '格助詞' \
+            #         or morph[MCB_POS2] == '係助詞' \
+            #         or morph[MCB_POS2] == '接続助詞' \
+            #         or morph[MCB_POS2] == '副詞化' \
+            #         or morph[MCB_POS2] == '並立助詞' \
+            #         or morph[MCB_POS2] == '連体化':
             if morph[MCB_POS2] == '格助詞' \
                     or morph[MCB_POS2] == '係助詞' \
                     or morph[MCB_POS2] == '接続助詞' \
                     or morph[MCB_POS2] == '副詞化' \
-                    or morph[MCB_POS2] == '並立助詞' \
-                    or morph[MCB_POS2] == '連体化':
+                    or morph[MCB_POS2] == '並立助詞':
 
                 # ガ格
                 if morph[MCB_FORM] == 'が':
@@ -290,11 +297,12 @@ def parse_cabocha(str):
                     chunk.argment.append('')
                     if len(chunk.argment) >= 2:
                         chunk.argment[-2] = 'ハ格'
-                # 連体化「の」
-                elif morph[MCB_FORM] == 'の' and morph[MCB_POS2] == '連体化' and len(chunk.pos1) >= 2 and chunk.pos1[-2] == '名詞' and chunk.pos2[-2] != '代名詞':
-                    chunk.case.append('連体化「の」')
-                    chunk.argment.append('')
-                    chunk.argment[-2] = '連体化「の」'
+                # # 連体化「の」
+                # elif morph[MCB_FORM] == 'の' and morph[MCB_POS2] == '連体化' and len(chunk.pos1) >= 2 and chunk.pos1[-2] == '名詞' and chunk.pos2[-2] != '代名詞':
+                #     chunk.case.append('連体化「の」')
+                #     chunk.argment.append('')
+                #     chunk.argment[-2] = '連体化「の」'
+
                 else:
                     chunk.case.append('')
                     chunk.argment.append('')
@@ -349,17 +357,21 @@ def merge_chunk(chunk, edge=False):
                 forms.append(word)
                 continue
 
-            # 動詞,サ変名詞は終止形にする
+            # 動詞,サ変名詞は終止形にして後続をスキップ
             if chunk.pos1[i] == '動詞' or chunk.pos2[i] == 'サ変接続':
+                # forms.append(chunk.form[i])
+                # i += 1
+                # continue
                 forms.append(chunk.base[i])
-                i += 1
-                continue
+                break
 
-            # 格助詞および連体形「の」は除外する
-            if chunk.case[i] != 'ガ格' and \
-                chunk.case[i] != 'ニ格' and \
-                chunk.case[i] != 'ヲ格' and \
-                chunk.case[i] != '連体化「の」':
+            # # 格助詞および連体形「の」は除外する
+            # if chunk.case[i] != 'ガ格' and \
+            #     chunk.case[i] != 'ニ格' and \
+            #     chunk.case[i] != 'ヲ格' and \
+            #     chunk.case[i] != '連体化「の」':
+            #     forms.append(chunk.form[i])
+            if chunk.case[i] == '':
                 forms.append(chunk.form[i])
             i += 1
 
@@ -373,48 +385,112 @@ def merge_chunk(chunk, edge=False):
         return ' ' if label == '' else label
 
 
-def make_tree(chunks, verbose=False, s=1, p=1):
+# ノードラベルは,助詞以外の品詞と述語
+def merge_node_label(chunk):
+    label = []
+    i = 0
+
+    while True:
+        if i >= len(chunk.form):
+            break
+
+        # 名詞の連続は連結する (最大 N個まで連結)
+        N = 5
+        if chunk.pos1[i] == '名詞':
+            word = chunk.form[i]
+            i += 1
+            k = 1
+            for j in range(i, len(chunk.form)):
+                if k >= N:
+                    break
+                if chunk.pos1[j] == '名詞':
+                    word += chunk.form[j]
+                    i += 1
+                    k += 1
+                else:
+                    break
+
+            label.append(word)
+            continue
+
+        # 動詞,サ変名詞は終止形にして後続をスキップ
+        if chunk.pos1[i] == '動詞' or chunk.pos2[i] == 'サ変接続':
+            if len(chunk.pos1) > i+1 and chunk.pos1[i+1] == '助動詞' and chunk.pos4[i+1] == '特殊・ナイ':
+                label.append(chunk.form[i])
+                label.append(chunk.base[i+1])
+            else:
+                label.append(chunk.base[i])
+            break
+
+        # 動詞,サ変名詞は終止形にして後続をスキップ
+        if chunk.pos1[i] == '動詞' or chunk.pos2[i] == 'サ変接続':
+            # label.append(chunk.form[i])
+            # i += 1
+            # continue
+            label.append(chunk.base[i])
+            break
+
+        # # 格助詞および連体形「の」は除外する
+        # if chunk.case[i] != 'ガ格' and \
+        #     chunk.case[i] != 'ニ格' and \
+        #     chunk.case[i] != 'ヲ格' and \
+        #     chunk.case[i] != '連体化「の」':
+        #     label.append(chunk.form[i])
+        if chunk.case[i] == '':
+            label.append(chunk.form[i])
+        i += 1
+
+    return '-'.join(label).strip()
+
+
+# エッジラベルは,格助詞
+def merge_edge_label(chunk):
+    label = ''.join(chunk.case)
+    return ' ' if label == '' else label
+
+
+def draw_tree(chunks, d=0, s=0, p=0):
 
     import networkx as nx
 
     top = len(chunks)
 
     # グラフ解析する
-    G = nx.Graph()
+    G = nx.DiGraph()
+
     for i in range(0, top):
         fr_node = chunks[i].fr
         to_node = chunks[i].to
 
         if not G.has_node(fr_node):
-            label = merge_chunk(chunks[fr_node - 1])
-            # G.add_node(fr_node, label=unicode(fr_node) + ':' + label)
+            label = merge_node_label(chunks[fr_node - 1])
             G.add_node(fr_node, label=label)
 
         if not to_node == 0:
             if not G.has_node(to_node):
-                label = merge_chunk(chunks[to_node - 1])
-                # G.add_node(to_node, label=unicode(to_node) + ':' + label)
+                label = merge_node_label(chunks[to_node - 1])
                 G.add_node(to_node, label=label)
-            label = merge_chunk(chunks[i], edge=True)
-            G.add_edge(to_node, fr_node, weight=label)
+
+            label = merge_edge_label(chunks[i])
+            G.add_edge(fr_node, to_node, weight=label)
 
     # if logger.isEnabledFor(logging.DEBUG):
     #     logger.debug('--- dfs -------------')
     #     for e in list(nx.dfs_edges(G, top)):
     #         logger.debug(e)
-    # 
+    #
     #     logger.debug('--- bfs -------------')
     #     for e in list(nx.bfs_edges(G, top)):
     #         logger.debug(e)
-    # 
+    #
     #     logger.debug('--- dfs-r -----------')
     #     for e in reversed(list(nx.dfs_edges(G, top))):
     #         logger.debug(e)
-    # 
+    #
     #     logger.debug('--- bfs-r -----------')
     #     for e in reversed(list(nx.bfs_edges(G, top))):
     #         logger.debug(e)
-    # 
+    #
     #     logger.debug('--- iter ------------')
     #     # for e in list(G.edges_iter()):
     #     for e in list(G.edges):
@@ -434,57 +510,33 @@ def make_tree(chunks, verbose=False, s=1, p=1):
         elif edge == '連体化「の」':
             used_nodes.extend([left, right])
 
-    ret = []
     # for left, right in list(G.edges_iter()):
     for left, right in list(G.edges()):
         edge = G[left][right]['weight']
 
         if edge == 'ガ格':
             used_nodes.extend([left, right])
-            ret.append(G.node[left]['label'] + 'が' + G.node[right]['label'])
         elif edge == 'ニ格':
             used_nodes.extend([left, right])
-            ret.append(G.node[left]['label'] + 'に' + G.node[right]['label'])
         elif edge == 'ヲ格':
             used_nodes.extend([left, right])
-            ret.append(G.node[left]['label'] + 'を' + G.node[right]['label'])
         elif edge == '連体化「の」':
             used_nodes.extend([left, right])
-            ret.append(G.node[left]['label'] + 'の' + G.node[right]['label'])
         else:
             if left not in used_nodes:
                 used_nodes.extend([left])
             if right not in used_nodes or right == top:
                 used_nodes.extend([right])
-            ret.append(G.node[left]['label'])
-            ret.append(G.node[right]['label'])
 
-    if verbose:
-        # dot = nx.drawing.nx_pydot.to_pydot(G, strict='true')
-        dot = nx.drawing.nx_pydot.to_pydot(G)
-        dot.set_rankdir('LR')
-        for e in dot.get_edge_list():
-            e.set_label(e.get_attributes()['weight'])
-        title = '{}\n({})'.format(text, '{}'.format(' '.join(ret)))
-        dot.set_label(title)
-        dot.write_png('graph_s{:03d}-p{:03d}.png'.format(s+1, p+1), prog='dot')
+    # dot = nx.drawing.nx_pydot.to_pydot(G, strict='true')
+    dot = nx.drawing.nx_pydot.to_pydot(G)
+    dot.set_rankdir('LR')
+    for e in dot.get_edge_list():
+        e.set_label(e.get_attributes()['weight'])
+    dot.set_label('{:}'.format(text))
+    dot.write_png('graph_d{:03d}_s{:03d}-p{:03d}.png'.format(d+1, s+1, p+1), prog='dot')
 
-    return '{}'.format(' '.join(ret))
-
-
-def wakachi(text):
-    ret = []
-    sents = split(cleans(text))
-
-    for i, text in enumerate(sents):
-        cb = parse_cabocha(text)
-
-        for j, chunks in enumerate(cb):
-            ret.append(make_tree(chunks))
-
-    text = ' '.join(ret).strip()
-
-    return text.split()
+    return
 
 
 if __name__ == '__main__':
@@ -505,21 +557,20 @@ if __name__ == '__main__':
             text = args.text.strip()
             documents.append(text)
     else:
-        text = '望遠鏡で泳ぐ少女の姿を見た。彼は本屋で本を買った。'
+        text = '彼は本屋で本を買った。私は太郎のように泳げない。'
         documents.append(text)
 
-    for document in documents:
+    for i, document in enumerate(documents):
         sentences = split(cleans(document))
 
-        for i, text in enumerate(sentences):
-            text = re.sub(r'[。、．，.,]', '', text)
+        for j, text in enumerate(sentences):
             cb = parse_cabocha(text)
 
             logger.info('=====================')
             logger.info(text)
             logger.info('=====================')
 
-            for j, chunks in enumerate(cb):
+            for k, chunks in enumerate(cb):
                 logger.info('----- CaboCha   -----')
                 for chunk in chunks:
                     logger.info('{}\t{}\t{}\t{}\t{}'.format(
@@ -531,7 +582,6 @@ if __name__ == '__main__':
                     ))
                 logger.info('---------------------')
 
-            for j, chunks in enumerate(cb):
-                print(make_tree(chunks, verbose=True, s=i, p=j))
+                draw_tree(chunks, d=i, s=j, p=k)
 
     sys.stderr.write('time spent: {}\n'.format(time.time() - start_time))
