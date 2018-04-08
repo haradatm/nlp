@@ -20,12 +20,12 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 ```
 
 ***Output***
-- output-triples3.txt (by **triples3.py**)
+- output-triples3.txt (use **triples3.py**)
 ```
 [d001-s001-p001]	subject=彼	predicate=買う	object=本	others=本屋
 [d001-s002-p001]	subject=私	predicate=泳げ-ない	object=	others=太郎-の-よう
 ```
-- graph_d001-s001-p001.png (by **tree3.py**)
+- graph_d001-s001-p001.png (use **tree3.py**)
 
 <img src="graph_d001-s001-p001.png" width="262px" height="261px"/>
 
