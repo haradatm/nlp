@@ -2,6 +2,7 @@
 
 ### Dependencies
 - python 3.6
+- cabocha
 - graphviz (tree3.py only)
 
 In addition, please add the project folder to PYTHONPATH and `conca install` the following packages:
