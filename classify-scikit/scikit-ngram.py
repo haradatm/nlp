@@ -104,13 +104,14 @@ if __name__ == '__main__':
     sys.stdout.flush()
 
     def get_classifier(clf_type):
-        if clf_type == "lgb":
-            import xgboost as xgb
-            return xgb.XGBClassifier()
 
-        elif clf_type == "xgb":
+        if clf_type == "lgb":
             import lightgbm as lgb
             return lgb.LGBMClassifier()
+
+        elif clf_type == "xgb":
+            import xgboost as xgb
+            return xgb.XGBClassifier()
 
         else:
             from sklearn.svm import LinearSVC
