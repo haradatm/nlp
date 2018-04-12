@@ -17,6 +17,12 @@ python scikit-ngram.py --type lgb  --analyzer word --train dataset-rt/01-train.t
 python scikit-ngram.py --type xgb  --analyzer word --train dataset-rt/01-train.txt --test dataset-rt/01-test.txt 2>&1 | tee results/rt-ngram-xgb_-word.log
 ```
 
+***Data***
+
+  - For English dataset: Downlod [sentence polarity dataset v1.0](https://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz) and put them in the appropriate place.
+  - For Japanese dataset: Collect from [Ministry of Land, Infrastructure, Transport and Tourism](http://carinf.mlit.go.jp/jidosha/carinf/opn/index.html) and put them in the appropriate place.
+
+
 ***Results (dataset-rt)***
 
 
