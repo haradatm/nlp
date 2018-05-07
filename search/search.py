@@ -181,7 +181,7 @@ if __name__ == '__main__':
     parser.add_argument('--docs',    default='', type=str, help='document data file (.txt)')
     parser.add_argument('--queries', default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',   default='', type=str, help='query relevance file (.qrel)')
-    parser.add_argument('--type',    default='bm25', choices=['tfidf', 'bm25', 'w2v'], help='type of vectorizer')
+    parser.add_argument('--type',    default='w2v', choices=['tfidf', 'bm25', 'w2v', 'fast'], help='type of vectorizer')
     parser.add_argument('--K', default=20, type=int, help='number of evaluations')
     args = parser.parse_args()
 
@@ -202,14 +202,14 @@ if __name__ == '__main__':
     vectorizer = module.Vectorizer()
 
     # データのベクトル化
-    vector = vectorizer.fit_transform(np.array(docs))
+    vector = vectorizer.fit_transform(docs)
 
     with open('results-{:}.txt'.format(args.type), 'w') as f:
 
         sim_doc_labels = []
         for idx, text in enumerate(queries):
 
-            item = vectorizer.transform(np.array([text]))
+            item = vectorizer.transform([text])
 
             # calculate cosine similarities
             similarities = cosine_similarity(item, vector)

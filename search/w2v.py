@@ -63,12 +63,24 @@ class Vectorizer():
         self.w2v = load_w2v_model(w2v_model_path)
         self.feature_names = []
         self.analyzer = analyzer
+        self.alpha, self.beta = 0.001, 4.0
+        self.tf = {}
+        self.count = 0
 
     def fit_transform(self, documents):
+        self.fit(documents)
         return self.transform(documents)
 
     def fit(self, documents):
-        pass
+        self.count = 0
+        for document in documents:
+            words = self.analyzer(document)
+            for word in words:
+                if word in self.tf:
+                    self.tf[word] += 1.0
+                else:
+                    self.tf[word] = 1.0
+            self.count += len(words)
 
     def transform(self, documents):
         results = []
@@ -77,7 +89,10 @@ class Vectorizer():
             words = self.analyzer(document)
             for word in words:
                 try:
-                    vec.append(self.w2v[word])
+                    # v = self.alpha * self.w2v[word] / (self.alpha + self.tf[word] / self.count)
+                    p = (self.tf[word] / self.count) if word in self.tf else (1. / self.count)
+                    v = self.alpha * self.w2v[word] / (self.alpha + p)
+                    vec.append(v)
                 except KeyError:
                     logger.warning('unk: {}'.format(word))
                     vec.append(UNK_VEC)

@@ -37,7 +37,7 @@ def load_data(filename):
 
     text, labels = [], []
 
-    for i, line in enumerate(open(filename, 'rU')):
+    for i, line in enumerate(open(filename, 'r')):
         # if i == 0:
         #     continue
 
@@ -50,9 +50,9 @@ def load_data(filename):
         if line == '':
             continue
 
-        line = line.replace(u'. . .', u'…')
+        line = line.replace('. . .', '…')
 
-        row = line.split(u'\t')
+        row = line.split('\t')
         if len(row) < 2:
             logger.error('invalid record: {}\n'.format(line))
             continue
@@ -69,7 +69,7 @@ def load_data(filename):
 def load_qrels(filename):
     qrels = collections.defaultdict(lambda: [])
 
-    for i, line in enumerate(open(filename, 'rU')):
+    for i, line in enumerate(open(filename, 'r')):
         # if i == 0:
         #     continue
 
@@ -82,9 +82,9 @@ def load_qrels(filename):
         if line == '':
             continue
 
-        line = line.replace(u'. . .', u'…')
+        line = line.replace('. . .', '…')
 
-        row = line.split(u'\t')
+        row = line.split('\t')
         if len(row) < 2:
             logger.error('invalid record: {}\n'.format(line))
             continue
@@ -181,6 +181,7 @@ if __name__ == '__main__':
     parser.add_argument('--docs',    default='', type=str, help='document data file (.txt)')
     parser.add_argument('--queries', default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',   default='', type=str, help='query relevance file (.qrel)')
+    parser.add_argument('--type',    default='arora', choices=['w2v', 'fast'], help='type of hybrid')
     parser.add_argument('--K', default=20, type=int, help='number of evaluations')
     args = parser.parse_args()
 
@@ -200,19 +201,19 @@ if __name__ == '__main__':
     # ベクトライザの定義
     import importlib
     vectorizer_bm25  = importlib.import_module('bm25').Vectorizer()
-    vectorizer_arora = importlib.import_module('arora').Vectorizer()
+    vectorizer_arora = importlib.import_module(args.type).Vectorizer()
 
     # データのベクトル化
-    vector_bm25  = vectorizer_bm25.fit_transform(np.array(docs))
-    vector_arora = vectorizer_arora.fit_transform(np.array(docs))
+    vector_bm25  = vectorizer_bm25.fit_transform(docs)
+    vector_arora = vectorizer_arora.fit_transform(docs)
 
-    with open('results-{:}.txt'.format('hybrid'), 'w') as f:
+    with open('results-hybrid_{:}.txt'.format(args.type), 'w') as f:
 
         sim_doc_labels = []
         for idx, text in enumerate(queries):
 
-            item_bm25  = vectorizer_bm25.transform(np.array([text]))
-            item_arora = vectorizer_arora.transform(np.array([text]))
+            item_bm25  = vectorizer_bm25.transform([text])
+            item_arora = vectorizer_arora.transform([text])
 
             # calculate cosine similarities
             similarities = cosine_similarity(item_bm25, vector_bm25) + beta * cosine_similarity(item_arora, vector_arora)
