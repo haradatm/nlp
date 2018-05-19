@@ -36,19 +36,19 @@ trec_eval -m all_trec datasets/nfcorpus/test.2-1-0.qrel results/results-hybrid_f
 ***NDCG Score***
 
 ```
-grep 100 ndcg-*.txt
+grep "_20" ndcg-*.txt
 
-ndcg-bm25.txt:ndcg_cut_100          all 0.2773		# Okapi BM25
-ndcg-tfidf.txt:ndcg_cut_100         all 0.2668		# TF-IDF
-ndcg-w2v.txt:ndcg_cut_100           all 0.2085		# word2vec
-ndcg-fast.txt:ndcg_cut_100          all 0.1959		# fastText
-ndcg-hybrid_w2v.txt:ndcg_cut_100    all 0.2905		# Okapi BM25 + word2vec
-ndcg-hybrid_fast.txt:ndcg_cut_100   all 0.2892		# Okapi BM25 + fastText
+ndcg-bm25.txt:ndcg_cut_20          all 0.2557		# Okapi BM25
+ndcg-tfidf.txt:ndcg_cut_20         all 0.2475		# TF-IDF
+ndcg-w2v.txt:ndcg_cut_20           all 0.1753		# word2vec
+ndcg-fast.txt:ndcg_cut_20          all 0.1686		# fastText
+ndcg-hybrid_w2v.txt:ndcg_cut_20    all 0.2673		# Okapi BM25 + word2vec
+ndcg-hybrid_fast.txt:ndcg_cut_20   all 0.2704		# Okapi BM25 + fastText
 
-ndcg-bm25.txt:ndcg_cut_1000         all 0.3907
-ndcg-tfidf.txt:ndcg_cut_1000        all 0.3797
-ndcg-w2v.txt:ndcg_cut_1000          all 0.3281
-ndcg-fast.txt:ndcg_cut_1000         all 0.3123
-ndcg-hybrid_w2v.txt:ndcg_cut_1000   all 0.4002
-ndcg-hybrid_fast.txt:ndcg_cut_1000  all 0.3974
+ndcg-bm25.txt:ndcg_cut_200         all 0.3076
+ndcg-tfidf.txt:ndcg_cut_200        all 0.2943
+ndcg-w2v.txt:ndcg_cut_200          all 0.2321
+ndcg-fast.txt:ndcg_cut_200         all 0.2208
+ndcg-hybrid_w2v.txt:ndcg_cut_200   all 0.3167
+ndcg-hybrid_fast.txt:ndcg_cut_200  all 0.3179
 ```
