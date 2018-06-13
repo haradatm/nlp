@@ -120,13 +120,17 @@ python train_rnn-bilstm.py --train ../datasets/01-train.txt --test ../datasets/0
 ```
 
 - 0[1-3]-rnn-1.png (use **train_mlp.py**)
+
 <img src="results/01-rnn-1.png" width="262px" height="261px"/> <img src="results/02-rnn-1.png" width="262px" height="261px"/> <img src="results/03-rnn-1.png" width="262px" height="261px"/>
 
 - 0[1-3]-rnn-1.png (use **train_rnn-lstm.py**)
+
 <img src="results/01-rnn-2.png" width="262px" height="261px"/> <img src="results/02-rnn-2.png" width="262px" height="261px"/> <img src="results/03-rnn-2.png" width="262px" height="261px"/>
 
 - 0[1-3]-rnn-1.png (use **train_rnn-nstep.py**)
+
 <img src="results/01-rnn-3.png" width="262px" height="261px"/> <img src="results/02-rnn-3.png" width="262px" height="261px"/> <img src="results/03-rnn-3.png" width="262px" height="261px"/>
 
 - 0[1-3]-rnn-1.png (use **train_rnn-bilstm.py**)
+
 <img src="results/01-rnn-4.png" width="262px" height="261px"/> <img src="results/02-rnn-4.png" width="262px" height="261px"/> <img src="results/03-rnn-4.png" width="262px" height="261px"/>
