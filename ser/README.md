@@ -119,15 +119,7 @@ python train_rnn-bilstm.py --train ../datasets/01-train.txt --test ../datasets/0
 2018-06-13 07:51:19,903 - main - INFO - [300] T/loss=0.000054 T/acc1=1.000000 T/acc2=0.000000 T/sec= 0.441888 D/loss=9.569883 D/acc1=0.713333 D/acc2=0.000000 D/sec= 0.291807 lr=0.001000
 2018-06-13 07:51:20,491 - main - INFO - time spent: 227.100839 sec
 ```
-- 01-rnn-1.png (use **train_mlp.py**)
+- 0[1-3]-rnn-1.png (use **train_mlp.py**)
 
-<img src="results/01-rnn-1.png" width="262px" height="261px"/>
-
-- 01-rnn-1.png (use **train_mlp.py**)
-
-<img src="results/02-rnn-1.png" width="262px" height="261px"/>
-
-- 01-rnn-1.png (use **train_mlp.py**)
-
-<img src="results/03-rnn-1.png" width="262px" height="261px"/>
+<img src="results/01-rnn-1.png" width="262px" height="261px"/> <img src="results/02-rnn-1.png" width="262px" height="261px"/> <img src="results/03-rnn-1.png" width="262px" height="261px"/>
 
