@@ -99,19 +99,18 @@ python train_rnn-bilstm.py --train ../datasets/01-train.txt --test ../datasets/0
 ***Input***
 
 - format
-
 ```
 [#trun] [feature 1] ... [feature 384] [class of turn 1] [class of turn N] [class of ALL]
 ```
 
 - 01-test.txt
-
 ```
 3	1.793738e-02	6.840575e-05	1.786898e-02	･･･	-1.245339e-01	4.882097e+00	happy	happy	happy	happy
 ```
 
 
 ***Output***
+
 - 01-rnn-1.log (use **train_mlp.py**)
 ```
 2018-06-13 07:47:34,549 - main - INFO - [  1] T/loss=640.268173 T/acc1=0.333333 T/acc2=0.000000 T/sec= 0.035807 D/loss=389.692932 D/acc1=0.340000 D/acc2=0.000000 D/sec= 0.136682 lr=0.001000
@@ -119,9 +118,15 @@ python train_rnn-bilstm.py --train ../datasets/01-train.txt --test ../datasets/0
 2018-06-13 07:51:19,903 - main - INFO - [300] T/loss=0.000054 T/acc1=1.000000 T/acc2=0.000000 T/sec= 0.441888 D/loss=9.569883 D/acc1=0.713333 D/acc2=0.000000 D/sec= 0.291807 lr=0.001000
 2018-06-13 07:51:20,491 - main - INFO - time spent: 227.100839 sec
 ```
-- 0[1-3]-rnn-1.png (use **train_mlp.py**)
 
+- 0[1-3]-rnn-1.png (use **train_mlp.py**)
 <img src="results/01-rnn-1.png" width="262px" height="261px"/> <img src="results/02-rnn-1.png" width="262px" height="261px"/> <img src="results/03-rnn-1.png" width="262px" height="261px"/>
+
+- 0[1-3]-rnn-1.png (use **train_rnn-lstm.py**)
 <img src="results/01-rnn-2.png" width="262px" height="261px"/> <img src="results/02-rnn-2.png" width="262px" height="261px"/> <img src="results/03-rnn-2.png" width="262px" height="261px"/>
+
+- 0[1-3]-rnn-1.png (use **train_rnn-nstep.py**)
 <img src="results/01-rnn-3.png" width="262px" height="261px"/> <img src="results/02-rnn-3.png" width="262px" height="261px"/> <img src="results/03-rnn-3.png" width="262px" height="261px"/>
+
+- 0[1-3]-rnn-1.png (use **train_rnn-bilstm.py**)
 <img src="results/01-rnn-4.png" width="262px" height="261px"/> <img src="results/02-rnn-4.png" width="262px" height="261px"/> <img src="results/03-rnn-4.png" width="262px" height="261px"/>
