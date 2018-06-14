@@ -51,7 +51,7 @@ class Vectorizer:
 
     def fit_transform(self, documents):
         self.fit(documents)
-        return self.transform(documents)
+        return self.transform(documents, bm=True)
 
     def fit(self, documents):
 
@@ -80,7 +80,7 @@ class Vectorizer:
         self.idf = np.log2((len(documents) - self.idf + 0.5) / (self.idf + .5))
         self.avg_words = self.avg_words / len(documents)
 
-    def transform(self, documents):
+    def transform(self, documents, bm=True):
 
         # 疎行列オブジェクト生成
         scores = sp.lil_matrix((len(documents), len(self.vocab)))
@@ -99,7 +99,10 @@ class Vectorizer:
 
             # BM25 スコア
             for key in tf:
-                scores[i, key] = self.idf[key] * (self.delta + (tf[key] * (self.K1 + 1.0)) / (tf[key] + self.K1 * (1.0 - self.B + self.B * (len(words) / self.avg_words))))
+                if bm:
+                    scores[i, key] = self.idf[key] * (self.delta + (tf[key] * (self.K1 + 1.0)) / (tf[key] + self.K1 * (1.0 - self.B + self.B * (len(words) / self.avg_words))))
+                else:
+                    scores[i, key] = tf[key]
 
         return scores
 

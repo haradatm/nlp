@@ -181,8 +181,10 @@ if __name__ == '__main__':
     parser.add_argument('--docs',    default='', type=str, help='document data file (.txt)')
     parser.add_argument('--queries', default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',   default='', type=str, help='query relevance file (.qrel)')
-    parser.add_argument('--type',    default='arora', choices=['w2v', 'fast'], help='type of hybrid')
-    parser.add_argument('--K', default=20, type=int, help='number of evaluations')
+    parser.add_argument('--type',    default='w2v', choices=['w2v', 'fast'], help='type of hybrid')
+    parser.add_argument('--bm_type', default='qtf', choices=['qtf', 'qbm'], help='type of query vectorize')
+    parser.add_argument('--beta',    default=0.40, type=float, help='value of interpolation coefficient')
+    parser.add_argument('--K',       default=20,   type=int, help='number of evaluations')
     args = parser.parse_args()
 
     # データの読み込み
@@ -207,12 +209,16 @@ if __name__ == '__main__':
     vector_bm25  = vectorizer_bm25.fit_transform(docs)
     vector_arora = vectorizer_arora.fit_transform(docs)
 
-    with open('results-hybrid_{:}.txt'.format(args.type), 'w') as f:
+    with open("results/results-hybrid_{:}_{:}.txt".format(args.bm_type, args.type), 'w') as f:
 
         sim_doc_labels = []
         for idx, text in enumerate(queries):
 
-            item_bm25  = vectorizer_bm25.transform([text])
+            if args.bm_type == 'qtf':
+                item_bm25 = vectorizer_bm25.transform([text], bm=False)
+            else:
+                item_bm25 = vectorizer_bm25.transform([text])
+
             item_arora = vectorizer_arora.transform([text])
 
             # calculate cosine similarities
