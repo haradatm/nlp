@@ -55,7 +55,7 @@ ndcg-hybrid_qbm_fast.txt:ndcg_cut_20           	all	0.2706	# Okapi BM25 (w/tf qu
 ndcg-hybrid_qtf_fast.txt:ndcg_cut_20           	all	0.2719	# Okapi BM25 (w/bm25 query vector) + fastText
 ```
 
-<img src="results/ndcg-020.png" width="262px" height="261px"/>
+<img src="results/ndcg-020.png"/>
 
 ```
 grep "_200 " ndcg-*.txt
@@ -71,4 +71,4 @@ ndcg-hybrid_qbm_fast.txt:ndcg_cut_200          	all	0.3174
 ndcg-hybrid_qtf_fast.txt:ndcg_cut_200          	all	0.3196
 ```
 
-<img src="results/ndcg-200.png" width="262px" height="261px"/>
+<img src="results/ndcg-200.png"/>
