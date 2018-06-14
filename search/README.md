@@ -45,14 +45,14 @@ trec_eval -m all_trec datasets/nfcorpus/test.2-1-0.qrel results/results-hybrid_q
 grep "_20 " ndcg-*.txt
 
 ndcg-tfidf.txt:ndcg_cut_20                     	all	0.2475	# TF-IDF
-ndcg-bm25_qbm.txt:ndcg_cut_20                  	all	0.2557	# Okapi BM25 (w/tf query vector)
-ndcg-bm25_qtf.txt:ndcg_cut_20                  	all	0.2657	# Okapi BM25 (w/bm25 query vector)
+ndcg-bm25_qbm.txt:ndcg_cut_20                  	all	0.2557	# Okapi BM25 (w/bm25 query vector)
+ndcg-bm25_qtf.txt:ndcg_cut_20                  	all	0.2657	# Okapi BM25 (w/tf query vector)
 ndcg-w2v.txt:ndcg_cut_20                       	all	0.1752	# word2vec
 ndcg-fast.txt:ndcg_cut_20                      	all	0.1687	# fastText
-ndcg-hybrid_qbm_w2v.txt:ndcg_cut_20            	all	0.2676	# Okapi BM25 (w/tf query vector)   + word2vec
-ndcg-hybrid_qtf_w2v.txt:ndcg_cut_20            	all	0.2650	# Okapi BM25 (w/bm25 query vector) + word2vec
-ndcg-hybrid_qbm_fast.txt:ndcg_cut_20           	all	0.2706	# Okapi BM25 (w/tf query vector)   + fastText
-ndcg-hybrid_qtf_fast.txt:ndcg_cut_20           	all	0.2719	# Okapi BM25 (w/bm25 query vector) + fastText
+ndcg-hybrid_qbm_w2v.txt:ndcg_cut_20            	all	0.2676	# Okapi BM25 (w/bm25 query vector) + word2vec
+ndcg-hybrid_qtf_w2v.txt:ndcg_cut_20            	all	0.2650	# Okapi BM25 (w/tf query vector)   + word2vec
+ndcg-hybrid_qbm_fast.txt:ndcg_cut_20           	all	0.2706	# Okapi BM25 (w/bm25 query vector) + fastText
+ndcg-hybrid_qtf_fast.txt:ndcg_cut_20           	all	0.2719	# Okapi BM25 (w/tf query vector)   + fastText
 ```
 
 <img src="results/ndcg-020.png"/>
