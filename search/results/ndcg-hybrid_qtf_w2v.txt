@@ -1,6 +1,6 @@
-ndcg                  	all	0.4841
-ndcg_rel              	all	0.3919
-Rndcg                 	all	0.3391
+ndcg                  	all	0.4005
+ndcg_rel              	all	0.3687
+Rndcg                 	all	0.3072
 ndcg_cut_5            	all	0.3034
 ndcg_cut_10           	all	0.2771
 ndcg_cut_15           	all	0.2670
