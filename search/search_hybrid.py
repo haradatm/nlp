@@ -178,13 +178,14 @@ if __name__ == '__main__':
 
     from argparse import ArgumentParser
     parser = ArgumentParser(description='')
-    parser.add_argument('--docs',    default='', type=str, help='document data file (.txt)')
-    parser.add_argument('--queries', default='', type=str, help='query data file (.txt)')
-    parser.add_argument('--qrels',   default='', type=str, help='query relevance file (.qrel)')
-    parser.add_argument('--type',    default='w2v', choices=['w2v', 'fast'], help='type of hybrid')
-    parser.add_argument('--bm_type', default='qtf', choices=['qtf', 'qbm'], help='type of query vectorize')
-    parser.add_argument('--beta',    default=0.40, type=float, help='value of interpolation coefficient')
-    parser.add_argument('--K',       default=20,   type=int, help='number of evaluations')
+    parser.add_argument('--docs',     default='', type=str, help='document data file (.txt)')
+    parser.add_argument('--queries',  default='', type=str, help='query data file (.txt)')
+    parser.add_argument('--qrels',    default='', type=str, help='query relevance file (.qrel)')
+    parser.add_argument('--type',     default='w2v', choices=['w2v', 'fast'], help='type of hybrid')
+    parser.add_argument('--bm_type',  default='qtf', choices=['qtf', 'qbm'], help='type of query vectorize')
+    parser.add_argument('--beta',     default=0.40, type=float, help='value of interpolation coefficient')
+    parser.add_argument('--K',        default=20,   type=int, help='score for top-k results')
+    parser.add_argument('--max_eval', default=1000, type=int, help='number of evaluations')
     args = parser.parse_args()
 
     # データの読み込み
@@ -224,11 +225,11 @@ if __name__ == '__main__':
             # calculate cosine similarities
             similarities = cosine_similarity(item_bm25, vector_bm25) + beta * cosine_similarity(item_arora, vector_arora)
 
-            for i, j in enumerate(similarities.argsort()[0][::-1]):
+            for i, j in enumerate(similarities.argsort()[0][-1:-(args.max_eval+1):-1]):
                 f.write("{}\tQ0\t{}\t{}\t{:.6f}\tSTANDARD\n".format(que_labels[idx], doc_labels[j], i, similarities[0][j]))
 
             # sort in descending order
-            similarities_idx = similarities.argsort()[0][-1:-1001:-1]
+            similarities_idx = similarities.argsort()[0][-1:-(args.max_eval+1):-1]
             sim_doc_labels.append([doc_labels[x] for x in similarities_idx])
 
     acc_map = mean_average_precision(que_labels, sim_doc_labels, qrels, k=args.K)

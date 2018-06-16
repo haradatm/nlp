@@ -60,15 +60,15 @@ ndcg-hybrid_qtf_fast.txt:ndcg_cut_20           	all	0.2719	# Okapi BM25 (w/tf qu
 ```
 grep "_200 " ndcg-*.txt
 
-ndcg-tfidf.txt:ndcg_cut_200                    	all	0.2943
-ndcg-bm25_qbm.txt:ndcg_cut_200                 	all	0.3076
-ndcg-bm25_qtf.txt:ndcg_cut_200                 	all	0.3142
+ndcg-tfidf.txt:ndcg_cut_200                    	all	0.2897
+ndcg-bm25_qbm.txt:ndcg_cut_200                 	all	0.2989
+ndcg-bm25_qtf.txt:ndcg_cut_200                 	all	0.3055
 ndcg-w2v.txt:ndcg_cut_200                      	all	0.2344
 ndcg-fast.txt:ndcg_cut_200                     	all	0.2213
 ndcg-hybrid_qbm_w2v.txt:ndcg_cut_200           	all	0.3157
 ndcg-hybrid_qtf_w2v.txt:ndcg_cut_200           	all	0.3194
-ndcg-hybrid_qbm_fast.txt:ndcg_cut_200          	all	0.3174
 ndcg-hybrid_qtf_fast.txt:ndcg_cut_200          	all	0.3196
+ndcg-hybrid_qbm_fast.txt:ndcg_cut_200          	all	0.3174
 ```
 
 <img src="results/ndcg-200.png"/>

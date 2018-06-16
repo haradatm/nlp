@@ -15,7 +15,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-import sys
+import sys, struct
 import numpy as np
 
 BOS_TOKEN = '<s>'
@@ -24,6 +24,43 @@ UNK_TOKEN = '<unk>'
 PAD_TOKEN = '<pad>'
 UNK_VEC = None
 PAD_VEC = None
+
+
+class Word2Vec:
+    def __init__(self, path):
+
+        with open(path, 'rb') as f:
+            self.vocab, self.index2word = {}, {}
+            self.vocab_size, self.vector_size = map(int, f.readline().split())
+            self.vectors = np.empty((self.vocab_size, self.vector_size), dtype=np.float32)
+
+            for i in range(self.vocab_size):
+                chs = b''
+                while True:
+                    ch = struct.unpack('c', f.read(1))[0]
+                    if ch == b' ':
+                        break
+                    chs += ch
+
+                word = chs.decode('utf-8')
+                try:
+                    self.vocab[word] = i
+                    self.index2word[i] = word
+
+                except RuntimeError:
+                    logging.error('Error unicode(): %s', word)
+                    self.vocab[word] = i
+                    self.index2word[i] = word
+
+                self.vectors[i] = np.zeros(self.vector_size)
+                for j in range(self.vector_size):
+                    self.vectors[i][j] = struct.unpack('f', f.read(struct.calcsize('f')))[0]
+
+                # 改行を strip する
+                assert f.read(1) == b'\n'
+
+    def __getitem__(self, word):
+        return self.vectors[self.vocab[word]]
 
 
 def analyzer(text):
@@ -39,7 +76,6 @@ def seeded_vector(w2v, seed_string):
     return (once.rand(w2v.vector_size) - 0.5) / w2v.vector_size
 
 
-from gensim.models import KeyedVectors
 # w2v_model_path = 'models/nfc_train_w2v.bin'
 w2v_model_path = 'models/nfcorpus-all_w2v.bin'
 
@@ -49,7 +85,9 @@ def load_w2v_model(filename):
     logger.info('loading word2vec model: {}'.format(filename))
     sys.stdout.flush()
 
-    w2v = KeyedVectors.load_word2vec_format(filename, binary=True)
+    # from gensim.models import KeyedVectors
+    # w2v = KeyedVectors.load_word2vec_format(filename, binary=True)
+    w2v = Word2Vec(filename)
 
     global UNK_VEC, PAD_VEC
     UNK_VEC = seeded_vector(w2v, UNK_TOKEN)
