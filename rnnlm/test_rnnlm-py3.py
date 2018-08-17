@@ -3,7 +3,7 @@
 
 """ Sample script of recurrent neural network language model.
 
-    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-char.txt --out model-neko
+    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-wakachi.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
     usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾 輩 は 猫 で ある 。"
 """
 
@@ -33,7 +33,6 @@ import chainer
 from chainer import cuda
 import chainer.functions as F
 import chainer.links as L
-import matplotlib.pyplot as plt
 import pickle
 
 

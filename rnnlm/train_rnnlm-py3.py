@@ -3,7 +3,7 @@
 
 """ Sample script of recurrent neural network language model.
 
-    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-char.txt --out model-neko
+    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-wakachi.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
     usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾 輩 は 猫 で ある 。"
 """
 
@@ -35,39 +35,79 @@ import chainer.functions as F
 import chainer.links as L
 import matplotlib.pyplot as plt
 import pickle
-
+from struct import unpack, calcsize
 
 # UNK_ID = 0
 # EOS_ID = 1
 UNK_TOKEN = '<unk>'
 EOS_TOKEN = '<eos>'
 
-primetext = ""
+prime_text = ""
 
 
-def load_data(filename, vocab=[]):
-    global primetext
+def load_w2v_model(path, vocab=[]):
+
+    with open(path, 'rb') as f:
+
+        n_vocab, n_units = map(int, f.readline().split())
+        M = np.empty((n_vocab, n_units), dtype=np.float32)
+
+        for i in range(n_vocab):
+            b_str = b''
+
+            while True:
+                b_ch = f.read(1)
+                if b_ch == b' ':
+                    break
+                b_str += b_ch
+
+            token = b_str.decode(encoding='utf-8')
+
+            if token not in vocab:
+                vocab += [token]
+            else:
+                logging.error("Duplicate token: {}", token)
+
+            M[i] = np.zeros(n_units)
+            for j in range(n_units):
+                M[i][j] = unpack('f', f.read(calcsize('f')))[0]
+
+            # ベクトルを正規化する
+            vlen = np.linalg.norm(M[i], 2)
+            M[i] /= vlen
+
+            # 改行を strip する
+            assert f.read(1) != '\n'
+
+    return M, vocab
+
+
+def load_data(filename, vocab, w2v=None):
+    global prime_text
 
     dataset = []
 
     for i, line in enumerate(open(filename, 'r')):
-        # if i > 100:
-        #     break
-
         line = line.strip()
         tokens = line.split(' ') + [EOS_TOKEN]
 
         if i == 0:
-            primetext = line.split(' ')
+            prime_text = line.split(' ')
 
         for token in tokens:
             if token == '':
                 continue
+
             if token not in vocab:
                 vocab += [token]
+                if w2v is not None:
+                    v = np.random.uniform(-0.1, 0.1, (1, w2v.shape[1])).astype(np.float32)
+                    v /= np.linalg.norm(v, 2)
+                    w2v = np.vstack((w2v, v))
+
             dataset.append(vocab.index(token))
 
-    return dataset, vocab
+    return dataset, vocab, w2v
 
 
 # Definition of a recurrent net for language modeling
@@ -138,6 +178,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='Chainer example: RNNLM')
     parser.add_argument('--train', default='datasets/soseki/neko-char.txt', type=str, help='training file (.txt)')
+    parser.add_argument('--w2v', '-w', default='', type=str, help='initialize word embedding layer with word2vec (.bin)')
     parser.add_argument('--batchsize', '-b', type=int, default=100, help='Number of examples in each mini-batch')
     parser.add_argument('--bproplen', '-l', type=int, default=35, help='Number of words in each mini-batch (= length of truncated BPTT)')
     parser.add_argument('--epoch', '-e', type=int, default=200, help='Number of sweeps over the dataset to train')
@@ -158,7 +199,15 @@ def main():
     xp = cuda.cupy if args.gpu >= 0 else np
     xp.random.seed(123)
 
-    train_data, vocab = load_data(args.train)
+    if args.w2v:
+        w2v, vocab = load_w2v_model(args.w2v)
+        n_dims = w2v.shape[1]
+        train_data, vocab, w2v = load_data(args.train, vocab, w2v)
+    else:
+        vocab = []
+        n_dims = args.unit
+        train_data, vocab, _ = load_data(args.train, vocab)
+
     train_length = len(train_data)
 
     token2id = {}
@@ -167,7 +216,7 @@ def main():
 
     logger.info('Train vocabulary size: %d' % len(vocab))
     logger.info('Train data size: %d' % train_length)
-    logger.info('Train data starts with: {} ...'.format(' '.join(primetext)))
+    logger.info('Train data starts with: {} ...'.format(' '.join(prime_text)))
     sys.stdout.flush()
 
     if not os.path.exists(args.out):
@@ -177,7 +226,7 @@ def main():
         pickle.dump(vocab, f)
 
     # Recurrent neural net languabe model
-    model = RNNLM(len(vocab), args.unit)
+    model = RNNLM(len(vocab), n_dims)
 
     # 学習率
     lr = 0.0007
@@ -201,6 +250,11 @@ def main():
         chainer.serializers.load_npz('{}.model'.format(args.resume), model)
         chainer.serializers.load_npz('{}.state'.format(args.resume), optimizer, strict=False)
         sys.stdout.flush()
+
+    # Initialize word embedding layer with word2vec
+    if not args.resume and args.w2v:
+        print('Initialize the embedding from word2vec model: {}'.format(args.w2v))
+        model.set_word_embedding(w2v)
 
     if args.gpu >= 0:
         model.to_gpu(args.gpu)
@@ -297,7 +351,7 @@ def main():
 
             if args.test:
                 with chainer.no_backprop_mode(), chainer.using_config('train', False):
-                    test(model.copy(), vocab, token2id, primetext)
+                    test(model.copy(), vocab, token2id, prime_text)
 
             # 精度と誤差をグラフ描画
             if True:
@@ -362,7 +416,7 @@ def main():
         token2id[token] = i
 
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
-        test(model, vocab, token2id, primetext)
+        test(model, vocab, token2id, prime_text)
 
 
 if __name__ == '__main__':
