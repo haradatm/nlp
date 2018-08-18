@@ -3,14 +3,15 @@
 
 """ Sample script of recurrent neural network language model.
 
-    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-wakachi.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
-    usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾 輩 は 猫 で ある 。"
+    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
+    usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。"
 """
 
 __version__ = '0.0.1'
 
 import sys, os, time, logging, json, math
 import numpy as np
+
 np.set_printoptions(precision=20)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -20,6 +21,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(funcName)s - %(levelname
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
+
 def pp(obj):
     import pprint
     pp = pprint.PrettyPrinter(indent=1, width=160)
@@ -27,7 +29,6 @@ def pp(obj):
 
 
 start_time = time.time()
-
 
 import chainer
 from chainer import cuda
@@ -39,14 +40,13 @@ from struct import unpack, calcsize
 
 # UNK_ID = 0
 # EOS_ID = 1
-UNK_TOKEN = '<unk>'
-EOS_TOKEN = '<eos>'
+# UNK_TOKEN = '<unk>'
+EOS_TOKEN = '</s>'
 
 prime_text = ""
 
 
 def load_w2v_model(path, vocab=[]):
-
     with open(path, 'rb') as f:
 
         n_vocab, n_units = map(int, f.readline().split())
@@ -82,7 +82,7 @@ def load_w2v_model(path, vocab=[]):
     return M, vocab
 
 
-def load_data(filename, vocab, w2v=None):
+def load_data(filename, w2v, vocab, train=True):
     global prime_text
 
     dataset = []
@@ -91,23 +91,27 @@ def load_data(filename, vocab, w2v=None):
         line = line.strip()
         tokens = line.split(' ') + [EOS_TOKEN]
 
-        if i == 0:
+        if i == 0 and train:
             prime_text = line.split(' ')
 
         for token in tokens:
             if token == '':
                 continue
 
-            if token not in vocab:
-                vocab += [token]
-                if w2v is not None:
-                    v = np.random.uniform(-0.1, 0.1, (1, w2v.shape[1])).astype(np.float32)
-                    v /= np.linalg.norm(v, 2)
-                    w2v = np.vstack((w2v, v))
+            if train:
+                if token not in vocab:
+                    vocab += [token]
+                    if w2v is not None:
+                        v = np.random.uniform(-0.1, 0.1, (1, w2v.shape[1])).astype(np.float32)
+                        v /= np.linalg.norm(v, 2)
+                        w2v = np.vstack((w2v, v))
+                    dataset.append(vocab.index(token))
+                dataset.append(vocab.index(token))
+            else:
+                if token in vocab:
+                    dataset.append(vocab.index(token))
 
-            dataset.append(vocab.index(token))
-
-    return dataset, vocab, w2v
+    return dataset, w2v, vocab
 
 
 # Definition of a recurrent net for language modeling
@@ -149,15 +153,14 @@ class RNNLM(chainer.Chain):
         self.embed.W.data = data
 
 
-def test(model, vocab, token2id, text, length=20):
+def show_sample(model, vocab, token2id, length=20):
     model.reset_state()
 
-    for token in list(text):
+    for token in prime_text:
         sys.stdout.write(token)
         prev_word = model.predict(xp.array([token2id[token]], dtype=np.int32))
 
     for i in range(length):
-        # idx = np.argmax(cuda.to_cpu(prev_word.data))
         next_prob = cuda.to_cpu(prev_word.data)[0].astype(np.float64)
         next_prob /= np.sum(next_prob)
         idx = np.random.choice(range(len(next_prob)), p=next_prob)
@@ -169,7 +172,6 @@ def test(model, vocab, token2id, text, length=20):
         prev_word = model.predict(xp.array([idx], dtype=np.int32))
 
     sys.stdout.write('\n')
-    sys.stdout.flush()
 
 
 def main():
@@ -177,21 +179,21 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(description='Chainer example: RNNLM')
-    parser.add_argument('--train', default='datasets/soseki/neko-char.txt', type=str, help='training file (.txt)')
+    parser.add_argument('--train', default='datasets/soseki/neko-word-train.txt', type=str, help='dataset to train (.txt)')
+    parser.add_argument('--test', default='', type=str, help='use tiny datasets to evaluate (.txt)')
     parser.add_argument('--w2v', '-w', default='', type=str, help='initialize word embedding layer with word2vec (.bin)')
-    parser.add_argument('--batchsize', '-b', type=int, default=100, help='Number of examples in each mini-batch')
-    parser.add_argument('--bproplen', '-l', type=int, default=35, help='Number of words in each mini-batch (= length of truncated BPTT)')
-    parser.add_argument('--epoch', '-e', type=int, default=200, help='Number of sweeps over the dataset to train')
-    parser.add_argument('--unit', '-u', type=int, default=300, help='Number of LSTM units in each layer')
+    parser.add_argument('--batchsize', '-b', type=int, default=100, help='number of examples in each mini-batch')
+    parser.add_argument('--bproplen', '-l', type=int, default=35, help='number of words in each mini-batch (= length of truncated BPTT)')
+    parser.add_argument('--epoch', '-e', type=int, default=300, help='number of sweeps over the dataset to train')
+    parser.add_argument('--unit', '-u', type=int, default=200, help='number of LSTM units in each layer')
     parser.add_argument('--gpu', '-g', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--gradclip', '-c', type=float, default=5, help='Gradient norm threshold to clip')
-    parser.add_argument('--out', '-o', default='results', help='Directory to output the result')
-    parser.add_argument('--resume', '-r', default='', help='Resume the training from snapshot')
-    parser.add_argument('--test', action='store_true', help='Use tiny datasets for quick tests')
-    # parser.set_defaults(test=True)
+    parser.add_argument('--out', '-o', default='results_rnnlm-2', help='Directory to output the result')
+    parser.add_argument('--resume', '-r', default='', help='resume the training from snapshot')
     # args = parser.parse_args(args=[])
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
+    sys.stdout.flush()
 
     if args.gpu >= 0:
         cuda.get_device_from_id(args.gpu).use()
@@ -199,24 +201,26 @@ def main():
     xp = cuda.cupy if args.gpu >= 0 else np
     xp.random.seed(123)
 
+    w2v, vocab, n_dims = None, [], args.unit
+
     if args.w2v:
         w2v, vocab = load_w2v_model(args.w2v)
         n_dims = w2v.shape[1]
-        train_data, vocab, w2v = load_data(args.train, vocab, w2v)
+
+    if args.test:
+        train_data, w2v, vocab = load_data(args.train, w2v, vocab, train=True)
+        test_data,  w2v, vocab = load_data(args.test,  w2v, vocab, train=False)
     else:
-        vocab = []
-        n_dims = args.unit
-        train_data, vocab, _ = load_data(args.train, vocab)
+        dataset, w2v, vocab = load_data(args.train, w2v, vocab, train=True)
+        train_data = dataset[:-1000]
+        test_data  = dataset[-1000:]
 
-    train_length = len(train_data)
+    token2id = {w: i for i, w in enumerate(vocab)}
 
-    token2id = {}
-    for i, token in enumerate(vocab):
-        token2id[token] = i
-
-    logger.info('Train vocabulary size: %d' % len(vocab))
-    logger.info('Train data size: %d' % train_length)
-    logger.info('Train data starts with: {} ...'.format(' '.join(prime_text)))
+    logger.info('vocabulary size: %d' % len(vocab))
+    logger.info('train data size: %d' % len(train_data))
+    logger.info('train data starts with: {} ...'.format(' '.join(prime_text)))
+    logger.info('test  data size: %d' % len(test_data))
     sys.stdout.flush()
 
     if not os.path.exists(args.out):
@@ -263,22 +267,27 @@ def main():
     train_loss = []
     train_accuracy1 = []
     train_accuracy2 = []
+    test_loss = []
+    test_accuracy1 = []
+    test_accuracy2 = []
     min_loss = float('inf')
     min_epoch = 0
 
-    # スライド幅を計算する
-    width = int(train_length / args.batchsize)
+    # ストライド幅を計算する
+    train_stride = len(train_data) // args.batchsize
+    test_stride = len(test_data) // args.batchsize
 
     # 最初の時間情報を取得する
     start_at = time.time()
     cur_at = start_at
 
     # Learning loop
-    print("going to train {} iterations".format(width * args.epoch))
+    print("going to train {} iterations ({} epochs)".format(train_stride * args.epoch, args.epoch))
 
     # training
     epoch = 1
     accum_loss = None
+
     sum_train_loss = 0.
     sum_train_accuracy1 = 0.
     sum_train_accuracy2 = 0.
@@ -287,13 +296,13 @@ def main():
     # RNN 状態を初期化する
     model.reset_state()
 
-    for iteration in range(width * args.epoch):
+    for iteration in range(train_stride * args.epoch):
 
         # logger.info('epoch {:} / {:}'.format(epoch, n_epoch))
         # handler1.flush()
 
-        x_batch = xp.array([train_data[(width * x + iteration) % train_length] for x in range(args.batchsize)])
-        y_batch = xp.array([train_data[(width * x + iteration + 1) % train_length] for x in range(args.batchsize)])
+        x_batch = xp.array([train_data[(train_stride * x + iteration) % len(train_data)] for x in range(args.batchsize)])
+        y_batch = xp.array([train_data[(train_stride * x + iteration + 1) % len(train_data)] for x in range(args.batchsize)])
 
         # 順伝播させて誤差と精度を算出
         loss, accuracy = model(x_batch, y_batch)
@@ -309,10 +318,9 @@ def main():
             accum_loss.backward()
             accum_loss.unchain_backward()
             optimizer.update()
-            # optimizer.alpha *= lr_decay
 
         # 訓練データの誤差と,正解精度を表示 (epoch ごと)
-        if (iteration + 1) % width == 0:
+        if (iteration + 1) % train_stride == 0:
             mean_train_loss = sum_train_loss / K
             mean_train_accuracy1 = sum_train_accuracy1 / K
             mean_train_accuracy2 = sum_train_accuracy2 / K
@@ -321,22 +329,59 @@ def main():
             train_accuracy2.append(mean_train_accuracy2)
             now = time.time()
             train_throughput = now - cur_at
+            cur_at = now
+
+            # evaluation
+            sum_test_loss = 0.
+            sum_test_accuracy1 = 0.
+            sum_test_accuracy2 = 0.
+            K = 0
+
+            with chainer.no_backprop_mode(), chainer.using_config('train', False):
+                for i in range(test_stride):
+                    x_batch = xp.array([test_data[(test_stride * x + iteration) % len(test_data)] for x in range(args.batchsize)])
+                    y_batch = xp.array([test_data[(test_stride * x + iteration + 1) % len(test_data)] for x in range(args.batchsize)])
+
+                    # 順伝播させて誤差と精度を算出
+                    loss, accuracy = model(x_batch, y_batch)
+                    accum_loss = loss if accum_loss is None else accum_loss + loss
+                    sum_test_loss += float(loss.data)
+                    sum_test_accuracy1 += float(accuracy.data)
+                    sum_test_accuracy2 += math.exp(float(loss.data))
+                    K += 1
+
+            # テストデータでの誤差と正解精度を表示
+            mean_test_loss = sum_test_loss / K
+            mean_test_accuracy1 = sum_test_accuracy1 / K
+            mean_test_accuracy2 = sum_test_accuracy2 / K
+            test_loss.append(mean_test_loss)
+            test_accuracy1.append(mean_test_accuracy1)
+            test_accuracy2.append(mean_test_accuracy2)
+            now = time.time()
+            test_throughput = now - cur_at
 
             logger.info(''
-                  '[{:>3d}] '
-                  'T/loss={:.6f} '
-                  'T/acc={:.6f} '
-                  'T/perp={:.6f} '
-                  'T/sec= {:.6f} '
-                  'lr={:.6f}'
-                  ''.format(
-                        epoch,
-                        mean_train_loss,
-                        mean_train_accuracy1,
-                        mean_train_accuracy2,
-                        train_throughput,
-                        optimizer.alpha
-                    )
+                        '[{:>3d}] '
+                        'T/loss={:.6f} '
+                        'T/acc={:.6f} '
+                        'T/perp={:.6f} '
+                        'T/sec= {:.6f} '
+                        'D/loss={:.6f} '
+                        'D/acc={:.6f} '
+                        'D/perp={:.6f} '
+                        'D/sec= {:.6f} '
+                        'lr={:.6f}'
+                        ''.format(
+                epoch,
+                mean_train_loss,
+                mean_train_accuracy1,
+                mean_train_accuracy2,
+                train_throughput,
+                mean_test_loss,
+                mean_test_accuracy1,
+                mean_test_accuracy2,
+                test_throughput,
+                optimizer.alpha)
             )
             sys.stdout.flush()
 
@@ -349,55 +394,61 @@ def main():
                 chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.state'), optimizer)
                 if args.gpu >= 0: model.to_gpu()
 
-            if args.test:
-                with chainer.no_backprop_mode(), chainer.using_config('train', False):
-                    test(model.copy(), vocab, token2id, prime_text)
+            print("SAMPLE #=> ", end='')
+            with chainer.no_backprop_mode(), chainer.using_config('train', False):
+                show_sample(model.copy(), vocab, token2id)
+            sys.stdout.flush()
 
             # 精度と誤差をグラフ描画
             if True:
-                # ylim1 = [min(train_loss), max(train_loss)]
-                # ylim2 = [min(train_accuracy1), max(train_accuracy1)]
-                # ylim3 = [min(train_accuracy2), max(train_accuracy2)]
+                # ylim1 = [min(train_loss + train_accuracy1 + test_loss + test_accuracy1), max(train_loss + train_accuracy1 + test_loss + test_accuracy1)]
+                # ylim2 = [min(train_accuracy2 + test_accuracy2), max(train_accuracy2 + test_accuracy2)]
 
                 # グラフ左
                 plt.figure(figsize=(10, 10))
-                plt.subplots_adjust(wspace=0.4)
                 plt.subplot(1, 2, 1)
                 # plt.ylim(ylim1)
-                plt.plot(range(1, len(train_loss) + 1), train_loss, color='C0', marker='')
+                plt.plot(range(1, len(train_loss) + 1), train_loss, 'b')
+                plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
                 plt.grid(False)
-                plt.ylabel('train loss')
-                plt.legend(['train loss'], loc="lower left")
+                plt.ylabel('loss and perplexity')
+                plt.legend(['train loss', 'train perplexity'], loc="lower left")
                 plt.twinx()
                 # plt.ylim(ylim2)
-                plt.plot(range(1, len(train_accuracy1) + 1), train_accuracy1, color='C1', marker='')
+                plt.plot(range(1, len(train_accuracy1) + 1), train_accuracy1, 'r')
                 plt.grid(False)
-                plt.ylabel('train accuracy')
+                # plt.ylabel('accuracy')
                 plt.legend(['train accuracy'], loc="upper right")
-                plt.title('Loss and accuracy of train.')
+                plt.title('Loss and accuracy for train data.')
 
                 # グラフ右
                 plt.subplot(1, 2, 2)
+                # plt.ylim(ylim1)
+                plt.plot(range(1, len(test_loss) + 1), test_loss, 'b')
+                plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
                 plt.grid(False)
+                # plt.ylabel('loss and perplexity')
+                plt.legend(['test loss', 'test perplexity'], loc="lower left")
                 plt.twinx()
-                # plt.ylim(ylim3)
-                plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, color='C2', marker='')
+                # plt.ylim(ylim2)
+                plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, 'r')
                 plt.grid(False)
-                plt.ylabel('perplexity')
-                plt.legend(['train perplexity'], loc="upper right")
-                plt.title('Perplexity of train.')
+                plt.ylabel('accuracy')
+                plt.legend(['test accuracy'], loc="upper right")
+                plt.title('Loss and accuracy for test data.')
 
-                plt.savefig('{}.png'.format(args.out))
-                # plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
+                # plt.savefig('{}.png'.format(args.out))
+                plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
                 # plt.show()
+
+            optimizer.alpha *= lr_decay
+            cur_at = now
 
             epoch += 1
             sum_train_loss = 0.
             sum_train_accuracy1 = 0.
             sum_train_accuracy2 = 0.
             K = 0
-
-            cur_at = now
 
     # model と optimizer を保存する
     if args.gpu >= 0: model.to_cpu()
@@ -416,7 +467,7 @@ def main():
         token2id[token] = i
 
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
-        test(model, vocab, token2id, prime_text)
+        show_sample(model, vocab, token2id, prime_text)
 
 
 if __name__ == '__main__':

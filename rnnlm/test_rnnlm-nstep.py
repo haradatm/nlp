@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Sample script of recurrent neural network language model.
+""" Sample script of recurrent neural network language model. (using NStep-LSTM)
 
     usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
     usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。"
@@ -42,40 +42,67 @@ UNK_TOKEN = '<unk>'
 EOS_TOKEN = '</s>'
 
 
+def sequence_embed(embed, xs):
+    x_len = [len(x) for x in xs]
+    x_section = np.cumsum(x_len[:-1])
+    ex = embed(F.concat(xs, axis=0))
+    exs = F.split_axis(ex, x_section, 0)
+    return exs
+
+
+def to_device_batch(batch, device):
+    if device is None:
+        return batch
+    elif device < 0:
+        return [chainer.dataset.to_device(device, x) for x in batch]
+    else:
+        xp = cuda.cupy.get_array_module(*batch)
+        concat = xp.concatenate(batch, axis=0)
+        sections = xp.cumsum([len(x) for x in batch[:-1]], dtype='i')
+        concat_dev = chainer.dataset.to_device(device, concat)
+        batch_dev = cuda.cupy.split(concat_dev, sections)
+        return batch_dev
+
+
 # Definition of a recurrent net for language modeling
 class RNNLM(chainer.Chain):
 
-    def __init__(self, n_vocab, n_units):
+    def __init__(self, n_layers, n_source_vocab, n_units):
         super(RNNLM, self).__init__()
         with self.init_scope():
-            self.embed = L.EmbedID(n_vocab, n_units)
-            self.l1 = L.LSTM(n_units, n_units)
-            self.l2 = L.LSTM(n_units, n_units)
-            self.l3 = L.Linear(n_units, n_vocab)
+            self.embed = L.EmbedID(n_source_vocab, n_units)
+            self.l1 = L.NStepLSTM(n_layers, n_units, n_units, 0.1)
+            self.l2 = L.Linear(n_units, n_source_vocab)
 
         for param in self.params():
             param.data[...] = np.random.uniform(-0.1, 0.1, param.data.shape)
 
-    def __call__(self, x, t):
-        y = self.forward(x)
-        return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
+        self.n_layers = n_layers
+        self.n_units = n_units
 
-    # 1ステップ前方処理関数 (学習データ,状態を与える)
-    def forward(self, x):
-        h0 = self.embed(x)
-        h1 = self.l1(F.dropout(h0))
-        h2 = self.l2(F.dropout(h1))
-        y = self.l3(F.dropout(h2))
-        return y
+    def __call__(self, xs, ys):
+        hx, cx, os = self.forward(xs)
+        concat_os = self.l2(F.concat(os, axis=0))
+        concat_ys_out = F.concat(ys, axis=0)
 
-    def predict(self, x):
-        y = self.forward(x)
-        return F.softmax(y)
+        batch = len(xs)
+        n_words = concat_ys_out.shape[0]
 
-    # 状態の初期化 (初期状態を現在の状態にセット)
-    def reset_state(self):
-        self.l1.reset_state()
-        self.l2.reset_state()
+        loss = F.sum(F.softmax_cross_entropy(concat_os, concat_ys_out, reduce='no')) / batch
+        accuracy = F.accuracy(concat_os, concat_ys_out)
+        perplexity = xp.exp(loss.data * batch / n_words)
+
+        return loss, accuracy, perplexity
+
+    def forward(self, xs, hx=None, cx=None):
+        exs = sequence_embed(self.embed, xs)
+        hx, cx, os = self.l1(hx=hx, cx=cx, xs=exs)
+        return hx, cx, os
+
+    def predict(self, xs, hx=None, cx=None):
+        hx, cx, os = self.forward(xs, hx=hx, cx=cx)
+        y = self.l2(F.concat(os, axis=0))
+        return hx, cx, F.softmax(y)
 
     def set_word_embedding(self, data):
         self.embed.W.data = data
@@ -88,7 +115,8 @@ def main():
     parser = argparse.ArgumentParser(description='Chainer example: RNNLM')
     parser.add_argument('--model', '-m', type=str, default='model/final.model', help='model data, saved by train.py')
     parser.add_argument('--text', '-t', type=str, default='吾 輩 は 猫 で あ る', help='base text data, used for text generation')
-    parser.add_argument('--unit', '-u', type=int, default=200, help='Number of LSTM units in each layer')
+    parser.add_argument('--unit', '-u', type=int, default=200, help='number of dimensions')
+    parser.add_argument('--layer', '-l', type=int, default=3, help='number of layers')
     parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
     parser.add_argument('--length', type=int, default=2000, help='length of the generated text')
     parser.add_argument('--gpu', type=int, default=0, help='GPU ID (negative value indicates CPU)')
@@ -111,31 +139,28 @@ def main():
     logger.info('Vocabulary size: {}'.format(len(vocab)))
 
     # Recurrent neural net languabe model
-    model = RNNLM(len(vocab), args.unit)
+    model = RNNLM(args.layer, len(vocab), args.unit)
     chainer.serializers.load_npz(args.model, model)
 
     if args.gpu >= 0:
         model.to_gpu(args.gpu)
 
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
-        model.reset_state()
 
-        for token in args.text.strip().split(' '):
-            if token == EOS_TOKEN:
-                sys.stdout.write('\n')
-                sys.stdout.flush()
-            else:
-                sys.stdout.write(token)
-                sys.stdout.flush()
-            prev_word = model.predict(xp.array([token2id[token]], dtype=np.int32))
+        prime_text = args.text.strip().split(' ')
+
+        for token in prime_text:
+            sys.stdout.write(token)
+
+        hx, cx, prev_word = model.predict([xp.array([token2id[x] for x in prime_text], dtype=np.int32)])
 
         for i in range(args.length):
-            if args.sample > 0:
-                next_prob = cuda.to_cpu(prev_word.data)[0].astype(np.float64)
+            if args.sample < 0:
+                next_prob = cuda.to_cpu(prev_word.data)[-1].astype(np.float64)
                 next_prob /= np.sum(next_prob)
                 idx = np.random.choice(range(len(next_prob)), p=next_prob)
             else:
-                idx = np.argmax(cuda.to_cpu(prev_word.data))
+                idx = np.argmax(cuda.to_cpu(prev_word.data)[-1])
 
             if vocab[idx] == EOS_TOKEN:
                 sys.stdout.write('\n')
@@ -143,7 +168,7 @@ def main():
             else:
                 sys.stdout.write(vocab[idx])
                 sys.stdout.flush()
-            prev_word = model.predict(xp.array([idx], dtype=np.int32))
+            hx, cx, prev_word = model.predict([xp.array([idx], dtype=np.int32)], hx=hx, cx=cx)
 
         sys.stdout.write('\n')
         sys.stdout.flush()
