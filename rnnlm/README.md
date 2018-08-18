@@ -2,7 +2,7 @@
 
 ### Description
 
-This example code is a recurrent net for language modeling using three kinds of approaches, `Simple LSTM`, `NStep LSTM`.
+This example code is a recurrent net for language modeling using three kinds of approaches, `BPTT (back-propagation through time) LSTM`, `NStep LSTM`.
 
 ### Dependencies
 - python 3.6
@@ -40,13 +40,13 @@ cd ../../
 - training
 
 ```
-python train_rnnlm.py       --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v       | tee train_rnnlm-w2v.log 2>&1
+python train_rnnlm-bptt.py  --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v-bptt  | tee train_rnnlm-w2v-bptt.log 2>&1
 python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out result_rnnlm-w2v-nstep | tee train_rnnlm-w2v-nstep.log 2>&1
 ```
 
 - test (your own text-generating)
 ```
-python  test_rnnlm.py       --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v.log       2>&1
+python  test_rnnlm-bptt.py  --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v-bptt.log  2>&1
 python  test_rnnlm-nstep.py --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v-nstep.log 2>&1
 ```
 
@@ -78,7 +78,7 @@ python  test_rnnlm-nstep.py --model "model-neko/final.model" --text "吾輩 は 
 
 ***Output***
 
-- train_rnnlm-w2v.log (use **train_rnnlm.py**)
+- train_rnnlm-w2v-bptt.log (use **train_rnnlm-bptt.py**)
 ```
 2018-08-18 06:09:43,306 - main - INFO - vocabulary size: 13948
 2018-08-18 06:09:43,311 - main - INFO - train data size: 208502
@@ -107,7 +107,7 @@ SAMPLE #=> 吾輩は猫である。てか。磁力</s>ががにななろ云う�
  :
 ```
 
-- test_rnnlm-w2v.log (use **test_rnnlm.py**)
+- test_rnnlm-w2v-bptt.log (use **test_rnnlm-bptt.py**)
 
 ```
 2018-08-18 07:11:16,440 - main - INFO - Number of units: 300
