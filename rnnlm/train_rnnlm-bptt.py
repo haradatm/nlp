@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Sample script of recurrent neural network language model.
+""" Sample script of recurrent neural network language model. (using back-propagation through time)
 
-    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
-    usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。"
+    usage: python3.6 train_rnnlm-bptt.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
+    usage: python3.6  test_rnnlm-bptt.py --gpu -1 --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。"
 """
 
 __version__ = '0.0.1'
@@ -178,7 +178,7 @@ def main():
     global xp
 
     import argparse
-    parser = argparse.ArgumentParser(description='Chainer example: RNNLM')
+    parser = argparse.ArgumentParser(description='Chainer example: BPTT RNNLM')
     parser.add_argument('--train', default='datasets/soseki/neko-word-train.txt', type=str, help='dataset to train (.txt)')
     parser.add_argument('--test', default='', type=str, help='use tiny datasets to evaluate (.txt)')
     parser.add_argument('--w2v', '-w', default='', type=str, help='initialize word embedding layer with word2vec (.bin)')
@@ -188,7 +188,7 @@ def main():
     parser.add_argument('--unit', '-u', type=int, default=200, help='number of LSTM units in each layer')
     parser.add_argument('--gpu', '-g', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--gradclip', '-c', type=float, default=5, help='Gradient norm threshold to clip')
-    parser.add_argument('--out', '-o', default='results_rnnlm-2', help='Directory to output the result')
+    parser.add_argument('--out', '-o', default='results_rnnlm-bptt', help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='', help='resume the training from snapshot')
     # args = parser.parse_args(args=[])
     args = parser.parse_args()
@@ -401,20 +401,20 @@ def main():
 
             # 精度と誤差をグラフ描画
             if True:
-                # ylim1 = [min(train_loss + train_accuracy1 + test_loss + test_accuracy1), max(train_loss + train_accuracy1 + test_loss + test_accuracy1)]
-                # ylim2 = [min(train_accuracy2 + test_accuracy2), max(train_accuracy2 + test_accuracy2)]
+                ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2), max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
+                ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
 
                 # グラフ左
                 plt.figure(figsize=(10, 10))
                 plt.subplot(1, 2, 1)
-                # plt.ylim(ylim1)
+                plt.ylim(ylim1)
                 plt.plot(range(1, len(train_loss) + 1), train_loss, 'b')
                 plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
                 plt.grid(False)
                 plt.ylabel('loss and perplexity')
                 plt.legend(['train loss', 'train perplexity'], loc="lower left")
                 plt.twinx()
-                # plt.ylim(ylim2)
+                plt.ylim(ylim2)
                 plt.plot(range(1, len(train_accuracy1) + 1), train_accuracy1, 'r')
                 plt.grid(False)
                 # plt.ylabel('accuracy')
@@ -423,22 +423,22 @@ def main():
 
                 # グラフ右
                 plt.subplot(1, 2, 2)
-                # plt.ylim(ylim1)
+                plt.ylim(ylim1)
                 plt.plot(range(1, len(test_loss) + 1), test_loss, 'b')
                 plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
                 plt.grid(False)
                 # plt.ylabel('loss and perplexity')
                 plt.legend(['test loss', 'test perplexity'], loc="lower left")
                 plt.twinx()
-                # plt.ylim(ylim2)
+                plt.ylim(ylim2)
                 plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, 'r')
                 plt.grid(False)
                 plt.ylabel('accuracy')
                 plt.legend(['test accuracy'], loc="upper right")
                 plt.title('Loss and accuracy for test data.')
 
-                # plt.savefig('{}.png'.format(args.out))
-                plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
+                plt.savefig('{}.png'.format(args.out))
+                # plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
                 # plt.show()
 
             optimizer.alpha *= lr_decay

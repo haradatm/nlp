@@ -38,7 +38,7 @@ import pickle
 
 # UNK_ID = 0
 # EOS_ID = 1
-UNK_TOKEN = '<unk>'
+# UNK_TOKEN = '<unk>'
 EOS_TOKEN = '</s>'
 
 

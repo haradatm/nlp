@@ -3,8 +3,8 @@
 
 """ Sample script of recurrent neural network language model. (using NStep-LSTM)
 
-    usage: python3.6 train_rnnlm.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
-    usage: python3.6  test_rnnlm.py --gpu -1 --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。"
+    usage: python3.6 train_rnnlm-nstep.py --gpu -1 --epoch 200 --batchsize 100 --unit 300 --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --out model-neko
+    usage: python3.6  test_rnnlm-nstep.py --gpu -1 --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。"
 """
 
 __version__ = '0.0.1'
@@ -220,7 +220,7 @@ def main():
     parser.add_argument('--layer', '-l', type=int, default=3, help='number of layers')
     parser.add_argument('--gpu', '-g', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--gradclip', '-c', type=float, default=5, help='gradient norm threshold to clip')
-    parser.add_argument('--out', '-o', default='results_rnnlm-1', help='directory to output the result')
+    parser.add_argument('--out', '-o', default='results_rnnlm-nstep', help='directory to output the result')
     parser.add_argument('--resume', '-r', default='', help='resume the training from snapshot')
     # args = parser.parse_args(args=[])
     args = parser.parse_args()
@@ -420,20 +420,20 @@ def main():
 
         # 精度と誤差をグラフ描画
         if True:
-            # ylim1 = [min(train_loss + train_accuracy1 + test_loss + test_accuracy1), max(train_loss + train_accuracy1 + test_loss + test_accuracy1)]
-            # ylim2 = [min(train_accuracy2 + test_accuracy2), max(train_accuracy2 + test_accuracy2)]
+            ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2), max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
+            ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
 
             # グラフ左
             plt.figure(figsize=(10, 10))
             plt.subplot(1, 2, 1)
-            # plt.ylim(ylim1)
+            plt.ylim(ylim1)
             plt.plot(range(1, len(train_loss) + 1), train_loss, 'b')
             plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
             plt.grid(False)
             plt.ylabel('loss and perplexity')
             plt.legend(['train loss', 'train perplexity'], loc="lower left")
             plt.twinx()
-            # plt.ylim(ylim2)
+            plt.ylim(ylim2)
             plt.plot(range(1, len(train_accuracy1) + 1), train_accuracy1, 'r')
             plt.grid(False)
             # plt.ylabel('accuracy')
@@ -442,22 +442,22 @@ def main():
 
             # グラフ右
             plt.subplot(1, 2, 2)
-            # plt.ylim(ylim1)
+            plt.ylim(ylim1)
             plt.plot(range(1, len(test_loss) + 1), test_loss, 'b')
             plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
             plt.grid(False)
             # plt.ylabel('loss and perplexity')
             plt.legend(['valid loss', 'valid perplexity'], loc="lower left")
             plt.twinx()
-            # plt.ylim(ylim2)
+            plt.ylim(ylim2)
             plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, 'r')
             plt.grid(False)
             plt.ylabel('accuracy')
             plt.legend(['valid accuracy'], loc="upper right")
             plt.title('Loss and accuracy of valid.')
 
-            # plt.savefig('{}.png'.format(args.out))
-            plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
+            plt.savefig('{}.png'.format(args.out))
+            # plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
             # plt.show()
 
         optimizer.alpha *= lr_decay

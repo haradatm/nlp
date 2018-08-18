@@ -38,7 +38,7 @@ import pickle
 
 # UNK_ID = 0
 # EOS_ID = 1
-UNK_TOKEN = '<unk>'
+# UNK_TOKEN = '<unk>'
 EOS_TOKEN = '</s>'
 
 
@@ -155,7 +155,7 @@ def main():
         hx, cx, prev_word = model.predict([xp.array([token2id[x] for x in prime_text], dtype=np.int32)])
 
         for i in range(args.length):
-            if args.sample < 0:
+            if args.sample > 0:
                 next_prob = cuda.to_cpu(prev_word.data)[-1].astype(np.float64)
                 next_prob /= np.sum(next_prob)
                 idx = np.random.choice(range(len(next_prob)), p=next_prob)
