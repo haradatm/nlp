@@ -37,10 +37,17 @@ cd ../../
 ```
 
 ***Run and Evaluate***
+- training
 
 ```
-python train_rnnlm.py       --train datasets/soseki/neko-word-train.txt --test  datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v       | tee train_rnnlm-w2v.log 2>&1
-python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test  datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out result_rnnlm-w2v-nstep | tee train_rnnlm-w2v-nstep.log 2>&1
+python train_rnnlm.py       --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v       | tee train_rnnlm-w2v.log 2>&1
+python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out result_rnnlm-w2v-nstep | tee train_rnnlm-w2v-nstep.log 2>&1
+```
+
+- test (your own text-generating)
+```
+python  test_rnnlm.py       --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v.log       2>&1
+python  test_rnnlm-nstep.py --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v-nstep.log 2>&1
 ```
 
 ***Input***
@@ -97,5 +104,18 @@ Initialize the embedding from word2vec model: datasets/soseki/neko_w2v.bin
 SAMPLE #=> 吾輩は猫である。ねえさに音なり武ないと当る。間もなくものこのののにようをと聖書
 2018-08-18 06:10:34,729 - main - INFO - [  2] T/loss=137.093931 T/acc=0.058924 T/perp=468.661673 T/sec= 41.567921 D/loss=99.580887 D/acc=0.070336 D/perp=441.674988 D/sec= 0.044635 lr=0.000696
 SAMPLE #=> 吾輩は猫である。てか。磁力</s>ががにななろ云うたて否や遊弋よう全くて。た
+ :
+```
+
+- test_rnnlm-w2v.log (use **test_rnnlm.py**)
+
+```
+2018-08-18 07:11:16,440 - main - INFO - Number of units: 300
+2018-08-18 07:11:16,440 - main - INFO - Vocabulary size: 3038
+吾輩は猫である。
+さてこの友人は奇麗に帰って一つ刈になって、非常作事をしく、つえまへ生徒と霊々にくていった。
+吾輩が胃としてごとくも此時主人の頭を少し上げてラァチ皮の刈せみを歓術使て舌したいところである。
+まちこと徳の境に普通の人間を吾輩の研動を運動した者の一年にこの時日によって彼の名を生々全したまないだろう。
+主人は少々くらいに立ってやって来た。
  :
 ```
