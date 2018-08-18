@@ -153,7 +153,7 @@ class RNNLM(chainer.Chain):
         self.embed.W.data = data
 
 
-def show_sample(model, vocab, token2id, length=20):
+def show_sample(model, vocab, token2id, length=20, eos=EOS_TOKEN):
     model.reset_state()
 
     for token in prime_text:
@@ -166,7 +166,7 @@ def show_sample(model, vocab, token2id, length=20):
         idx = np.random.choice(range(len(next_prob)), p=next_prob)
 
         if vocab[idx] == EOS_TOKEN:
-            sys.stdout.write(EOS_TOKEN)
+            sys.stdout.write(eos)
         else:
             sys.stdout.write(vocab[idx])
         prev_word = model.predict(xp.array([idx], dtype=np.int32))
@@ -467,7 +467,9 @@ def main():
         token2id[token] = i
 
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
-        show_sample(model, vocab, token2id, prime_text)
+        show_sample(model, vocab, token2id, length=500, eos="\n")
+
+    logger.info('time spent: {:.6f} sec\n'.format(time.time() - start_time))
 
 
 if __name__ == '__main__':
