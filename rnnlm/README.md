@@ -123,6 +123,4 @@ loading early stopped-model at epoch 73
 
 - train_rnnlm-{bptt,nstep}-w2v.png (use **train_rnnlm-{bptt,nstep}.py**)
 
-<img src="results/train_rnnlm-w2v-bptt.png" width="262px" height="261px">btpp</> <img src="results/train_rnnlm-w2v-nstep.png" width="262px" height="261px">nstep</>
-
-- train_rnnlm-nstep-w2v.png (use **test_rnnlm-nstep.py**)
+<img alt="BTPP"  src="results/train_rnnlm-w2v-bptt.png" width="262px" height="261px"/> <img alt="NStep" src="results/train_rnnlm-w2v-nstep.png" width="262px" height="261px"/>
