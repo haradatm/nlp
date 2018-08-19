@@ -11,6 +11,7 @@ __version__ = '0.0.1'
 
 import sys, os, time, logging, json, math
 import numpy as np
+
 np.set_printoptions(precision=20)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -20,6 +21,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(funcName)s - %(levelname
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
+
 def pp(obj):
     import pprint
     pp = pprint.PrettyPrinter(indent=1, width=160)
@@ -28,13 +30,11 @@ def pp(obj):
 
 start_time = time.time()
 
-
 import chainer
 from chainer import cuda
 import chainer.functions as F
 import chainer.links as L
 import pickle
-
 
 # UNK_ID = 0
 # EOS_ID = 1
@@ -112,7 +112,7 @@ def main():
     global xp
 
     import argparse
-    parser = argparse.ArgumentParser(description='Chainer example: RNNLM')
+    parser = argparse.ArgumentParser(description='Chainer example: NStep RNNLM')
     parser.add_argument('--model', '-m', type=str, default='model/final.model', help='model data, saved by train.py')
     parser.add_argument('--text', '-t', type=str, default='吾 輩 は 猫 で あ る', help='base text data, used for text generation')
     parser.add_argument('--unit', '-u', type=int, default=200, help='number of dimensions')

@@ -40,8 +40,8 @@ cd ../../
 - training
 
 ```
-python train_rnnlm-bptt.py  --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v-bptt  | tee train_rnnlm-w2v-bptt.log 2>&1
-python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out result_rnnlm-w2v-nstep | tee train_rnnlm-w2v-nstep.log 2>&1
+python train_rnnlm-bptt.py  --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v-bptt  2>&1 | tee train_rnnlm-w2v-bptt.log
+python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out result_rnnlm-w2v-nstep 2>&1 | tee train_rnnlm-w2v-nstep.log 
 ```
 
 - test (your own text-generating)

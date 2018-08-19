@@ -11,6 +11,7 @@ __version__ = '0.0.1'
 
 import sys, os, time, logging, json
 import numpy as np
+
 np.set_printoptions(precision=20)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -20,6 +21,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(funcName)s - %(levelname
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
+
 def pp(obj):
     import pprint
     pp = pprint.PrettyPrinter(indent=1, width=160)
@@ -27,7 +29,6 @@ def pp(obj):
 
 
 start_time = time.time()
-
 
 import chainer
 from chainer import cuda
@@ -47,7 +48,6 @@ prime_text = ""
 
 
 def load_w2v_model(path, vocab=[]):
-
     with open(path, 'rb') as f:
 
         n_vocab, n_units = map(int, f.readline().split())

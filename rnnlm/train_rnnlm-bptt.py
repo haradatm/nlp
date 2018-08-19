@@ -283,6 +283,7 @@ def main():
 
     # Learning loop
     print("going to train {} iterations ({} epochs)".format(train_stride * args.epoch, args.epoch))
+    sys.stdout.flush()
 
     # training
     epoch = 1
