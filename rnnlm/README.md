@@ -40,14 +40,14 @@ cd ../../
 - training
 
 ```
-python train_rnnlm-bptt.py  --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out result_rnnlm-w2v-bptt  2>&1 | tee train_rnnlm-w2v-bptt.log
-python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out result_rnnlm-w2v-nstep 2>&1 | tee train_rnnlm-w2v-nstep.log 
+python train_rnnlm-bptt.py  --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200 --bproplen 35 --out results/rnnlm-w2v-bptt  2>&1 | tee results/train_rnnlm-w2v-bptt.log
+python train_rnnlm-nstep.py --train datasets/soseki/neko-word-train.txt --test datasets/soseki/neko-word-test.txt --w2v datasets/soseki/neko_w2v.bin --gpu 0 --epoch 300 --batchsize 100 --unit 200               --out results/rnnlm-w2v-nstep 2>&1 | tee results/train_rnnlm-w2v-nstep.log 
 ```
 
 - test (your own text-generating)
 ```
-python  test_rnnlm-bptt.py  --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v-bptt.log  2>&1
-python  test_rnnlm-nstep.py --model "model-neko/final.model" --text "吾輩 は 猫 で ある 。" | tee test_rnnlm-w2v-nstep.log 2>&1
+python  test_rnnlm-bptt.py  --model results/rnnlm-w2v-bptt/early_stopped.model  --text "吾輩 は 猫 で ある 。" 2>&1 | tee results/test_rnnlm-w2v-bptt.log 
+python  test_rnnlm-nstep.py --model results/rnnlm-w2v-nstep/early_stopped.model --text "吾輩 は 猫 で ある 。" 2>&1 | tee results/test_rnnlm-w2v-nstep.log
 ```
 
 ***Input***
@@ -78,44 +78,53 @@ python  test_rnnlm-nstep.py --model "model-neko/final.model" --text "吾輩 は 
 
 ***Output***
 
-- train_rnnlm-w2v-bptt.log (use **train_rnnlm-bptt.py**)
+- train_rnnlm-w2v-bptt.log (use **train_rnnlm-bptt.ipynb** on **Google Colaboratory**)
 ```
-2018-08-18 06:09:43,306 - main - INFO - vocabulary size: 13948
-2018-08-18 06:09:43,311 - main - INFO - train data size: 208502
-2018-08-18 06:09:43,312 - main - INFO - train data starts with: 吾輩 は 猫 で ある 。 ...
-2018-08-18 06:09:43,319 - main - INFO - test  data size: 1735
+2018-08-19 11:27:32,705 - main - INFO - vocabulary size: 13948
+2018-08-19 11:27:32,707 - main - INFO - train data size: 208502
+2018-08-19 11:27:32,713 - main - INFO - train data starts with: 吾輩 は 猫 で ある 。 ...
+2018-08-19 11:27:32,715 - main - INFO - test  data size: 1735
 Initialize the embedding from word2vec model: datasets/soseki/neko_w2v.bin
 going to train 625500 iterations (300 epochs)
-2018-08-18 06:15:17,925 - main - INFO - [  1] T/loss=7.314021 T/acc=0.030782 T/perp=3182.100133 T/sec= 332.478771 D/loss=6.096238 D/acc=0.050000 D/perp=444.183391 D/sec= 1.517477 lr=0.000700
-SAMPLE #=> 吾輩は猫である。をが名さを鼠ことごとくもだろ。のかくし事がし奴黒い使て
-2018-08-18 06:21:13,628 - main - INFO - [  2] T/loss=6.378471 T/acc=0.041856 T/perp=614.686833 T/sec= 354.200411 D/loss=6.348036 D/acc=0.180000 D/perp=571.370132 D/sec= 1.502880 lr=0.000696
-SAMPLE #=> 吾輩は猫である。同もで</s>置い延びる手方法富子て安心ないか迷亭をしおめでたけりゃも上、
+2018-08-19 11:28:34,263 - main - INFO - [  1] T/loss=7.321579 T/acc=0.034657 T/perp=3177.996886 T/sec= 36.996148 D/loss=6.078034 D/acc=0.050000 D/perp=436.170881 D/sec= 0.061185 lr=0.000700
+SAMPLE #=> 吾輩は猫である。、しからながらため月並手云う顔が堂々たる現に出来かと時魂消るた動か用
  :
-```
-
-- train_rnnlm-w2v-nstep.log (use **train_rnnlm-nstep.py**)
-```
-2018-08-18 06:09:37,145 - main - INFO - vocabulary size: 13948
-2018-08-18 06:09:37,146 - main - INFO - train data size: 8951
-2018-08-18 06:09:37,152 - main - INFO - train data starts with: 吾輩 は 猫 で ある 。 ...
-2018-08-18 06:09:37,157 - main - INFO - test  data size: 100
-Initialize the embedding from word2vec model: datasets/soseki/neko_w2v.bin
-2018-08-18 06:09:53,117 - main - INFO - [  1] T/loss=153.408735 T/acc=0.050951 T/perp=2161.037404 T/sec= 15.201595 D/loss=100.005348 D/acc=0.067890 D/perp=453.291382 D/sec= 0.044296 lr=0.000700
-SAMPLE #=> 吾輩は猫である。ねえさに音なり武ないと当る。間もなくものこのののにようをと聖書
-2018-08-18 06:10:34,729 - main - INFO - [  2] T/loss=137.093931 T/acc=0.058924 T/perp=468.661673 T/sec= 41.567921 D/loss=99.580887 D/acc=0.070336 D/perp=441.674988 D/sec= 0.044635 lr=0.000696
-SAMPLE #=> 吾輩は猫である。てか。磁力</s>ががにななろ云うたて否や遊弋よう全くて。た
- :
-```
-
-- test_rnnlm-w2v-bptt.log (use **test_rnnlm-bptt.py**)
-
-```
-2018-08-18 07:11:16,440 - main - INFO - Number of units: 300
-2018-08-18 07:11:16,440 - main - INFO - Vocabulary size: 3038
+2018-08-19 14:20:45,239 - main - INFO - [300] T/loss=4.009955 T/acc=0.314206 T/perp=58.074400 T/sec= 24.630806 D/loss=6.091312 D/acc=0.227647 D/perp=442.883241 D/sec= 0.065305 lr=0.000156
+SAMPLE #=> 吾輩は猫である。</s>純然たら蒟蒻べからんがあ、えらいな。</s>知らないが、すべてで妙
+loading early stopped-model at epoch 276
 吾輩は猫である。
-さてこの友人は奇麗に帰って一つ刈になって、非常作事をしく、つえまへ生徒と霊々にくていった。
-吾輩が胃としてごとくも此時主人の頭を少し上げてラァチ皮の刈せみを歓術使て舌したいところである。
-まちこと徳の境に普通の人間を吾輩の研動を運動した者の一年にこの時日によって彼の名を生々全したまないだろう。
-主人は少々くらいに立ってやって来た。
- :
+そのあてつけるに行き休むだ。
+誰を知り出すか、あの事は私はとうてい駄目か。と医者が満更首を返らんて付をなる。
+少し食べていただきたい。
+それで何だか叔母さんだ。と云う。
+2018-08-19 14:21:09,672 - main - INFO - time spent: 10434.439452 sec
 ```
+
+- train_rnnlm-w2v-nstep.log (use **train_rnnlm-nstep.ipynb** on **Google Colaboratory**)
+```
+2018-08-18 12:36:25,397 - main - INFO - vocabulary size: 13948
+2018-08-18 12:36:25,398 - main - INFO - train data size: 8951
+2018-08-18 12:36:25,403 - main - INFO - train data starts with: 吾輩 は 猫 で ある 。 ...
+2018-08-18 12:36:25,405 - main - INFO - test  data size: 100
+Initialize the embedding from word2vec model: datasets/soseki/neko_w2v.bin
+2018-08-18 12:36:50,768 - main - INFO - [  1] T/loss=153.004472 T/acc=0.047866 T/perp=2103.527864 T/sec= 21.964320 D/loss=100.016502 D/acc=0.070948 D/perp=453.600800 D/sec= 0.120360 lr=0.000700
+SAMPLE #=> 吾輩は猫である。。つい、上押し返しとがた</s>に今でそんな</s>はなけれ</s>よりはある
+ :
+2018-08-18 14:19:30,912 - main - INFO - [300] T/loss=98.843602 T/acc=0.374162 T/perp=84.322790 T/sec= 14.485338 D/loss=89.144028 D/acc=0.201835 D/perp=233.278687 D/sec= 0.043545 lr=0.000156
+SAMPLE #=> 吾輩は猫である。</s>に話しかける。</s>は始まる宴会の泥棒が筧に目だたである天下煖ほどで
+loading early stopped-model at epoch 73
+吾輩は猫である。
+の気になってるものじゃない。寒月君は読売新聞のあたりへ京焼杯入れて鞍何らしいものが想像します。
+から妻が聖書掌に行って彼だって近日的に帰るんでございませんなどだから宜だ。
+と聞かれたから、ほかにその客なんぞ先月の？
+生きますから返す返すまで裸体とか大変、まだいい車屋が鋭目へ呼びかけて、冷笑してくれが吾輩は撮っるを似合？
+2018-08-18 14:20:05,497 - main - INFO - time spent: 6233.629851 sec
+```
+
+- train_rnnlm-bptt-w2v.png (use **train_rnnlm-bptt.py**)
+
+<img src="results/train_rnnlm-bptt-w2v.png" width="262px" height="261px"/> <img src="results/02-turn-1.png" width="262px" height="261px"/> <img src="results/03-turn-1.png" width="262px" height="261px"/>
+
+- train_rnnlm-nstep-w2v.png (use **test_rnnlm-nstep.py**)
+
+<img src="results/train_rnnlm-nstep-w2v.png" width="262px" height="261px"/> <img src="results/02-turn-2.png" width="262px" height="261px"/> <img src="results/03-turn-2.png" width="262px" height="261px"/>
