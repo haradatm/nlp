@@ -338,6 +338,9 @@ def main():
             sum_test_accuracy2 = 0.
             K = 0
 
+            # RNN 状態を初期化する
+            model.reset_state()
+
             with chainer.no_backprop_mode(), chainer.using_config('train', False):
                 for i in range(test_stride):
                     x_batch = xp.array([test_data[(test_stride * x + iteration) % len(test_data)] for x in range(args.batchsize)])
