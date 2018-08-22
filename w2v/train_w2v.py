@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" KGE: Knowledge Graph Embedding example
+"""Sample script of word embedding model.
+
+This code implements skip-gram model and continuous-bow model.
 """
 
 __version__ = '0.0.1'
