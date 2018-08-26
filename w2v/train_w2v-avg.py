@@ -49,10 +49,18 @@ class ContinuousBoW(chainer.Chain):
             self.out = L.Linear(n_units, n_vocab, initialW=0)
 
     def __call__(self, x, contexts):
+        y = self.forward(contexts)
+        return F.softmax_cross_entropy(y, x), F.accuracy(F.softmax(y), x)
+
+    def predict(self, contexts):
+        y = self.forward(contexts)
+        return F.softmax(y)
+
+    def forward(self, contexts):
         e = self.embed(contexts)
         h = F.sum(e, axis=1) * (1. / contexts.shape[1])
-        loss = F.softmax_cross_entropy(self.out(h), x)
-        return loss
+        y = self.out(h)
+        return y
 
 
 class SkipGram(chainer.Chain):
@@ -66,55 +74,22 @@ class SkipGram(chainer.Chain):
             self.out = L.Linear(n_units, n_vocab, initialW=0)
 
     def __call__(self, x, contexts):
+        y = self.forward(contexts)
+        batch_size, n_context = contexts.shape
+        x = F.broadcast_to(x[:, None], (batch_size, n_context))
+        x = F.reshape(x, (batch_size * n_context,))
+        return F.softmax_cross_entropy(y, x), F.accuracy(F.softmax(y), x)
+
+    def predict(self, contexts):
+        y = self.forward(contexts)
+        return F.softmax(y)
+
+    def forward(self, contexts):
         e = self.embed(contexts)
         batch_size, n_context, n_units = e.shape
-        x = F.broadcast_to(x[:, None], (batch_size, n_context))
         e = F.reshape(e, (batch_size * n_context, n_units))
-        x = F.reshape(x, (batch_size * n_context,))
-        loss = F.softmax_cross_entropy(self.out(e), x)
-        return loss
-
-
-class ContinuousBoW_NS(chainer.Chain):
-    """Definition of Continuous Bag of Words Model"""
-
-    def __init__(self, n_vocab, n_units, cs, n_ngs):
-        super(ContinuousBoW_NS, self).__init__()
-
-        with self.init_scope():
-            self.embed = L.EmbedID(n_vocab, n_units, initialW=I.Uniform(1. / n_units))
-            self.out = L.NegativeSampling(n_units, cs, n_ngs)
-
-        self.out.W.data[...] = 0
-
-    def __call__(self, x, contexts):
-        e = self.embed(contexts)
-        h = F.sum(e, axis=1) * (1. / contexts.shape[1])
-        loss = self.out(h, x)
-        return loss
-
-
-class SkipGram_NS(chainer.Chain):
-    """Definition of Skip-gram Model"""
-
-    def __init__(self, n_vocab, n_units, cs, n_ngs):
-        super(SkipGram_NS, self).__init__()
-
-        with self.init_scope():
-            self.embed = L.EmbedID(n_vocab, n_units, initialW=I.Uniform(1. / n_units))
-            self.out = L.Linear(n_units, n_vocab, initialW=0)
-            self.out = L.NegativeSampling(n_units, cs, n_ngs)
-
-        self.out.W.data[...] = 0
-
-    def __call__(self, x, contexts):
-        e = self.embed(contexts)
-        batch_size, n_context, n_units = e.shape
-        x = F.broadcast_to(x[:, None], (batch_size, n_context))
-        e = F.reshape(e, (batch_size * n_context, n_units))
-        x = F.reshape(x, (batch_size * n_context,))
-        loss = self.out(e, x)
-        return loss
+        y = self.out(e)
+        return y
 
 
 EOS_TOKEN = '</s>'
@@ -123,11 +98,16 @@ EOS_TOKEN = '</s>'
 def load_data(path, vocab={}):
     dataset = []
 
-    for line in open(path, 'r'):
+    for i, line in enumerate(open(path, 'r')):
         line = line.strip()
         if line == '':
             continue
+        # if i > 10000:
+        #     break
+
+        # words = ['吾輩', 'は', '猫', 'で', 'ある', '。'] + [EOS_TOKEN]
         words = line.split(' ') + [EOS_TOKEN]
+
         for word in words:
             if word not in vocab:
                 vocab[word] = len(vocab)
@@ -136,53 +116,29 @@ def load_data(path, vocab={}):
     return np.array(dataset, 'i'), vocab
 
 
-class WindowIterator(object):
-    """Dataset iterator to create a batch of sequences at different positions.
+def get_minibatches(dataset, window, batch_size):
 
-    This iterator returns a pair of the current words and the context words.
-    """
+    # 学習時に文書の最初から最後まで順番に学習するのではなく,文書からランダムに単語を選択し学習するため,
+    # ウィンドウサイズ分だけ最初と最後を切り取った単語の位置をシャッフルする
+    order = np.random.permutation(len(dataset) - window * 2).astype(np.int32)
+    order += window
 
-    def __init__(self, dataset, window, batch_size, repeat=True):
-        self.dataset = np.array(dataset, np.int32)
-        self.window = window
-        self.batch_size = batch_size
-        self._repeat = repeat
-        self.order = np.random.permutation(len(dataset) - window * 2).astype(np.int32)
-        self.order += window
-        self.current_position = 0
-        self.epoch = 0
-        self.is_new_epoch = False
+    for i in range(0, len(order), batch_size):
 
-    def __iter__(self):
-        return self
+        # 単語の位置をシャッフルしたリストから batch_size 分の Target Word のインデックスを生成する
+        position = order[i:i + batch_size]
 
-    def __next__(self):
-        """This iterator returns a list representing a mini-batch.
-
-        Each item indicates a different position in the original sequence.
-        """
-        if not self._repeat and self.epoch > 0:
-            raise StopIteration
-
-        i = self.current_position
-        i_end = i + self.batch_size
-        position = self.order[i:i_end]
-        w = np.random.randint(self.window - 1) + 1
+        # ウインドウを表現するオフセットを作成する
+        w = np.random.randint(window - 1) + 1
         offset = np.concatenate([np.arange(-w, 0), np.arange(1, w + 1)])
+
+        # 各 Target Word に対する Context Word のインデックスを生成する
         pos = position[:, None] + offset[None, :]
-        contexts = self.dataset.take(pos)
-        center = self.dataset.take(position)
 
-        if i_end >= len(self.order):
-            np.random.shuffle(self.order)
-            self.epoch += 1
-            self.is_new_epoch = True
-            self.current_position = 0
-        else:
-            self.is_new_epoch = False
-            self.current_position = i_end
+        contexts = dataset.take(pos)
+        center = dataset.take(position)
 
-        return center, contexts
+        yield center, contexts
 
 
 def convert(batch, device):
@@ -201,14 +157,14 @@ def main():
     parser.add_argument('--gpu', '-g', default=-1, type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--unit', '-u', default=100, type=int, help='number of units')
     parser.add_argument('--window', '-w', default=5, type=int, help='window size')
-    parser.add_argument('--batchsize', '-b', type=int, default=500, help='learning minibatch size')
+    parser.add_argument('--batchsize', '-b', type=int, default=1000, help='learning minibatch size')
     parser.add_argument('--epoch', '-e', default=20, type=int, help='number of epochs to learn')
     parser.add_argument('--model', '-m', choices=['skipgram', 'cbow'], default='skipgram', help='model type ("skipgram", "cbow")')
     parser.add_argument('--negative-size', default=5, type=int, help='number of negative samples')
     parser.add_argument('--out-type', '-o', choices=['hsm', 'ns', 'original'], default='original', help='output model type ("hsm": hierarchical softmax, "ns": negative sampling, "original": no approximation)')
-    parser.add_argument('--out', default='result', help='Directory to output the result')
+    parser.add_argument('--out', default='result-2', help='Directory to output the result')
     parser.add_argument('--test', dest='test', action='store_true')
-    # parser.set_defaults(test=True)
+    parser.set_defaults(test=False)
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     print(json.dumps(args.__dict__, indent=2))
@@ -233,16 +189,16 @@ def main():
     xp.random.seed(123)
 
     # Load the dataset
-    train, vocab = load_data("datasets/ptb/ptb.train.txt")
-    val,   vocab = load_data("datasets/ptb/ptb.valid.txt", vocab)
+    train, vocab = load_data("datasets/soseki/neko-word-train.txt")
+    val,   vocab = load_data("datasets/soseki/neko-word-test.txt", vocab)
 
     counts = collections.Counter(train)
     counts.update(collections.Counter(val))
-    n_vocab = max(train) + 1
+    n_vocab = len(vocab)
 
     if args.test:
-        train = train[:100]
-        val = val[:100]
+        train = train[:1000]
+        val = val[:1000]
 
     index2word = {wid: word for word, wid in vocab.items()}
 
@@ -251,8 +207,6 @@ def main():
     logger.info('vaid  data length: %d' % len(val))
     sys.stdout.flush()
 
-    cs = [counts[w] for w in range(len(counts))]
-
     if not os.path.exists(args.out):
         os.mkdir(args.out)
 
@@ -260,7 +214,10 @@ def main():
         pickle.dump(vocab, f)
 
     # Model Parameters
-    model = SkipGram(n_vocab, args.unit)
+    if args.model == 'skipgram':
+        model = SkipGram(n_vocab, args.unit)
+    else:
+        model = ContinuousBoW(n_vocab, args.unit)
 
     if args.gpu >= 0:
         model.to_gpu()
@@ -278,14 +235,11 @@ def main():
     lr_decay = 0.995
 
     # Setup optimizer (Optimizer の設定)
-    optimizer = chainer.optimizers.Adam(alpha=lr)
+    # optimizer = chainer.optimizers.Adam(alpha=lr)
+    optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
-    optimizer.add_hook(chainer.optimizer.GradientClipping(gradclip))
-    optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
-
-    # Set up an iterator
-    train_iter = WindowIterator(train, args.window, args.batchsize)
-    val_iter = WindowIterator(val, args.window, args.batchsize, repeat=False)
+    # optimizer.add_hook(chainer.optimizer.GradientClipping(gradclip))
+    # optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
 
     # プロット用に実行結果を保存する
     train_loss = []
@@ -307,32 +261,29 @@ def main():
         # logger.info('epoch {:} / {:}'.format(epoch, n_epoch))
         # handler1.flush()
 
-        # training
+        # Set up an iterator
+        train_iter = get_minibatches(train, args.window, args.batchsize)
         sum_train_loss = 0.
         sum_train_accuracy1 = 0.
         sum_train_accuracy2 = 0.
         K = 0
 
-        iteration = 1.
-
+        # training
         for batch in train_iter:
             center, contexts = convert(batch, args.gpu)
 
+            # 誤差逆伝播で勾配を計算 (minibatch ごと)
+            model.cleargrads()
+
             # 順伝播させて誤差と精度を算出
-            loss = model(center, contexts)
+            loss, accuracy = model(center, contexts)
             sum_train_loss += float(loss.data) * len(center)
-            sum_train_accuracy1 += .0
+            sum_train_accuracy1 += float(accuracy.data) * len(center)
             sum_train_accuracy2 += .0
             K += len(center)
 
-            # 誤差逆伝播で勾配を計算 (minibatch ごと)
-            model.cleargrads()
             loss.backward()
             optimizer.update()
-
-            if iteration != 0 and iteration % 100 == 0:
-                logger.debug("epoch: {} ({:2.2f}%)  loss: {:.6f}".format(epoch, (iteration * 100 / len(train) / args.batchsize), float(loss.data)))
-            iteration += 1
 
         # 訓練データの誤差と,正解精度を表示
         mean_train_loss = sum_train_loss / K
@@ -345,22 +296,32 @@ def main():
         train_throughput = now - cur_at
         cur_at = now
 
-        # evaluation
+        # Set up an iterator
+        val_iter = get_minibatches(val, args.window, args.batchsize)
         sum_test_loss = 0.
         sum_test_accuracy1 = 0.
         sum_test_accuracy2 = 0.
         K = 0
 
+        # evaluation
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
             for batch in val_iter:
                 center, contexts = convert(batch, args.gpu)
 
                 # 順伝播させて誤差と精度を算出
-                loss = model(center, contexts )
+                loss, accuracy = model(center, contexts )
                 sum_test_loss += float(loss.data) * len(center)
-                sum_test_accuracy1 += .0
+                sum_test_accuracy1 += float(accuracy.data) * len(center)
                 sum_test_accuracy2 += .0
                 K += len(center)
+
+            # test
+            contexts = [vocab[x] for x in ['吾輩', 'は', 'で', 'ある']]
+            y = model.predict(xp.array([contexts], 'i'))
+            yy = np.argsort(cuda.to_cpu(y.data)[0])
+            print("SAMPLE# '吾輩 は【 】で ある' => ", end='')
+            print(" ".join(["{}. {}".format(x1 + 1, index2word[yy[x2]]) for x1, x2 in enumerate(range(-5, -0, 1))]))
+            sys.stdout.flush()
 
         # テストデータでの誤差と正解精度を表示
         mean_test_loss = sum_test_loss / K
@@ -375,80 +336,91 @@ def main():
         logger.info(''
                     '[{:>3d}] '
                     'T/loss={:.6f} '
-                    'T/acc={:.6f} '
-                    'T/perp={:.6f} '
+                    'T/accuracy={:.6f} '
+                    # 'T/acc2={:.6f} '
                     'T/sec= {:.6f} '
                     'D/loss={:.6f} '
-                    'D/acc={:.6f} '
-                    'D/perp={:.6f} '
+                    'D/accuracy={:.6f} '
+                    # 'D/acc2={:.6f} '
                     'D/sec= {:.6f} '
                     'lr={:.6f}'
                     ''.format(
             epoch,
             mean_train_loss,
             mean_train_accuracy1,
-            mean_train_accuracy2,
+            # mean_train_accuracy2,
             train_throughput,
             mean_test_loss,
             mean_test_accuracy1,
-            mean_test_accuracy2,
+            # mean_test_accuracy2,
             test_throughput,
             optimizer.alpha)
         )
         sys.stdout.flush()
 
         # model と optimizer を保存する
-        if mean_train_loss < min_loss:
-            min_loss = mean_train_loss
+        if mean_test_loss < min_loss:
+            min_loss = mean_test_loss
             min_epoch = epoch
             if args.gpu >= 0: model.to_cpu()
             chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
             chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.state'), optimizer)
             if args.gpu >= 0: model.to_gpu()
 
+            # word2vec model を出力する
+            print('save the word2vec model at epoch {}'.format(min_epoch))
+            with open(os.path.join(args.out, "word2vec.model"), 'w') as f:
+                f.write('%d %d\n' % (len(index2word), args.unit))
+                w = cuda.to_cpu(model.embed.W.data)
+                for i, wi in enumerate(w):
+                    v = ' '.join(map(str, wi))
+                    f.write('%s %s\n' % (index2word[i], v))
+            sys.stdout.flush()
+
         # 精度と誤差をグラフ描画
         if True:
-            ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2), max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
-            ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
+            ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
+            # ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
+            ylim2 = [0, 1]
 
             # グラフ左
             plt.figure(figsize=(10, 10))
             plt.subplot(1, 2, 1)
             plt.ylim(ylim1)
             plt.plot(range(1, len(train_loss) + 1), train_loss, 'b')
-            plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
+            # plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
             plt.grid(False)
-            plt.ylabel('loss and perplexity')
-            plt.legend(['train loss', 'train perplexity'], loc="lower left")
+            plt.ylabel('loss and accuracy')
+            plt.legend(['train loss'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
             plt.plot(range(1, len(train_accuracy1) + 1), train_accuracy1, 'r')
             plt.grid(False)
             # plt.ylabel('accuracy')
             plt.legend(['train accuracy'], loc="upper right")
-            plt.title('Loss and accuracy of train.')
+            plt.title('Loss and accuracy for train.')
 
             # グラフ右
             plt.subplot(1, 2, 2)
             plt.ylim(ylim1)
             plt.plot(range(1, len(test_loss) + 1), test_loss, 'b')
-            plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
+            # plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
             plt.grid(False)
-            # plt.ylabel('loss and perplexity')
-            plt.legend(['valid loss', 'valid perplexity'], loc="lower left")
+            # plt.ylabel('loss and accuracy')
+            plt.legend(['test loss'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
             plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, 'r')
             plt.grid(False)
             plt.ylabel('accuracy')
-            plt.legend(['valid accuracy'], loc="upper right")
-            plt.title('Loss and accuracy of valid.')
+            plt.legend(['test accuracy'], loc="upper right")
+            plt.title('Loss and accuracy for test.')
 
             plt.savefig('{}.png'.format(args.out))
             # plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
             # plt.show()
 
-        optimizer.alpha *= lr_decay
+        # optimizer.alpha *= lr_decay
         cur_at = now
 
     # model と optimizer を保存する
@@ -458,14 +430,12 @@ def main():
     if args.gpu >= 0: model.to_gpu()
 
     # word2vec model を出力する
-    print('save the word2vec model at epoch {}'.format(min_epoch))
-    with open(os.path.join(args.out, "word2vec.model"), 'w') as f:
+    with open(os.path.join(args.out, "final-word2vec.model"), 'w') as f:
         f.write('%d %d\n' % (len(index2word), args.unit))
         w = cuda.to_cpu(model.embed.W.data)
         for i, wi in enumerate(w):
             v = ' '.join(map(str, wi))
             f.write('%s %s\n' % (index2word[i], v))
-    sys.stdout.flush()
 
 
 if __name__ == '__main__':
