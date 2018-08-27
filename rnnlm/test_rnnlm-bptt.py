@@ -81,6 +81,28 @@ class RNNLM(chainer.Chain):
         self.embed.W.data = data
 
 
+def make_candidates(candidates, beam_width):
+    next_candidates = []
+
+    for model, token_ids, likelihood in candidates:
+        y = model.predict(xp.array([token_ids[-1]], dtype=np.int32))
+        next_prob = cuda.to_cpu(y.data)[0].astype(np.float64)
+        next_prob /= np.sum(next_prob)
+        next_likelihood = np.log(next_prob)
+
+        # 上位 beam_width 個の枝を残す
+        # order = np.argsort(next_prob)[::-1][:beam_width]
+        order = np.random.choice(range(len(next_prob)), beam_width, p=next_prob)
+
+        for i in order:
+            ll = (likelihood * len(token_ids) + next_likelihood[i]) / (len(token_ids) + 1)
+            next_candidates.append((model.copy(), token_ids + [i], ll))
+
+        # 全ての枝の中から対数尤度の上位 beam_width 個を残す
+        candidates = sorted(next_candidates, key=lambda x: -x[2])[:beam_width]
+
+    return candidates
+
 def main():
     global xp
 
@@ -90,7 +112,7 @@ def main():
     parser.add_argument('--text', '-t', type=str, default='吾 輩 は 猫 で あ る', help='base text data, used for text generation')
     parser.add_argument('--unit', '-u', type=int, default=200, help='Number of LSTM units in each layer')
     parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
-    parser.add_argument('--length', type=int, default=2000, help='length of the generated text')
+    parser.add_argument('--length', type=int, default=300, help='length of the generated text')
     parser.add_argument('--gpu', type=int, default=0, help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
@@ -114,38 +136,30 @@ def main():
     model = RNNLM(len(vocab), args.unit)
     chainer.serializers.load_npz(args.model, model)
 
+    beam_width = 5
+
     if args.gpu >= 0:
         model.to_gpu(args.gpu)
 
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
         model.reset_state()
 
-        for token in args.text.strip().split(' '):
-            if token == EOS_TOKEN:
-                sys.stdout.write('\n')
-                sys.stdout.flush()
-            else:
-                sys.stdout.write(token)
-                sys.stdout.flush()
-            prev_word = model.predict(xp.array([token2id[token]], dtype=np.int32))
+        tokens = args.text.strip().split(' ')
+        token_ids = [token2id[x] for x in tokens]
+
+        for token in tokens:
+            _ = model.predict(xp.array([token2id[token]], dtype=np.int32))
+
+        candidates = [(model.copy(), token_ids, 0)]
 
         for i in range(args.length):
-            if args.sample > 0:
-                next_prob = cuda.to_cpu(prev_word.data)[0].astype(np.float64)
-                next_prob /= np.sum(next_prob)
-                idx = np.random.choice(range(len(next_prob)), p=next_prob)
-            else:
-                idx = np.argmax(cuda.to_cpu(prev_word.data))
+            candidates = make_candidates(candidates, beam_width)
 
-            if vocab[idx] == EOS_TOKEN:
-                sys.stdout.write('\n')
-                sys.stdout.flush()
+        for x in candidates[0][1][1:]:
+            if x != token2id[EOS_TOKEN]:
+                print(vocab[x], end='')
             else:
-                sys.stdout.write(vocab[idx])
-                sys.stdout.flush()
-            prev_word = model.predict(xp.array([idx], dtype=np.int32))
-
-        sys.stdout.write('\n')
+                print()
         sys.stdout.flush()
 
 
