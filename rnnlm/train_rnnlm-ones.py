@@ -9,7 +9,7 @@
 
 __version__ = '0.0.1'
 
-import sys, os, time, logging, json
+import sys, os, time, logging, json, math
 import numpy as np
 
 np.set_printoptions(precision=20)
@@ -128,44 +128,40 @@ def sequence_embed(embed, xs):
     return exs
 
 
+# Definition of a recurrent net for language modeling
 class RNNLM(chainer.Chain):
 
-    def __init__(self, n_layers, n_vocab, n_units):
+    def __init__(self, n_vocab, n_units):
         super(RNNLM, self).__init__()
         with self.init_scope():
-            self.embed = L.EmbedID(n_vocab, n_units)
-            self.l1 = L.NStepLSTM(n_layers, n_units, n_units, 0.1)
-            self.l2 = L.Linear(n_units, n_vocab)
+            self.embed = L.EmbedID(n_vocab, n_units, ignore_label=-1)
+            self.l1 = L.LSTM(n_units, n_units)
+            self.l2 = L.LSTM(n_units, n_units)
+            self.l3 = L.Linear(n_units, n_vocab)
 
         for param in self.params():
             param.data[...] = np.random.uniform(-0.1, 0.1, param.data.shape)
 
-        self.n_layers = n_layers
-        self.n_units = n_units
+    def __call__(self, x, t):
+        y = self.forward(x)
+        return F.softmax_cross_entropy(y, t), F.accuracy(y, t)
 
-    def __call__(self, xs, ys):
-        hx, cx, os = self.forward(xs)
-        concat_os = self.l2(F.concat(os, axis=0))
-        concat_ys_out = F.concat(ys, axis=0)
+    # 1ステップ前方処理関数 (学習データ,状態を与える)
+    def forward(self, x):
+        h0 = self.embed(x)
+        h1 = self.l1(F.dropout(h0))
+        h2 = self.l2(F.dropout(h1))
+        y = self.l3(F.dropout(h2))
+        return y
 
-        batch = len(xs)
-        n_words = concat_ys_out.shape[0]
+    def predict(self, x):
+        y = self.forward(x)
+        return F.softmax(y)
 
-        loss = F.sum(F.softmax_cross_entropy(concat_os, concat_ys_out, reduce='no')) / batch
-        accuracy = F.accuracy(concat_os, concat_ys_out)
-        perplexity = xp.exp(loss.data * batch / n_words)
-
-        return loss, accuracy, perplexity
-
-    def forward(self, xs, hx=None, cx=None):
-        exs = sequence_embed(self.embed, xs)
-        hx, cx, ys = self.l1(hx=hx, cx=cx, xs=exs)
-        return hx, cx, ys
-
-    def predict(self, xs, hx=None, cx=None):
-        hx, cx, os = self.forward(xs, hx=hx, cx=cx)
-        y = self.l2(F.concat(os, axis=0))
-        return hx, cx, F.softmax(y)
+    # 状態の初期化 (初期状態を現在の状態にセット)
+    def reset_state(self):
+        self.l1.reset_state()
+        self.l2.reset_state()
 
     def set_word_embedding(self, data):
         self.embed.W.data = data
@@ -211,16 +207,18 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(description='Chainer example: NStep RNNLM')
-    parser.add_argument('--train', default='datasets/soseki/neko-word-train.txt', type=str, help='dataset to train (.txt)')
+    parser.add_argument('--train', default='datasets/soseki/neko-word-train.txt', type=str,
+                        help='dataset to train (.txt)')
     parser.add_argument('--test', default='', type=str, help='use tiny datasets to evaluate (.txt)')
-    parser.add_argument('--w2v', '-w', default='', type=str, help='initialize word embedding layer with word2vec (.bin)')
+    parser.add_argument('--w2v', '-w', default='', type=str,
+                        help='initialize word embedding layer with word2vec (.bin)')
     parser.add_argument('--batchsize', '-b', type=int, default=100, help='number of sentence pairs in each mini-batch')
     parser.add_argument('--epoch', '-e', type=int, default=300, help='number of sweeps over the dataset to train')
     parser.add_argument('--unit', '-u', type=int, default=200, help='number of LSTM units in each layer')
     parser.add_argument('--layer', '-l', type=int, default=3, help='number of layers')
     parser.add_argument('--gpu', '-g', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--gradclip', '-c', type=float, default=5, help='gradient norm threshold to clip')
-    parser.add_argument('--out', '-o', default='results_rnnlm-nstep', help='directory to output the result')
+    parser.add_argument('--out', '-o', default='results_rnnlm-lstm', help='directory to output the result')
     parser.add_argument('--resume', '-r', default='', help='resume the training from snapshot')
     # args = parser.parse_args(args=[])
     args = parser.parse_args()
@@ -261,7 +259,7 @@ def main():
     with open(os.path.join(args.out, 'vocab.bin'), 'wb') as f:
         pickle.dump(vocab, f)
 
-    model = RNNLM(args.layer, len(vocab), n_dims)
+    model = RNNLM(len(vocab), n_dims)
 
     # 学習率
     lr = 0.0007
@@ -323,20 +321,27 @@ def main():
         sum_train_accuracy2 = 0.
         K = 0
 
-        for xs in train_iter:
-            x_batch = [(x[:-1]) for x in xs]
-            y_batch = [(x[1:])  for x in xs]
+        for batch in train_iter:
+            accum_loss = None
 
-            # 順伝播させて誤差と精度を算出
-            loss, accuracy, perp = model(x_batch, y_batch)
-            sum_train_loss += float(loss.data) * len(y_batch)
-            sum_train_accuracy1 += float(accuracy.data) * len(y_batch)
-            sum_train_accuracy2 += float(perp) * len(y_batch)
-            K += len(y_batch)
+            for xs in batch:
+                model.reset_state()
+
+                for i in range(len(xs) - 1):
+                    x = xp.array([xs[i]])
+                    t = xp.array([xs[i + 1]])
+
+                    # 順伝播させて誤差と精度を算出
+                    loss, accuracy = model(x, t)
+                    accum_loss = loss if accum_loss is None else accum_loss + loss
+                    sum_train_loss += float(loss.data)
+                    sum_train_accuracy1 += float(accuracy.data)
+                    sum_train_accuracy2 += math.exp(float(loss.data))
+                    K += 1
 
             # 誤差逆伝播で勾配を計算 (minibatch ごと)
             model.cleargrads()
-            loss.backward()
+            accum_loss.backward()
             optimizer.update()
 
         # 訓練データの誤差と,正解精度を表示
@@ -358,16 +363,21 @@ def main():
         K = 0
 
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
-            for xs in test_iter:
-                x_batch = [(x[:-1]) for x in xs]
-                y_batch = [(x[1:]) for x in xs]
+            for batch in test_iter:
 
-                # 順伝播させて誤差と精度を算出
-                loss, accuracy, perp = model(x_batch, y_batch)
-                sum_test_loss += float(loss.data) * len(y_batch)
-                sum_test_accuracy1 += float(accuracy.data) * len(y_batch)
-                sum_test_accuracy2 += float(perp) * len(y_batch)
-                K += len(y_batch)
+                for xs in batch:
+                    model.reset_state()
+
+                    for i in range(len(xs) - 1):
+                        x = xp.array([xs[i]])
+                        t = xp.array([xs[i + 1]])
+
+                        # 順伝播させて誤差と精度を算出
+                        loss, accuracy = model(x, t)
+                        sum_test_loss += float(loss.data)
+                        sum_test_accuracy1 += float(accuracy.data)
+                        sum_test_accuracy2 += math.exp(float(loss.data))
+                        K += 1
 
         # テストデータでの誤差と正解精度を表示
         mean_test_loss = sum_test_loss / K
@@ -406,7 +416,7 @@ def main():
 
         # model と optimizer を保存する
         if mean_train_loss < min_loss:
-            min_loss = mean_test_loss
+            min_loss = mean_train_loss
             min_epoch = epoch
             if args.gpu >= 0: model.to_cpu()
             chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
@@ -420,7 +430,8 @@ def main():
 
         # 精度と誤差をグラフ描画
         if True:
-            ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2), max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
+            ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2),
+                     max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
             ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
 
             # グラフ左

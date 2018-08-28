@@ -103,6 +103,7 @@ def make_candidates(candidates, beam_width):
 
     return candidates
 
+
 def main():
     global xp
 
@@ -112,7 +113,7 @@ def main():
     parser.add_argument('--text', '-t', type=str, default='吾 輩 は 猫 で あ る', help='base text data, used for text generation')
     parser.add_argument('--unit', '-u', type=int, default=200, help='Number of LSTM units in each layer')
     parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
-    parser.add_argument('--length', type=int, default=300, help='length of the generated text')
+    parser.add_argument('--length', type=int, default=50, help='length of the generated text')
     parser.add_argument('--gpu', type=int, default=0, help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
@@ -125,9 +126,7 @@ def main():
     xp.random.seed(123)
 
     vocab = pickle.load(open(os.path.join(os.path.dirname(args.model), 'vocab.bin'), 'rb'))
-    token2id = {}
-    for i, token in enumerate(vocab):
-        token2id[token] = i
+    token2id = {v: k for k, v in enumerate(vocab)}
 
     logger.info('Number of units: {}'.format(args.unit))
     logger.info('Vocabulary size: {}'.format(len(vocab)))
@@ -144,10 +143,10 @@ def main():
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
         model.reset_state()
 
-        tokens = args.text.strip().split(' ')
-        token_ids = [token2id[x] for x in tokens]
+        prime_text = args.text.strip().split(' ')
+        token_ids = [token2id[x] for x in prime_text]
 
-        for token in tokens:
+        for token in prime_text:
             _ = model.predict(xp.array([token2id[token]], dtype=np.int32))
 
         candidates = [(model.copy(), token_ids, 0)]

@@ -391,7 +391,7 @@ def main():
 
             # model と optimizer を保存する
             if mean_train_loss < min_loss:
-                min_loss = mean_train_loss
+                min_loss = mean_test_loss
                 min_epoch = epoch
                 if args.gpu >= 0: model.to_cpu()
                 chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
