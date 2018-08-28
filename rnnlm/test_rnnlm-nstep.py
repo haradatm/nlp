@@ -112,8 +112,7 @@ def make_candidates(candidates, beam_width):
     next_candidates = []
 
     for model, hx, cx, token_ids, likelihood in candidates:
-        hx, cx, y = model.predict([xp.array(token_ids, dtype=np.int32)], hx=hx, cx=cx)
-        y = model.predict(xp.array([token_ids[-1]], dtype=np.int32))
+        hx, cx, y = model.predict([xp.array([token_ids[-1]], dtype=np.int32)], hx=hx, cx=cx)
         next_prob = cuda.to_cpu(y.data)[0].astype(np.float64)
         next_prob /= np.sum(next_prob)
         next_likelihood = np.log(next_prob)
@@ -124,10 +123,10 @@ def make_candidates(candidates, beam_width):
 
         for i in order:
             ll = (likelihood * len(token_ids) + next_likelihood[i]) / (len(token_ids) + 1)
-            next_candidates.append((model.copy(), hx.copy(), cx.copy(), token_ids + [i], ll))
+            next_candidates.append((model.copy(), hx.data.copy(), cx.data.copy(), token_ids + [i], ll))
 
         # 全ての枝の中から対数尤度の上位 beam_width 個を残す
-        candidates = sorted(next_candidates, key=lambda x: -x[2])[:beam_width]
+        candidates = sorted(next_candidates, key=lambda x: -x[4])[:beam_width]
 
     return candidates
 
@@ -142,8 +141,8 @@ def main():
     parser.add_argument('--unit', '-u', type=int, default=200, help='number of dimensions')
     parser.add_argument('--layer', '-l', type=int, default=3, help='number of layers')
     parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
-    parser.add_argument('--length', type=int, default=2000, help='length of the generated text')
-    parser.add_argument('--gpu', type=int, default=0, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--length', type=int, default=50, help='length of the generated text')
+    parser.add_argument('--gpu', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     # print(json.dumps(args.__dict__, indent=2))
@@ -176,12 +175,12 @@ def main():
 
         hx, cx, prev_word = model.predict([xp.array(token_ids, dtype=np.int32)])
 
-        candidates = [(model.copy(), hx.copy(), cx.copy(), token_ids, 0)]
+        candidates = [(model.copy(), hx.data.copy(), cx.data.copy(), token_ids, 0)]
 
         for i in range(args.length):
             candidates = make_candidates(candidates, beam_width)
 
-        for x in candidates[0][1][1:]:
+        for x in candidates[0][3][1:]:
             if x != token2id[EOS_TOKEN]:
                 print(vocab[x], end='')
             else:

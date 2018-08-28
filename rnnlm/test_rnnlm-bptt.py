@@ -114,7 +114,7 @@ def main():
     parser.add_argument('--unit', '-u', type=int, default=200, help='Number of LSTM units in each layer')
     parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
     parser.add_argument('--length', type=int, default=50, help='length of the generated text')
-    parser.add_argument('--gpu', type=int, default=0, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--gpu', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     # print(json.dumps(args.__dict__, indent=2))
