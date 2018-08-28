@@ -274,11 +274,13 @@ def main():
     lr_decay = 0.995
 
     # Setup optimizer (Optimizer の設定)
-    optimizer = chainer.optimizers.Adam(alpha=lr)
-    # optimizer = optimizers.AdaDelta()
+    # optimizer = chainer.optimizers.Adam(alpha=lr)
+    # # optimizer = optimizers.AdaDelta()
+    # optimizer.setup(model)
+    # optimizer.add_hook(chainer.optimizer.GradientClipping(args.gradclip))
+    # optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
+    optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
-    optimizer.add_hook(chainer.optimizer.GradientClipping(args.gradclip))
-    optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
 
     # Resume the training from snapshot
     if args.resume:
@@ -405,7 +407,7 @@ def main():
         sys.stdout.flush()
 
         # model と optimizer を保存する
-        if mean_train_loss < min_loss:
+        if mean_test_loss < min_loss:
             min_loss = mean_test_loss
             min_epoch = epoch
             if args.gpu >= 0: model.to_cpu()
@@ -420,17 +422,17 @@ def main():
 
         # 精度と誤差をグラフ描画
         if True:
-            ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2), max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
-            ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
+            ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
+            ylim2 = [0, 1]
 
             # グラフ左
             plt.figure(figsize=(10, 10))
             plt.subplot(1, 2, 1)
             plt.ylim(ylim1)
             plt.plot(range(1, len(train_loss) + 1), train_loss, 'b')
-            plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
+            # plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
             plt.grid(False)
-            plt.ylabel('loss and perplexity')
+            plt.ylabel('loss')
             plt.legend(['train loss', 'train perplexity'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
@@ -444,9 +446,9 @@ def main():
             plt.subplot(1, 2, 2)
             plt.ylim(ylim1)
             plt.plot(range(1, len(test_loss) + 1), test_loss, 'b')
-            plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
+            # plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
             plt.grid(False)
-            # plt.ylabel('loss and perplexity')
+            # plt.ylabel('loss')
             plt.legend(['valid loss', 'valid perplexity'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
@@ -460,7 +462,7 @@ def main():
             # plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
             # plt.show()
 
-        optimizer.alpha *= lr_decay
+        # optimizer.alpha *= lr_decay
         cur_at = now
 
     # model と optimizer を保存する

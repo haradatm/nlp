@@ -88,6 +88,9 @@ def load_data(filename, w2v, vocab, train=True):
     dataset = []
 
     for i, line in enumerate(open(filename, 'r')):
+        # if i > 100:
+        #     break
+
         line = line.strip()
         tokens = line.split(' ') + [EOS_TOKEN]
 
@@ -242,11 +245,13 @@ def main():
     lr_decay = 0.995
 
     # Setup optimizer (Optimizer の設定)
-    optimizer = chainer.optimizers.Adam(alpha=lr)
-    # optimizer = optimizers.AdaDelta()
+    # optimizer = chainer.optimizers.Adam(alpha=lr)
+    # # optimizer = optimizers.AdaDelta()
+    # optimizer.setup(model)
+    # optimizer.add_hook(chainer.optimizer.GradientClipping(args.gradclip))
+    # optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
+    optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
-    optimizer.add_hook(chainer.optimizer.GradientClipping(args.gradclip))
-    optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
 
     # Resume the training from snapshot
     if args.resume:
@@ -348,7 +353,6 @@ def main():
 
                     # 順伝播させて誤差と精度を算出
                     loss, accuracy = model(x_batch, y_batch)
-                    accum_loss = loss if accum_loss is None else accum_loss + loss
                     sum_test_loss += float(loss.data)
                     sum_test_accuracy1 += float(accuracy.data)
                     sum_test_accuracy2 += math.exp(float(loss.data))
@@ -390,7 +394,7 @@ def main():
             sys.stdout.flush()
 
             # model と optimizer を保存する
-            if mean_train_loss < min_loss:
+            if mean_test_loss < min_loss:
                 min_loss = mean_test_loss
                 min_epoch = epoch
                 if args.gpu >= 0: model.to_cpu()
@@ -405,17 +409,17 @@ def main():
 
             # 精度と誤差をグラフ描画
             if True:
-                ylim1 = [min(train_loss + train_accuracy2 + test_loss + test_accuracy2), max(train_loss + train_accuracy2 + test_loss + test_accuracy2)]
-                ylim2 = [min(train_accuracy1 + test_accuracy1), max(train_accuracy1 + test_accuracy1)]
+                ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
+                ylim2 = [0, 1]
 
                 # グラフ左
                 plt.figure(figsize=(10, 10))
                 plt.subplot(1, 2, 1)
                 plt.ylim(ylim1)
                 plt.plot(range(1, len(train_loss) + 1), train_loss, 'b')
-                plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
+                # plt.plot(range(1, len(train_accuracy2) + 1), train_accuracy2, 'm')
                 plt.grid(False)
-                plt.ylabel('loss and perplexity')
+                plt.ylabel('loss')
                 plt.legend(['train loss', 'train perplexity'], loc="lower left")
                 plt.twinx()
                 plt.ylim(ylim2)
@@ -423,29 +427,29 @@ def main():
                 plt.grid(False)
                 # plt.ylabel('accuracy')
                 plt.legend(['train accuracy'], loc="upper right")
-                plt.title('Loss and accuracy for train data.')
+                plt.title('Loss and accuracy of train.')
 
                 # グラフ右
                 plt.subplot(1, 2, 2)
                 plt.ylim(ylim1)
                 plt.plot(range(1, len(test_loss) + 1), test_loss, 'b')
-                plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
+                # plt.plot(range(1, len(test_accuracy2) + 1), test_accuracy2, 'm')
                 plt.grid(False)
-                # plt.ylabel('loss and perplexity')
-                plt.legend(['test loss', 'test perplexity'], loc="lower left")
+                # plt.ylabel('loss')
+                plt.legend(['valid loss', 'valid perplexity'], loc="lower left")
                 plt.twinx()
                 plt.ylim(ylim2)
                 plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, 'r')
                 plt.grid(False)
                 plt.ylabel('accuracy')
-                plt.legend(['test accuracy'], loc="upper right")
-                plt.title('Loss and accuracy for test data.')
+                plt.legend(['valid accuracy'], loc="upper right")
+                plt.title('Loss and accuracy of valid.')
 
                 plt.savefig('{}.png'.format(args.out))
                 # plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
                 # plt.show()
 
-            optimizer.alpha *= lr_decay
+            # optimizer.alpha *= lr_decay
             cur_at = now
 
             epoch += 1

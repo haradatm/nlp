@@ -89,8 +89,8 @@ def load_data(filename, w2v, vocab, train=True):
     dataset = []
 
     for i, line in enumerate(open(filename, 'r')):
-        if i > 100:
-            break
+        # if i > 100:
+        #     break
 
         line = line.strip()
         tokens = line.split(' ') + [EOS_TOKEN]
@@ -134,7 +134,7 @@ class RNNLM(chainer.Chain):
     def __init__(self, n_vocab, n_units):
         super(RNNLM, self).__init__()
         with self.init_scope():
-            self.embed = L.EmbedID(n_vocab, n_units)
+            self.embed = L.EmbedID(n_vocab, n_units, ignore_label=-1)
             self.l1 = L.LSTM(n_units, n_units)
             self.l2 = L.LSTM(n_units, n_units)
             self.l3 = L.Linear(n_units, n_vocab)
@@ -167,18 +167,24 @@ class RNNLM(chainer.Chain):
         self.embed.W.data = data
 
 
-def batch_iter(data, batch_size, shuffle=True):
+def batch_iter(data, batch_size):
     batch = []
-    shuffled_data = np.copy(data)
-    if shuffle:
-        shuffled_data = skshuffle(shuffled_data)
-    for line in shuffled_data:
+    for line in sorted(data, key=lambda x: len(x), reverse=True):
         batch.append(line)
         if len(batch) == batch_size:
             yield batch
             batch = []
     if batch:
         yield batch
+
+
+def fill_batch(data, padding, min_height=1, shuffle=True):
+    max_len = max([x.shape[0] for x in data] + [min_height])
+    batch = [xp.pad(x, (0, max_len - x.shape[0]), "constant", constant_values=padding) for x in data]
+    if shuffle:
+        return skshuffle(batch)
+    else:
+        return batch
 
 
 def show_sample(model, vocab, token2id, length=20, eos=EOS_TOKEN):
@@ -214,9 +220,9 @@ def main():
     parser.add_argument('--epoch', '-e', type=int, default=300, help='number of sweeps over the dataset to train')
     parser.add_argument('--unit', '-u', type=int, default=200, help='number of LSTM units in each layer')
     parser.add_argument('--layer', '-l', type=int, default=3, help='number of layers')
-    parser.add_argument('--gpu', '-g', type=int, default=0, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--gpu', '-g', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--gradclip', '-c', type=float, default=5, help='gradient norm threshold to clip')
-    parser.add_argument('--out', '-o', default='results_rnnlm-ones', help='directory to output the result')
+    parser.add_argument('--out', '-o', default='results_rnnlm-pad', help='directory to output the result')
     parser.add_argument('--resume', '-r', default='', help='resume the training from snapshot')
     # args = parser.parse_args(args=[])
     args = parser.parse_args()
@@ -322,23 +328,22 @@ def main():
         K = 0
 
         for batch in train_iter:
+            X_batch = xp.array(fill_batch(batch, -1), dtype=np.int32)
+
             accum_loss = None
+            model.reset_state()
 
-            for xs in batch:
-                xs = xs.reshape(1, -1)
-                model.reset_state()
+            for i in range(X_batch.shape[1] - 1):
+                x_batch = X_batch[:, i:i+1]
+                y_batch = X_batch[:, (i+1):(i+1)+1][:, -1]
 
-                for i in range(xs.shape[1] - 1):
-                    x = xs[:, i:i + 1]
-                    t = xs[:, (i + 1):(i + 1) + 1][:, -1]
-
-                    # 順伝播させて誤差と精度を算出
-                    loss, accuracy = model(x, t)
-                    accum_loss = loss if accum_loss is None else accum_loss + loss
-                    sum_train_loss += float(loss.data)
-                    sum_train_accuracy1 += float(accuracy.data)
-                    sum_train_accuracy2 += math.exp(float(loss.data))
-                    K += 1
+                # 順伝播させて誤差と精度を算出
+                loss, accuracy = model(x_batch, y_batch)
+                accum_loss = loss if accum_loss is None else accum_loss + loss
+                sum_train_loss += float(loss.data)
+                sum_train_accuracy1 += float(accuracy.data)
+                sum_train_accuracy2 += math.exp(float(loss.data))
+                K += 1
 
             # 誤差逆伝播で勾配を計算 (minibatch ごと)
             model.cleargrads()
@@ -365,21 +370,20 @@ def main():
 
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
             for batch in test_iter:
+                X_batch = xp.array(fill_batch(batch, -1, shuffle=False), dtype=np.int32)
 
-                for xs in batch:
-                    xs = xs.reshape(1, -1)
-                    model.reset_state()
+                model.reset_state()
 
-                    for i in range(xs.shape[1] - 1):
-                        x = xs[:, i:i + 1]
-                        t = xs[:, (i + 1):(i + 1) + 1][:, -1]
+                for i in range(X_batch.shape[1] - 1):
+                    x_batch = X_batch[:, i:i + 1]
+                    y_batch = X_batch[:, (i + 1):(i + 1) + 1][:, -1]
 
-                        # 順伝播させて誤差と精度を算出
-                        loss, accuracy = model(x, t)
-                        sum_test_loss += float(loss.data)
-                        sum_test_accuracy1 += float(accuracy.data)
-                        sum_test_accuracy2 += math.exp(float(loss.data))
-                        K += 1
+                    # 順伝播させて誤差と精度を算出
+                    loss, accuracy = model(x_batch, y_batch)
+                    sum_test_loss += float(loss.data)
+                    sum_test_accuracy1 += float(accuracy.data)
+                    sum_test_accuracy2 += math.exp(float(loss.data))
+                    K += 1
 
         # テストデータでの誤差と正解精度を表示
         mean_test_loss = sum_test_loss / K
