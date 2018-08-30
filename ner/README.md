@@ -2,7 +2,7 @@
 
 ### Description
 
-This example code is a named entity recognition using, Bidirectional LSTM-CRF for Sequence Labeling based on ["Neural Architectures for Named Entity Recognition by Lample, Guillaume, et al., NAACL 2016"](https://arxiv.org/abs/1603.01360).
+This example code is a named entity recognition using, Bidirectional LSTM-CRF for Sequence Labeling based on ["Neural Architectures for Named Entity Recognition by Lample, Guillaume, et al., NAACL 2016"](https://arxiv.org/abs/1603.01360) and ["End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF by Ma and Hovy 2016"](https://arxiv.org/abs/1603.01354).
 
 ### Dependencies
 - python 3.6
@@ -20,8 +20,8 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 ***Run and Evaluate***
 
 ```
-python train_ner-2.py --gpu 0 --epoch 10                            --train datasets/train.txt --valid datasets/valid.txt --test  datasets/test.txt --out results/result-ner     2>&1 | tee results/train_ner.log
-python train_ner-2.py --gpu 0 --epoch 10 --w2v datasets/ner_w2v.bin --train datasets/train.txt --valid datasets/valid.txt --test  datasets/test.txt --out results/result-ner-w2v 2>&1 | tee results/train_ner-w2v.log
+python train_ner-blstm-cnn.py --gpu 0 --epoch 10                                    --train datasets/train.txt --valid datasets/valid.txt --test  datasets/test.txt --out results/result-blstm-cnn       2>&1 | tee results/train_blstm-cnn.log
+python train_ner-blstm-cnn.py --gpu 0 --epoch 10 --glove datasets/glove.6B.100d.txt --train datasets/train.txt --valid datasets/valid.txt --test  datasets/test.txt --out results/result-blstm-cnn-glove 2>&1 | tee results/train_blstm-cnn-glove.log
 ```
 
 ***Input***

@@ -4,7 +4,7 @@
 """Sample script of Bi-LSTM CRF model.
 
 Bidirectional LSTM-CRF for Sequence Labeling like Named-Entity Recognition
-[Lample,2016] Neural Architectures for Named Entity Recognition by Lample, Guillaume, et al., NAACL 2016.
+[Ma and Hovy,2016] End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF.
 """
 
 __version__ = '0.0.1'
@@ -33,7 +33,6 @@ start_time = time.time()
 import chainer
 from chainer.backends import cuda
 import chainer.functions as F
-import chainer.initializers as I
 import chainer.links as L
 import matplotlib.pyplot as plt
 from seqeval.metrics import f1_score, accuracy_score, classification_report
@@ -46,17 +45,43 @@ START_TAG = '<START>'
 STOP_TAG  = '<STOP>'
 
 
+def load_glove_model(path, vocab):
+    n_reserved = len(vocab)
+
+    vocab = {}
+    w = []
+
+    for i, line in enumerate(open(path, 'r')):
+        line = line.strip()
+        if line == '':
+            continue
+        cols = line.split(' ')
+
+        token = cols[0]
+        if token not in vocab:
+            vocab[token] = len(vocab)
+        else:
+            logging.error("Duplicate token: {}", token)
+
+        v = np.array([float(x) for x in cols[1:]], dtype=np.float32)
+        v /= np.linalg.norm(v, 2)
+        w.append(v)
+
+    M = np.array(w, dtype=np.float32)
+    reserved = np.random.uniform(-np.sqrt(3. / M.shape[1]), np.sqrt(3. / M.shape[1]), (n_reserved, M.shape[1])).astype(np.float32)
+    reserved /= np.linalg.norm(reserved, 2)
+
+    return np.vstack((reserved, M)), vocab
+
+
 def load_w2v_model(path, vocab):
     n_reserved = len(vocab)
 
     with open(path, 'rb') as f:
-        n_rows, n_cols = map(int, f.readline().split())
-        reserved = np.random.uniform(-0.1, 0.1, (n_reserved, n_cols)).astype(np.float32)
-        reserved /= np.linalg.norm(reserved, 2)
-        M = np.vstack((reserved, np.empty((n_rows, n_cols), dtype=np.float32)))
-        n_vocab = n_reserved + n_rows
+        n_vocab, n_units = map(int, f.readline().split())
+        M = np.empty((n_vocab, n_units), dtype=np.float32)
 
-        for i in range(n_reserved, n_vocab):
+        for i in range(n_vocab):
             b_str = b''
 
             while True:
@@ -72,8 +97,8 @@ def load_w2v_model(path, vocab):
             else:
                 logging.error("Duplicate token: {}", token)
 
-            M[i] = np.zeros(n_cols)
-            for j in range(n_cols):
+            M[i] = np.zeros(n_units)
+            for j in range(n_units):
                 M[i][j] = unpack('f', f.read(calcsize('f')))[0]
 
             # ベクトルを正規化する
@@ -83,36 +108,50 @@ def load_w2v_model(path, vocab):
             # 改行を strip する
             assert f.read(1) != '\n'
 
-    return M, vocab
+    reserved = np.random.uniform(-np.sqrt(3. / M.shape[1]), np.sqrt(3. / M.shape[1]), (n_reserved, M.shape[1])).astype(np.float32)
+    reserved /= np.linalg.norm(reserved, 2)
+
+    return np.vstack((reserved, M)), vocab
 
 
-def load_data(path, vocab_word, vocab_tag, w2v):
-    X, y = [], []
-    words, tags = [], []
+def load_data(path, vocab_word, vocab_char, vocab_tag, w2v):
+    X_word, X_char, y = [], [], []
+    words, chars, tags = [], [], []
 
     for i, line in enumerate(open(path, 'r')):
-        # if i > 10000:
+        # if i > 1000:
         #     break
 
         line = line.strip()
         if line != '':
             word, tag = line.split('\t')
+
             if word not in vocab_word:
+                vocab_word[word] = len(vocab_word)
                 if w2v is not None:
-                    v = np.random.uniform(-0.1, 0.1, (1, w2v.shape[1])).astype(np.float32)
+                    v = np.random.uniform(-np.sqrt(3. / w2v.shape[1]), np.sqrt(3. / w2v.shape[1]), (1, w2v.shape[1])).astype(np.float32)
                     v /= np.linalg.norm(v, 2)
                     w2v = np.vstack((w2v, v))
-                vocab_word[word] = len(vocab_word)
+
             if tag not in vocab_tag:
                 vocab_tag[tag] = len(vocab_tag)
+
+            chs = []
+            for ch in word:
+                if ch not in vocab_char:
+                    vocab_char[ch] = len(vocab_char)
+                chs.append(vocab_char[ch])
+
             words.append(vocab_word[word])
+            chars.append(xp.array(chs, 'i'))
             tags.append(vocab_tag[tag])
         else:
-            X.append(xp.array(words, 'i'))
+            X_word.append(xp.array(words, 'i'))
+            X_char.append(chars)
             y.append(xp.array(tags, 'i'))
-            words, tags = [], []
+            words, chars, tags = [], [], []
 
-    return X, y, vocab_word, vocab_tag
+    return X_word, X_char, y, vocab_word, vocab_char, vocab_tag
 
 
 def convert(batch, device):
@@ -123,7 +162,7 @@ def convert(batch, device):
     return center, contexts
 
 
-def sequence_embed(embed, xs):
+def sequence_chars_embed(embed, xs):
     x_len = [len(x) for x in xs]
     x_section = np.cumsum(x_len[:-1])
     ex = embed(F.concat(xs, axis=0))
@@ -131,30 +170,74 @@ def sequence_embed(embed, xs):
     return exs
 
 
-class BiLSTM_CRF(chainer.Chain):
+def sequence_words_embed(embed, xs):
+    x_len = [len(x) for x in xs]
+    x_section = np.cumsum(x_len[:-1])
+    ex = embed(F.concat(xs, axis=0))
+    exs = F.split_axis(ex, x_section, 0)
+    return exs
 
-    def __init__(self, word_vocab_size, word_emb_size, word_lstm_units, num_tags):
-        super(BiLSTM_CRF, self).__init__()
+
+class BLSTM_CNN(chainer.Chain):
+
+    def __init__(self, word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags, windows=3, filters=30):
+        super(BLSTM_CNN, self).__init__()
 
         with self.init_scope():
-            self.embed_word = L.EmbedID(word_vocab_size, word_emb_size, initialW=I.HeNormal())
-            self.l2 = L.NStepBiLSTM(1, word_emb_size, word_lstm_units, 0.25)
-            self.l3 = L.Linear(word_lstm_units * 2, num_tags, initialW=I.HeNormal())
+            self.embed_char = L.EmbedID(char_vocab_size, char_emb_size, ignore_label=-1)
+            self.conv1 = L.Convolution2D(1, filters, (windows, char_emb_size), pad=0)
+            self.fc1 = L.Linear(filters * windows, char_emb_size)
+            self.embed_word = L.EmbedID(word_vocab_size, word_emb_size, ignore_label=-1)
+            self.lstm1 = L.NStepBiLSTM(1, word_emb_size + char_emb_size, word_lstm_units, 0.5)
+            self.fc2 = L.Linear(word_lstm_units * 2, num_tags, initialW=.0)
             self.crf = L.CRF1d(num_tags)
 
-    def __call__(self, x_list, t_list):
-        y_list = self.forward(x_list)
+        for param in self.params():
+            param.data[...] = np.random.uniform(-np.sqrt(6. / sum(param.data.shape)), np.sqrt(6. / sum(param.data.shape)), param.data.shape).astype(np.float32)
+        self.embed_char.W.data = np.random.uniform(-np.sqrt(3. / char_emb_size), np.sqrt(3. / char_emb_size), self.embed_char.W.shape).astype(np.float32)
+        self.embed_word.W.data = np.random.uniform(-np.sqrt(3. / word_emb_size), np.sqrt(3. / word_emb_size), self.embed_word.W.shape).astype(np.float32)
+
+    def __call__(self, x_words_list, x_chars_list, t_list):
+        y_list = self.forward(x_words_list, x_chars_list)
         loss = self.crf(y_list, t_list)
         return loss
 
-    def forward(self, x_list):
-        exs = sequence_embed(self.embed_word, x_list)
-        hx, cx, ys = self.l2(None, None, exs)
-        y_list = [self.l3(y) for y in ys]
+    def forward(self, x_words_list, x_chars_list):
+
+        # char CNN
+        exs_chars = []
+        for x_chars in x_chars_list:
+            x_chars_filled = []
+            max_len = max([len(x) for x in x_chars] + [4])
+            for x_char in x_chars:
+                left = (max_len - len(x_char)) // 2
+                right = max_len - len(x_char) - left
+                x_chars_filled.append(xp.pad(x_char, [left, right], 'constant', constant_values=-1))
+            exs = sequence_chars_embed(self.embed_char, x_chars_filled)
+
+            # char CNN
+            # (rows, channel, height, width) の4次元テンソルに変換
+            x = xp.zeros((len(exs), 1, exs[0].shape[0], exs[0].shape[1]), dtype=np.float32)
+            for i, exs in enumerate(exs):
+                x[i, 0] = (F.dropout(exs, ratio=0.5)).data
+            h1 = F.spatial_pyramid_pooling_2d(F.relu(self.conv1(x)), 2, F.MaxPooling2D)
+            h2 = F.tanh(self.fc1(h1))
+
+            exs_chars.append(h2)
+
+        exs_words = sequence_words_embed(self.embed_word, x_words_list)
+
+        # BiLSTM
+        exs_concat = []
+        for w, c in zip(exs_words, exs_chars):
+            exs_concat.append(F.dropout(F.concat((w, c), axis=1), ratio=0.5))
+
+        hx, cx, ys = self.lstm1(None, None, exs_concat)
+        y_list = [self.fc2(F.dropout(y, ratio=0.5)) for y in ys]
         return y_list
 
-    def predict(self, x_list):
-        ys = self.forward(x_list)
+    def predict(self, x_words_list, x_chars_list):
+        ys = self.forward(x_words_list, x_chars_list)
         _, y_list = self.crf.argmax(ys)
         return y_list
 
@@ -162,11 +245,12 @@ class BiLSTM_CRF(chainer.Chain):
         self.embed_word.W.data = data
 
 
-def sorted_parallel(generator1, generator2, pooling, order=0):
+def sorted_parallel(generator1, generator2, generator3, pooling, order=0):
     gen1 = batch(generator1, pooling)
     gen2 = batch(generator2, pooling)
-    for batch1, batch2 in zip(gen1, gen2):
-        for x in sorted(zip(batch1, batch2), key=lambda x: len(x[order]), reverse=True):
+    gen3 = batch(generator3, pooling)
+    for batch1, batch2, batch3 in zip(gen1, gen2, gen3):
+        for x in sorted(zip(batch1, batch2, batch3), key=lambda x: len(x[order]), reverse=True):
             yield x
 
 
@@ -196,16 +280,17 @@ def main():
     global xp
 
     import argparse
-    parser = argparse.ArgumentParser(description='Chainer example: Bi-LSTM CRF')
+    parser = argparse.ArgumentParser(description='Chainer example: BLSTM-CNN')
     parser.add_argument('--gpu', '-g', default=-1, type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--train', default='datasets/train.txt', type=str, help='dataset to train (.txt)')
-    parser.add_argument('--valid', default='datasets/valid.txt', type=str, help='use tiny datasets to evaluate (.txt)')
-    parser.add_argument('--w2v', '-w', default='', type=str, help='initialize word embedding layer with word2vec (.bin)')
+    parser.add_argument('--valid', default='datasets/test.txt', type=str, help='use tiny datasets to evaluate (.txt)')
     parser.add_argument('--test', default='datasets/test.txt', type=str, help='use tiny datasets to test (.txt)')
-    parser.add_argument('--unit', '-u', default=100, type=int, help='number of units')
-    parser.add_argument('--batchsize', '-b', type=int, default=1000, help='learning minibatch size')
+    parser.add_argument('--glove', default='datasets/glove.6B.100d.txt', type=str, help='initialize word embedding layer with glove (.txt)')
+    parser.add_argument('--w2v', default='', type=str, help='initialize word embedding layer with word2vec (.bin)')
+    parser.add_argument('--unit', '-u', default=200, type=int, help='number of units')
+    parser.add_argument('--batchsize', '-b', type=int, default=10, help='learning minibatch size')
     parser.add_argument('--epoch', '-e', default=100, type=int, help='number of epochs to learn')
-    parser.add_argument('--out', default='result-2', help='Directory to output the result')
+    parser.add_argument('--out', default='result-blstm-cnn', help='Directory to output the result')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     print(json.dumps(args.__dict__, indent=2))
@@ -220,25 +305,37 @@ def main():
     # Set random seed
     xp.random.seed(123)
 
-    vocab_word = {PAD_TOKEN: 0, UNK_TOKEN: 1}
+    vocab_word = {UNK_TOKEN: 0}
+    vocab_char = {PAD_TOKEN: 0}
     vocab_tag = {"B": 0, "I": 1, "O": 2, START_TAG: 3, STOP_TAG: 4}
-    word_emb_size = 100
-    w2v = None
+    emb = None
+    char_emb_size = 30
+    word_emb_size = 200
 
     if args.w2v:
-        w2v, vocab = load_w2v_model(args.w2v, vocab_word)
-        word_emb_size = w2v.shape[1]
+        emb, vocab = load_w2v_model(args.w2v, vocab_word)
+        word_emb_size = emb.shape[1]
+
+    if args.glove:
+        emb, vocab = load_glove_model(args.glove, vocab_word)
+        word_emb_size = emb.shape[1]
 
     # Load the dataset
-    x_train_words, y_train, vocab_word, vocab_tag = load_data(args.train, vocab_word, vocab_tag, w2v)
-    x_valid_words, y_valid, vocab_word, vocab_tag = load_data(args.valid, vocab_word, vocab_tag, w2v)
-    x_test_words,  y_test,  vocab_word, vocab_tag = load_data(args.test,  vocab_word, vocab_tag, w2v)
+    X_train_words, X_train_chars, y_train, vocab_word, vocab_char, vocab_tag = load_data(args.train, vocab_word, vocab_char, vocab_tag, emb)
+    X_valid_words, X_valid_chars, y_valid, vocab_word, vocab_char, vocab_tag = load_data(args.valid, vocab_word, vocab_char, vocab_tag, emb)
+    X_test_words,  X_test_chars,  y_test,  vocab_word, vocab_char, vocab_tag = load_data(args.test,  vocab_word, vocab_char, vocab_tag, emb)
 
     index2word = {v: k  for k, v in vocab_word.items()}
     index2tag  = {v: k  for k, v in vocab_tag.items()}
 
+    char_vocab_size = len(vocab_char)
     word_vocab_size = len(vocab_word)
-    word_lstm_units = args.unit
+
+    char_lstm_units = 200
+    word_lstm_units = 200
+    cnn_windows = 3
+    cnn_filters = 30
+
     num_tags = len(vocab_tag)
 
     logger.info('vocabulary size: %d' % word_vocab_size)
@@ -253,12 +350,12 @@ def main():
     if not os.path.exists(args.out):
         os.mkdir(args.out)
 
-    model = BiLSTM_CRF(word_vocab_size, word_emb_size, word_lstm_units, num_tags)
+    model = BLSTM_CNN(word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags, windows=cnn_windows, filters=cnn_filters)
 
     # Initialize word embedding layer with word2vec
-    if w2v is not None:
+    if emb is not None:
         print('Initialize word embedding from word2vec model: {}'.format(args.w2v))
-        model.set_word_embedding(w2v)
+        model.set_word_embedding(emb)
         sys.stdout.flush()
 
     if args.gpu >= 0:
@@ -268,19 +365,20 @@ def main():
     lr = 0.015
 
     # 勾配上限
-    gradclip = 5.
+    gradclip = 5
 
     # L2正則化
-    decay = 0.0005
+    # decay = 0.0005
 
     # 学習率の減衰
-    lr_decay = 0.95
+    lr_decay = 0.995
 
     # Setup optimizer (Optimizer の設定)
     optimizer = chainer.optimizers.Adam(alpha=lr)
+    # optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
     optimizer.add_hook(chainer.optimizer.GradientClipping(gradclip))
-    optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
+    # optimizer.add_hook(chainer.optimizer.WeightDecay(decay))
 
     # プロット用に実行結果を保存する
     train_loss = []
@@ -303,7 +401,7 @@ def main():
         # handler1.flush()
 
         # Set up an iterator
-        train_iter = batch_tuple(sorted_parallel(x_train_words, y_train, args.batchsize), args.batchsize)
+        train_iter = batch_tuple(sorted_parallel(X_train_words, X_train_chars, y_train, args.batchsize), args.batchsize)
 
         sum_train_loss = 0.
         sum_train_accuracy1 = 0.
@@ -311,14 +409,14 @@ def main():
         K = 0
 
         # training
-        for x_batch, t_batch in train_iter:
+        for x_words_batch, x_chars_batch, t_batch in train_iter:
 
             # 順伝播させて誤差と精度を算出
-            loss = model(x_batch, t_batch)
+            loss = model(x_words_batch, x_chars_batch, t_batch)
             sum_train_loss += float(loss.data) * len(t_batch)
 
             with chainer.no_backprop_mode(), chainer.using_config('train', False):
-                y_pred = model.predict(x_batch)
+                y_pred = model.predict(x_words_batch, x_chars_batch)
                 y_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(y_pred)]
                 t_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(t_batch)]
                 sum_train_accuracy1 += f1_score(t_tags, y_tags) * len(t_batch)
@@ -343,7 +441,7 @@ def main():
         cur_at = now
 
         # Set up an iterator
-        val_iter = batch_tuple(sorted_parallel(x_valid_words, y_valid, args.batchsize), args.batchsize)
+        val_iter = batch_tuple(sorted_parallel(X_valid_words, X_valid_chars, y_valid, args.batchsize), args.batchsize)
         sum_test_loss = 0.
         sum_test_accuracy1 = 0.
         sum_test_accuracy2 = 0.
@@ -351,13 +449,13 @@ def main():
 
         # evaluation
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
-            for x_batch, t_batch in val_iter:
+            for x_words_batch, x_chars_batch, t_batch in val_iter:
 
                 # 順伝播させて誤差と精度を算出
-                loss = model(x_batch, t_batch)
+                loss = model(x_words_batch, x_chars_batch, t_batch)
                 sum_test_loss += float(loss.data) * len(t_batch)
 
-                y_pred = model.predict(x_batch)
+                y_pred = model.predict(x_words_batch, x_chars_batch)
                 y_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(y_pred)]
                 t_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(t_batch)]
                 sum_test_accuracy1 += f1_score(t_tags, y_tags) * len(t_batch)
@@ -404,10 +502,12 @@ def main():
         if mean_train_loss < min_loss:
             min_loss = mean_train_loss
             min_epoch = epoch
+            print('saving early stopped-model at epoch {}'.format(min_epoch))
             if args.gpu >= 0: model.to_cpu()
             chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
             chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.state'), optimizer)
             if args.gpu >= 0: model.to_gpu()
+            sys.stdout.flush()
 
         # 精度と誤差をグラフ描画
         if True:
@@ -462,10 +562,13 @@ def main():
     if args.gpu >= 0: model.to_gpu()
 
     # test
+    print('loading early stopped-model at epoch {}'.format(min_epoch))
+    chainer.serializers.load_npz(os.path.join(args.out, 'early_stopped.model'), model)
+    sys.stdout.flush()
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
-        test_iter = batch_tuple(sorted_parallel(x_test_words, y_test, len(y_test)), len(y_test))
-        for x_batch, t_batch in test_iter:
-            y_pred = model.predict(x_batch)
+        test_iter = batch_tuple(sorted_parallel(X_test_words, X_test_chars, y_test, len(y_test)), len(y_test))
+        for x_words_batch, x_chars_batch, t_batch in test_iter:
+            y_pred = model.predict(x_words_batch, x_chars_batch)
             y_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(y_pred)]
             t_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(t_batch)]
             print(classification_report(t_tags, y_tags))

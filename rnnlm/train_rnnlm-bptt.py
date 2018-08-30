@@ -43,7 +43,7 @@ from struct import unpack, calcsize
 # UNK_TOKEN = '<unk>'
 EOS_TOKEN = '</s>'
 
-prime_text = ""
+prime_text = ["主人", "は", "例", "の", "書斎", "で"]
 
 
 def load_w2v_model(path, vocab=[]):
@@ -95,7 +95,8 @@ def load_data(filename, w2v, vocab, train=True):
         tokens = line.split(' ') + [EOS_TOKEN]
 
         if i == 0 and train:
-            prime_text = line.split(' ')
+            if prime_text == "":
+                prime_text = line.split(' ')
 
         for token in tokens:
             if token == '':
@@ -324,6 +325,7 @@ def main():
             accum_loss.backward()
             accum_loss.unchain_backward()
             optimizer.update()
+            accum_loss = None
 
         # 訓練データの誤差と,正解精度を表示 (epoch ごと)
         if (iteration + 1) % train_stride == 0:
