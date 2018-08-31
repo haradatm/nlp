@@ -108,7 +108,7 @@ class RNNLM(chainer.Chain):
         self.embed.W.data = data
 
 
-def make_candidates(candidates, beam_width):
+def make_candidates(candidates, beam_width, sample=True):
     next_candidates = []
 
     for model, hx, cx, token_ids, likelihood in candidates:
@@ -118,8 +118,10 @@ def make_candidates(candidates, beam_width):
         next_likelihood = np.log(next_prob)
 
         # 上位 beam_width 個の枝を残す
-        # order = np.argsort(next_prob)[::-1][:beam_width]
-        order = np.random.choice(range(len(next_prob)), beam_width, p=next_prob)
+        if sample:
+            order = np.random.choice(range(len(next_prob)), beam_width, p=next_prob)
+        else:
+            order = np.argsort(next_prob)[::-1][:beam_width]
 
         for i in order:
             ll = (likelihood * len(token_ids) + next_likelihood[i]) / (len(token_ids) + 1)
@@ -140,7 +142,8 @@ def main():
     parser.add_argument('--text', '-t', type=str, default='吾 輩 は 猫 で あ る', help='base text data, used for text generation')
     parser.add_argument('--unit', '-u', type=int, default=200, help='number of dimensions')
     parser.add_argument('--layer', '-l', type=int, default=3, help='number of layers')
-    parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
+    parser.add_argument('--sample', action='store_true', help='use random choice')
+    parser.add_argument('--beam', type=int, default=5, help='number of beam width')
     parser.add_argument('--length', type=int, default=50, help='length of the generated text')
     parser.add_argument('--gpu', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
@@ -178,14 +181,15 @@ def main():
         candidates = [(model.copy(), hx.data.copy(), cx.data.copy(), token_ids, 0)]
 
         for i in range(args.length):
-            candidates = make_candidates(candidates, beam_width)
+            candidates = make_candidates(candidates, beam_width, sample=args.sample)
 
-        for x in candidates[0][3][1:]:
+        for x in candidates[0][3][0:]:
             if x != token2id[EOS_TOKEN]:
                 print(vocab[x], end='')
+                sys.stdout.flush()
             else:
                 print()
-        sys.stdout.flush()
+                sys.stdout.flush()
 
 
 if __name__ == '__main__':

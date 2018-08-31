@@ -81,7 +81,7 @@ class RNNLM(chainer.Chain):
         self.embed.W.data = data
 
 
-def make_candidates(candidates, beam_width):
+def make_candidates(candidates, beam_width, sample=True):
     next_candidates = []
 
     for model, token_ids, likelihood in candidates:
@@ -91,8 +91,10 @@ def make_candidates(candidates, beam_width):
         next_likelihood = np.log(next_prob)
 
         # 上位 beam_width 個の枝を残す
-        # order = np.argsort(next_prob)[::-1][:beam_width]
-        order = np.random.choice(range(len(next_prob)), beam_width, p=next_prob)
+        if sample:
+            order = np.random.choice(range(len(next_prob)), beam_width, p=next_prob)
+        else:
+            order = np.argsort(next_prob)[::-1][:beam_width]
 
         for i in order:
             ll = (likelihood * len(token_ids) + next_likelihood[i]) / (len(token_ids) + 1)
@@ -111,8 +113,9 @@ def main():
     parser = argparse.ArgumentParser(description='Chainer example: BPTT RNNLM')
     parser.add_argument('--model', '-m', type=str, default='model/final.model', help='model data, saved by train.py')
     parser.add_argument('--text', '-t', type=str, default='吾 輩 は 猫 で あ る', help='base text data, used for text generation')
-    parser.add_argument('--unit', '-u', type=int, default=200, help='Number of LSTM units in each layer')
-    parser.add_argument('--sample', type=int, default=1, help='negative value indicates NOT use random choice')
+    parser.add_argument('--unit', '-u', type=int, default=200, help='number of LSTM units in each layer')
+    parser.add_argument('--sample', action='store_true', help='use random choice')
+    parser.add_argument('--beam', type=int, default=5, help='number of beam width')
     parser.add_argument('--length', type=int, default=50, help='length of the generated text')
     parser.add_argument('--gpu', type=int, default=-1, help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
@@ -135,7 +138,7 @@ def main():
     model = RNNLM(len(vocab), args.unit)
     chainer.serializers.load_npz(args.model, model)
 
-    beam_width = 5
+    beam_width = args.beam
 
     if args.gpu >= 0:
         model.to_gpu(args.gpu)
@@ -152,14 +155,15 @@ def main():
         candidates = [(model.copy(), token_ids, 0)]
 
         for i in range(args.length):
-            candidates = make_candidates(candidates, beam_width)
+            candidates = make_candidates(candidates, beam_width, sample=args.sample)
 
-        for x in candidates[0][1][1:]:
+        for x in candidates[0][1][0:]:
             if x != token2id[EOS_TOKEN]:
                 print(vocab[x], end='')
+                sys.stdout.flush()
             else:
                 print()
-        sys.stdout.flush()
+                sys.stdout.flush()
 
 
 if __name__ == '__main__':

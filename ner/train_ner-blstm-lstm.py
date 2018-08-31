@@ -4,7 +4,7 @@
 """Sample script of Bi-LSTM CRF model.
 
 Bidirectional LSTM-CRF for Sequence Labeling like Named-Entity Recognition
-[Ma and Hovy,2016] End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF.
+[Lample,2016] Neural Architectures for Named Entity Recognition by Lample, Guillaume, et al., NAACL 2016.
 """
 
 __version__ = '0.0.1'
@@ -170,17 +170,16 @@ def sequence_embed(embed, xs):
     return exs
 
 
-class BLSTM_CRF_CNN(chainer.Chain):
+class BLSTM_CRF_LSTM(chainer.Chain):
 
-    def __init__(self, word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags, windows=3, filters=30):
-        super(BLSTM_CRF_CNN, self).__init__()
+    def __init__(self, word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags):
+        super(BLSTM_CRF_LSTM, self).__init__()
 
         with self.init_scope():
             self.embed_char = L.EmbedID(char_vocab_size, char_emb_size, ignore_label=-1)
-            self.conv1 = L.Convolution2D(1, filters, (windows, char_emb_size), pad=0)
-            self.fc1 = L.Linear(filters * windows, char_emb_size)
+            self.lstm1 = L.NStepBiLSTM(1, char_emb_size, char_lstm_units // 2, 0.5)
             self.embed_word = L.EmbedID(word_vocab_size, word_emb_size, ignore_label=-1)
-            self.lstm2 = L.NStepBiLSTM(1, word_emb_size + char_emb_size, word_lstm_units // 2, 0.5)
+            self.lstm2 = L.NStepBiLSTM(1, word_emb_size + char_lstm_units, word_lstm_units // 2, 0.5)
             self.fc2 = L.Linear(word_lstm_units, num_tags, initialW=.0)
             self.crf = L.CRF1d(num_tags)
 
@@ -196,31 +195,17 @@ class BLSTM_CRF_CNN(chainer.Chain):
 
     def forward(self, x_words_list, x_chars_list):
 
-        # CNN (char)
-        exs_chars = []
+        # BiLSTM (char)
+        exs_words_chars = []
         for x_chars in x_chars_list:
-            x_chars_filled = []
-            max_len = max([len(x) for x in x_chars] + [4])
-            for x_char in x_chars:
-                left = (max_len - len(x_char)) // 2
-                right = max_len - len(x_char) - left
-                x_chars_filled.append(xp.pad(x_char, [left, right], 'constant', constant_values=-1))
-            exs = sequence_embed(self.embed_char, x_chars_filled)
-
-            # char CNN
-            # (rows, channel, height, width) の4次元テンソルに変換
-            x = xp.zeros((len(exs), 1, exs[0].shape[0], exs[0].shape[1]), dtype=np.float32)
-            for i, exs in enumerate(exs):
-                x[i, 0] = (F.dropout(exs, ratio=0.5)).data
-            h1 = F.spatial_pyramid_pooling_2d(F.relu(self.conv1(x)), 2, F.MaxPooling2D)
-            h2 = F.relu(self.fc1(h1))
-
-            exs_chars.append(h2)
+            exs_chars = sequence_embed(self.embed_char, x_chars)
+            hx, cx, ys = self.lstm1(None, None, exs_chars)
+            exs_words_chars.append(F.concat([y[-1] for y in ys], axis=0).reshape(len(x_chars), -1))
 
         # BiLSTM (char + word)
         exs_words = sequence_embed(self.embed_word, x_words_list)
         exs_concat = []
-        for w, c in zip(exs_words, exs_chars):
+        for w, c in zip(exs_words, exs_words_chars):
             exs_concat.append(F.dropout(F.concat((w, c), axis=1), ratio=0.5))
 
         hx, cx, ys = self.lstm2(None, None, exs_concat)
@@ -271,7 +256,7 @@ def main():
     global xp
 
     import argparse
-    parser = argparse.ArgumentParser(description='Chainer example: BLSTM-CRF_CNN')
+    parser = argparse.ArgumentParser(description='Chainer example: BLSTM-CRF_LSTM')
     parser.add_argument('--gpu', '-g', default=-1, type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--train', default='datasets/train.txt', type=str, help='dataset to train (.txt)')
     parser.add_argument('--valid', default='datasets/test.txt', type=str, help='use tiny datasets to evaluate (.txt)')
@@ -281,7 +266,7 @@ def main():
     parser.add_argument('--unit', '-u', default=200, type=int, help='number of units')
     parser.add_argument('--batchsize', '-b', type=int, default=10, help='learning minibatch size')
     parser.add_argument('--epoch', '-e', default=100, type=int, help='number of epochs to learn')
-    parser.add_argument('--out', default='result-blstm-cnn', help='Directory to output the result')
+    parser.add_argument('--out', default='result-blstm-lstm', help='Directory to output the result')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     print(json.dumps(args.__dict__, indent=2))
@@ -323,8 +308,8 @@ def main():
 
     char_lstm_units = 30
     word_lstm_units = 200
-    cnn_windows = 3
-    cnn_filters = 30
+    # cnn_windows = 3
+    # cnn_filters = 30
 
     num_tags = len(vocab_tag)
 
@@ -340,7 +325,7 @@ def main():
     if not os.path.exists(args.out):
         os.mkdir(args.out)
 
-    model = BLSTM_CRF_CNN(word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags, windows=cnn_windows, filters=cnn_filters)
+    model = BLSTM_CRF_LSTM(word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags)
 
     # Initialize word embedding layer with word2vec
     if args.w2v:

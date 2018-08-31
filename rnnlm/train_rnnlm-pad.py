@@ -44,7 +44,7 @@ from sklearn.utils import shuffle as skshuffle
 # UNK_TOKEN = '<unk>'
 EOS_TOKEN = '</s>'
 
-prime_text = ""
+prime_text = ["主人", "は", "例", "の", "書斎", "で"]
 
 
 def load_w2v_model(path, vocab=[]):
@@ -96,7 +96,8 @@ def load_data(filename, w2v, vocab, train=True):
         tokens = line.split(' ') + [EOS_TOKEN]
 
         if i == 0 and train:
-            prime_text = line.split(' ')
+            if prime_text == "":
+                prime_text = line.split(' ')
 
         array = []
         for token in tokens:
