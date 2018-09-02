@@ -149,4 +149,9 @@ avg / total       0.87      0.75      0.81      5648
 
 - result-{blstm,blstm-lstm,blstm-cnn}.png (use **train_ner-{blstm,blstm-lstm,blstm-cnn}.py**)
 
-<img src="results/result-blstm.png" width="262px" height="261px"/> <img src="results/result-blstm-lstm.png" width="262px" height="261px"/> <img src="results/result-blstm-cnn.png" width="262px" height="261px"/>
+|Words BiLSTM-CRF|(Chars w/BiLSTM + Words) BiLSTM-CRF|(Chars w/CNN + Words) BiLSTM-CRF|
+|---|---|---|
+|![blstm](results/result-blstm.png "blstm")
+|![blstm-lstm](results/result-blstm-lstm.png "blstm-lstm")
+|![blstm-cnn](results/result-blstm-cnn.png "blstm-cnn")
+|
