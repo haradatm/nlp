@@ -2,9 +2,9 @@
 
 ### Description
 
-This example code is a named entity recognition using, Bidirectional LSTM-CRF for Sequence Labeling based on
-- ["Neural Architectures for Named Entity Recognition by Lample, Guillaume, et al., NAACL 2016"](https://arxiv.org/abs/1603.01360),
-- ["End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF by Ma and Hovy 2016"](https://arxiv.org/abs/1603.01354).
+This example code is a named entity recognition using, Bidirectional LSTM-CRF for Sequence Labeling based on the following two papers.
+- ["Neural Architectures for Named Entity Recognition by Lample, Guillaume, et al., NAACL 2016"](https://arxiv.org/abs/1603.01360)
+- ["End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF by Ma and Hovy 2016"](https://arxiv.org/abs/1603.01354)
 
 ### Dependencies
 - python 3.6
