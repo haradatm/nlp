@@ -119,7 +119,7 @@ def load_data(path, vocab_word, vocab_char, vocab_tag, w2v):
     words, chars, tags = [], [], []
 
     for i, line in enumerate(open(path, 'r')):
-        # if i > 10000:
+        # if i > 1000:
         #     break
 
         line = line.strip()
@@ -187,7 +187,9 @@ class BLSTM_CRF(chainer.Chain):
 
     def __call__(self, x_words_list, t_list):
         y_list = self.forward(x_words_list)
-        loss = self.crf(y_list, t_list)
+        ys = F.transpose_sequence(y_list)
+        ts = F.transpose_sequence(t_list)
+        loss = self.crf(ys, ts)
         return loss
 
     def forward(self, x_words_list):
@@ -199,14 +201,14 @@ class BLSTM_CRF(chainer.Chain):
             exs_dropout.append(F.dropout(w, ratio=0.5))
 
         hx, cx, ys = self.lstm(None, None, exs_dropout)
-        # y_list = [F.dropout(F.relu(self.fc2(y)), ratio=0.5) for y in ys]
         y_list = [F.dropout(self.fc2(y), ratio=0.5) for y in ys]
         return y_list
 
     def predict(self, x_words_list):
-        ys = self.forward(x_words_list)
-        _, y_list = self.crf.argmax(ys)
-        return y_list
+        y_list = self.forward(x_words_list)
+        ys = F.transpose_sequence(y_list)
+        _, predict = self.crf.argmax(ys)
+        return [y.data for y in F.transpose_sequence(predict)]
 
     def set_word_embedding(self, data):
         self.embed_word.W.data = data
@@ -280,11 +282,11 @@ def main():
     word_emb_size = 200
 
     if args.w2v:
-        emb, vocab = load_w2v_model(args.w2v, vocab_word)
+        emb, vocab_word = load_w2v_model(args.w2v, vocab_word)
         word_emb_size = emb.shape[1]
 
     if args.glove:
-        emb, vocab = load_glove_model(args.glove, vocab_word)
+        emb, vocab_word = load_glove_model(args.glove, vocab_word)
         word_emb_size = emb.shape[1]
 
     # Load the dataset
@@ -471,7 +473,7 @@ def main():
 
         # model と optimizer を保存する
         if mean_train_loss < min_loss:
-            min_loss = mean_train_loss
+            min_loss = mean_test_loss
             min_epoch = epoch
             print('saving early stopped-model at epoch {}'.format(min_epoch))
             if args.gpu >= 0: model.to_cpu()
@@ -539,7 +541,7 @@ def main():
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
         test_iter = batch_tuple(sorted_parallel(X_test_words, X_test_chars, y_test, len(y_test)), len(y_test))
         for x_words_batch, x_chars_batch, t_batch in test_iter:
-            y_pred = model.predict(x_words_batch, x_chars_batch)
+            y_pred = model.predict(x_words_batch)
             y_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(y_pred)]
             t_tags = [[index2tag[label_id] for label_id in labels] for labels in cuda.to_cpu(t_batch)]
             print(classification_report(t_tags, y_tags))
