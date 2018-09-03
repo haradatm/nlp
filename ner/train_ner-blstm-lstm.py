@@ -184,7 +184,7 @@ class BLSTM_CRF_LSTM(chainer.Chain):
         for x_chars in x_chars_list:
             exs_chars = sequence_embed(self.embed_char, x_chars)
             hx, cx, ys = self.lstm1(None, None, exs_chars)
-            exs_words_chars.append(F.concat([y[-1] for y in ys], axis=0).reshape(len(x_chars), -1))
+            exs_words_chars.append(F.concat(hx, axis=1))
 
         # BiLSTM (char + word)
         exs_words = sequence_embed(self.embed_word, x_words_list)
