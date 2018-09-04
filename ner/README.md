@@ -57,7 +57,7 @@ python train_ner-blstm-cnn.py  --gpu -1 --epoch 30 --batchsize 100 --train datas
 ...
 ```
 
-- train.txt
+- train.txt  (**BIO** format)
 ```
 EU   B-ORG
 rejects O
@@ -74,7 +74,7 @@ Blackburn   I-PER
 ...
 ```
 
-- train-iobes.txt
+- train-iobes.txt  (**IOBES** format)
 ```
 EU	S-ORG
 rejects	O
