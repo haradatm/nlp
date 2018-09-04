@@ -37,6 +37,7 @@ import chainer.links as L
 import matplotlib.pyplot as plt
 from seqeval.metrics import f1_score, accuracy_score, classification_report
 from struct import unpack, calcsize
+import pickle
 
 
 UNK_TOKEN = '<UNK>'
@@ -268,7 +269,7 @@ def main():
 
     vocab_word = [UNK_TOKEN]
     vocab_char = [PAD_TOKEN]
-    vocab_tag = {"B": 0, "I": 1, "O": 2, START_TAG: 3, STOP_TAG: 4}
+    vocab_tag = {}
 
     word_emb_size = 200
     char_emb_size = 30
@@ -310,6 +311,13 @@ def main():
 
     if not os.path.exists(args.out):
         os.mkdir(args.out)
+
+    with open(os.path.join(args.out, 'vocab_word.bin'), 'wb') as f:
+        pickle.dump(vocab_word, f)
+    with open(os.path.join(args.out, 'vocab_char.bin'), 'wb') as f:
+        pickle.dump(vocab_char, f)
+    with open(os.path.join(args.out, 'vocab_tag.bin'), 'wb') as f:
+        pickle.dump(vocab_tag, f)
 
     model = BLSTM_CRF_LSTM(word_vocab_size, word_emb_size, word_lstm_units, char_vocab_size, char_emb_size, char_lstm_units, num_tags)
 
@@ -468,7 +476,7 @@ def main():
         sys.stdout.flush()
 
         # model と optimizer を保存する
-        if mean_train_loss < min_loss:
+        if mean_test_loss < min_loss:
             min_loss = mean_test_loss
             min_epoch = epoch
             print('saving early stopped-model at epoch {}'.format(min_epoch))

@@ -37,6 +37,7 @@ import chainer.links as L
 import matplotlib.pyplot as plt
 from seqeval.metrics import f1_score, accuracy_score, classification_report
 from struct import unpack, calcsize
+import pickle
 
 
 UNK_TOKEN = '<UNK>'
@@ -45,9 +46,7 @@ START_TAG = '<START>'
 STOP_TAG  = '<STOP>'
 
 
-def load_glove_model(path, vocab):
-    n_reserved = len(vocab)
-
+def load_glove_model(path):
     vocab = {}
     w = []
 
@@ -68,14 +67,12 @@ def load_glove_model(path, vocab):
         w.append(v)
 
     M = np.array(w, dtype=np.float32)
-    reserved = np.random.uniform(-np.sqrt(3. / M.shape[1]), np.sqrt(3. / M.shape[1]), (n_reserved, M.shape[1])).astype(np.float32)
-    reserved /= np.linalg.norm(reserved, 2)
 
-    return np.vstack((reserved, M)), vocab
+    return M, vocab
 
 
-def load_w2v_model(path, vocab):
-    n_reserved = len(vocab)
+def load_w2v_model(path):
+    vocab = {}
 
     with open(path, 'rb') as f:
         n_vocab, n_units = map(int, f.readline().split())
@@ -108,30 +105,24 @@ def load_w2v_model(path, vocab):
             # 改行を strip する
             assert f.read(1) != '\n'
 
-    reserved = np.random.uniform(-np.sqrt(3. / M.shape[1]), np.sqrt(3. / M.shape[1]), (n_reserved, M.shape[1])).astype(np.float32)
-    reserved /= np.linalg.norm(reserved, 2)
-
-    return np.vstack((reserved, M)), vocab
+    return M, vocab
 
 
-def load_data(path, vocab_word, vocab_char, vocab_tag, w2v):
+def load_data(path, vocab_word, vocab_char, vocab_tag):
     X_word, X_char, y = [], [], []
     words, chars, tags = [], [], []
 
     for i, line in enumerate(open(path, 'r')):
-        # if i > 1000:
+        # if i > 100:
         #     break
 
         line = line.strip()
         if line != '':
             word, tag = line.split('\t')
+            word = word.lower()
 
             if word not in vocab_word:
-                vocab_word[word] = len(vocab_word)
-                if w2v is not None:
-                    v = np.random.uniform(-np.sqrt(3. / w2v.shape[1]), np.sqrt(3. / w2v.shape[1]), (1, w2v.shape[1])).astype(np.float32)
-                    v /= np.linalg.norm(v, 2)
-                    w2v = np.vstack((w2v, v))
+                vocab_word += [word]
 
             if tag not in vocab_tag:
                 vocab_tag[tag] = len(vocab_tag)
@@ -139,10 +130,10 @@ def load_data(path, vocab_word, vocab_char, vocab_tag, w2v):
             chs = []
             for ch in word:
                 if ch not in vocab_char:
-                    vocab_char[ch] = len(vocab_char)
-                chs.append(vocab_char[ch])
+                    vocab_char += [ch]
+                chs.append(vocab_char.index(ch))
 
-            words.append(vocab_word[word])
+            words.append(vocab_word.index(word))
             chars.append(xp.array(chs, 'i'))
             tags.append(vocab_tag[tag])
         else:
@@ -152,14 +143,6 @@ def load_data(path, vocab_word, vocab_char, vocab_tag, w2v):
             words, chars, tags = [], [], []
 
     return X_word, X_char, y, vocab_word, vocab_char, vocab_tag
-
-
-def convert(batch, device):
-    center, contexts = batch
-    if device >= 0:
-        center = cuda.to_gpu(center)
-        contexts = cuda.to_gpu(contexts)
-    return center, contexts
 
 
 def sequence_embed(embed, xs):
@@ -274,25 +257,26 @@ def main():
     # Set random seed
     xp.random.seed(123)
 
-    vocab_word = {UNK_TOKEN: 0}
-    vocab_char = {PAD_TOKEN: 0}
-    vocab_tag = {"B": 0, "I": 1, "O": 2, START_TAG: 3, STOP_TAG: 4}
-    emb = None
-    char_emb_size = 30
+    vocab_word = [UNK_TOKEN]
+    vocab_char = [PAD_TOKEN]
+    vocab_tag = {}
+
     word_emb_size = 200
+    char_emb_size = 30
 
+    # Load the pre-trained word embeddings
+    pre_embed, pre_vocab = None, None
     if args.w2v:
-        emb, vocab_word = load_w2v_model(args.w2v, vocab_word)
-        word_emb_size = emb.shape[1]
-
+        pre_embed, pre_vocab = load_w2v_model(args.w2v)
+        word_emb_size = pre_embed.shape[1]
     if args.glove:
-        emb, vocab_word = load_glove_model(args.glove, vocab_word)
-        word_emb_size = emb.shape[1]
+        pre_embed, pre_vocab = load_glove_model(args.glove)
+        word_emb_size = pre_embed.shape[1]
 
     # Load the dataset
-    X_train_words, X_train_chars, y_train, vocab_word, vocab_char, vocab_tag = load_data(args.train, vocab_word, vocab_char, vocab_tag, emb)
-    X_valid_words, X_valid_chars, y_valid, vocab_word, vocab_char, vocab_tag = load_data(args.valid, vocab_word, vocab_char, vocab_tag, emb)
-    X_test_words,  X_test_chars,  y_test,  vocab_word, vocab_char, vocab_tag = load_data(args.test,  vocab_word, vocab_char, vocab_tag, emb)
+    X_train_words, X_train_chars, y_train, vocab_word, vocab_char, vocab_tag = load_data(args.train, vocab_word, vocab_char, vocab_tag)
+    X_valid_words, X_valid_chars, y_valid, vocab_word, vocab_char, vocab_tag = load_data(args.valid, vocab_word, vocab_char, vocab_tag)
+    X_test_words,  X_test_chars,  y_test,  vocab_word, vocab_char, vocab_tag = load_data(args.test,  vocab_word, vocab_char, vocab_tag)
 
     index2tag = {v: k  for k, v in vocab_tag.items()}
 
@@ -301,8 +285,8 @@ def main():
 
     char_lstm_units = 30
     word_lstm_units = 200
-    # cnn_windows = 3
-    # cnn_filters = 30
+    cnn_windows = 3
+    cnn_filters = 30
 
     num_tags = len(vocab_tag)
 
@@ -318,17 +302,27 @@ def main():
     if not os.path.exists(args.out):
         os.mkdir(args.out)
 
+    with open(os.path.join(args.out, 'vocab_word.bin'), 'wb') as f:
+        pickle.dump(vocab_word, f)
+    with open(os.path.join(args.out, 'vocab_char.bin'), 'wb') as f:
+        pickle.dump(vocab_char, f)
+    with open(os.path.join(args.out, 'vocab_tag.bin'), 'wb') as f:
+        pickle.dump(vocab_tag, f)
+
     model = BLSTM_CRF(word_vocab_size, word_emb_size, word_lstm_units, num_tags)
 
     # Initialize word embedding layer with word2vec
-    if args.w2v:
-        print('Initialize word embedding by pre-trained model: {}'.format(args.w2v))
-        model.set_word_embedding(emb)
-        sys.stdout.flush()
-
-    if args.glove:
-        print('Initialize word embedding by pre-trained model: {}'.format(args.glove))
-        model.set_word_embedding(emb)
+    if args.w2v or args.glove:
+        print('Initialize word embedding by pre-trained model: {}'.format(args.w2v if args.w2v else args.glove))
+        w = np.zeros((word_vocab_size, word_emb_size), dtype=np.float32)
+        for i in range(word_vocab_size):
+            if vocab_word[i] in pre_vocab:
+                v = pre_embed[pre_vocab[vocab_word[i]]]
+            else:
+                v = np.random.uniform(-np.sqrt(3. / word_emb_size), np.sqrt(3. / word_emb_size), (1, word_emb_size)).astype(np.float32)
+                v /= np.linalg.norm(v, 2)
+            w[i] = v
+        model.set_word_embedding(w)
         sys.stdout.flush()
 
     if args.gpu >= 0:
@@ -472,7 +466,7 @@ def main():
         sys.stdout.flush()
 
         # model と optimizer を保存する
-        if mean_train_loss < min_loss:
+        if mean_test_loss < min_loss:
             min_loss = mean_test_loss
             min_epoch = epoch
             print('saving early stopped-model at epoch {}'.format(min_epoch))

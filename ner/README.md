@@ -20,22 +20,32 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 
   - Downlod [CoNLL-2003 Datasets](https://www.clips.uantwerpen.be/conll2003/ner/) and put them in the appropriate place.
 
+  - Convert from BIO to IOBES format as follows.
+
+```
+cd datasets
+python ../conv_iobes.py --file train.txt > train-iobes.txt
+python ../conv_iobes.py --file valid.txt > valid-iobes.txt
+python ../conv_iobes.py --file test.txt  > test-iobes.txt 
+```
+
+
 ***Run and Evaluate***
 
 - Words embedding BiLSTM + CRF
 
 ```
-python train_ner-blstm.py      --gpu -1 --epoch 30 --batchsize 100 --train datasets/train.txt --valid datasets/test.txt --test datasets/test.txt --out results --glove datasets/glove.6B.100d.txt 2>&1 | tee train_ner-blstm.log     
+python train_ner-blstm.py      --gpu -1 --epoch 30 --batchsize 100 --train datasets/train-iobes.txt --valid datasets/test-iobes.txt --test datasets/test-iobes.txt --out results --glove datasets/glove.6B.100d.txt 2>&1 | tee train_ner-blstm.log     
 ```
 
 - (Chars w/BiLSTM + Words) embedding BiLSTM + CRF
 ```
-python train_ner-blstm-lstm.py --gpu -1 --epoch 30 --batchsize 100 --train datasets/train.txt --valid datasets/test.txt --test datasets/test.txt --out results --glove datasets/glove.6B.100d.txt 2>&1 | tee train_ner-blstm-lstm.log
+python train_ner-blstm-lstm.py --gpu -1 --epoch 30 --batchsize 100 --train datasets/train-iobes.txt --valid datasets/test-iobes.txt --test datasets/test-iobes.txt --out results --glove datasets/glove.6B.100d.txt 2>&1 | tee train_ner-blstm-lstm.log
 ```
 
 - (Chars w/CNN + Words) embedding BiLSTM + CRF
 ```
-python train_ner-blstm-cnn.py  --gpu -1 --epoch 30 --batchsize 100 --train datasets/train.txt --valid datasets/test.txt --test datasets/test.txt --out results --glove datasets/glove.6B.100d.txt 2>&1 | tee train_ner-blstm-cnn.log 
+python train_ner-blstm-cnn.py  --gpu -1 --epoch 30 --batchsize 100 --train datasets/train-iobes.txt --valid datasets/test-iobes.txt --test datasets/test-iobes.txt --out results --glove datasets/glove.6B.100d.txt 2>&1 | tee train_ner-blstm-cnn.log 
 ```
 
 ***Input***
@@ -67,88 +77,89 @@ Blackburn   I-PER
 
 ***Output***
 
-- train_ner-blstm.log (use **train_ner-blstm.py**)
+- iobes-train_ner-blstm.log (use **train_ner-blstm.py**)
 ```
-2018-09-02 10:26:03,569 - main - INFO - vocabulary size: 24279
-2018-09-02 10:26:03,569 - main - INFO - number of word embedding dims: 100
-2018-09-02 10:26:03,569 - main - INFO - number of lstm units: 200
-2018-09-02 10:26:03,569 - main - INFO - number of tags: 12
-2018-09-02 10:26:03,569 - main - INFO - train data length: 14986
-2018-09-02 10:26:03,569 - main - INFO - valid data length: 3683
-2018-09-02 10:26:03,569 - main - INFO - test  data length: 3683
+2018-09-04 08:05:27,347 - main - INFO - vocabulary size: 24279
+2018-09-04 08:05:27,347 - main - INFO - number of word embedding dims: 100
+2018-09-04 08:05:27,347 - main - INFO - number of lstm units: 200
+2018-09-04 08:05:27,347 - main - INFO - number of tags: 17
+2018-09-04 08:05:27,347 - main - INFO - train data length: 14986
+2018-09-04 08:05:27,347 - main - INFO - valid data length: 3683
+2018-09-04 08:05:27,348 - main - INFO - test  data length: 3683
 Initialize word embedding by pre-trained model: datasets/glove.6B.100d.txt
-2018-09-02 10:29:52,696 - main - INFO - [  1] T/loss=8.969002 T/f1=0.039367 T/acc=0.813577 T/sec= 205.683472 V/loss=5.340519 V/f1=0.075995 V/acc=0.817870 V/sec= 22.967965 lr=0.015000
+2018-09-04 08:06:29,126 - main - INFO - [  1] T/loss=11.535595 T/f1=0.016110 T/acc=0.790955 T/sec= 55.327039 V/loss=6.535969 V/f1=0.033284 V/acc=0.808947 V/sec= 6.036303 lr=0.015000
+saving early stopped-model at epoch 1
  :
-2018-09-02 13:11:34,859 - main - INFO - [ 30] T/loss=2.731622 T/f1=0.942859 T/acc=0.990203 T/sec= 212.041916 V/loss=1.727283 V/f1=0.787506 V/acc=0.955804 V/sec= 19.909130 lr=0.012971
-saving early stopped-model at epoch 30
-loading early stopped-model at epoch 30
+2018-09-04 08:39:39,869 - main - INFO - [ 30] T/loss=2.610390 T/f1=0.952064 T/acc=0.988733 T/sec= 63.416778 V/loss=1.771711 V/f1=0.787922 V/acc=0.947691 V/sec= 6.427992 lr=0.012971
+loading early stopped-model at epoch 22
              precision    recall  f1-score   support
 
-        PER       0.90      0.79      0.84      1617
-       MISC       0.80      0.62      0.70       702
-        ORG       0.85      0.63      0.72      1661
-        LOC       0.86      0.86      0.86      1668
+        ORG       0.85      0.65      0.74      1661
+       MISC       0.84      0.60      0.70       702
+        PER       0.95      0.77      0.85      1617
+        LOC       0.86      0.84      0.85      1668
 
-avg / total       0.86      0.74      0.80      5648
+avg / total       0.88      0.74      0.80      5648
 
-2018-09-02 13:11:41,206 - <module> - INFO - time spent: 10001.290546 sec
+2018-09-04 08:39:43,562 - <module> - INFO - time spent: 2132.490583 sec
 ```
 
-- train_ner-blstm-lstm.log (use **train_ner-blstm-lstm.py**)
+- iobes-train_ner-blstm-lstm.log (use **train_ner-blstm-lstm.py**)
 ```
-2018-09-02 15:01:42,350 - main - INFO - vocabulary size: 24279
-2018-09-02 15:01:42,350 - main - INFO - number of word embedding dims: 100
-2018-09-02 15:01:42,350 - main - INFO - number of lstm units: 200
-2018-09-02 15:01:42,350 - main - INFO - number of tags: 12
-2018-09-02 15:01:42,350 - main - INFO - train data length: 14986
-2018-09-02 15:01:42,351 - main - INFO - valid data length: 3683
-2018-09-02 15:01:42,351 - main - INFO - test  data length: 3683
+2018-09-04 16:33:50,094 - main - INFO - vocabulary size: 24279
+2018-09-04 16:33:50,094 - main - INFO - number of word embedding dims: 100
+2018-09-04 16:33:50,094 - main - INFO - number of lstm units: 200
+2018-09-04 16:33:50,094 - main - INFO - number of tags: 17
+2018-09-04 16:33:50,094 - main - INFO - train data length: 14986
+2018-09-04 16:33:50,094 - main - INFO - valid data length: 3683
+2018-09-04 16:33:50,094 - main - INFO - test  data length: 3683
 Initialize word embedding by pre-trained model: datasets/glove.6B.100d.txt
-2018-09-02 15:07:40,546 - main - INFO - [  1] T/loss=9.301710 T/f1=0.037451 T/acc=0.800393 T/sec= 319.146127 V/loss=5.235821 V/f1=0.105273 V/acc=0.817353 V/sec= 38.657964 lr=0.015000
+2018-09-04 16:39:22,682 - main - INFO - [  1] T/loss=11.556778 T/f1=0.017740 T/acc=0.791779 T/sec= 292.626435 V/loss=6.595389 V/f1=0.030442 V/acc=0.810334 V/sec= 39.536179 lr=0.015000
+saving early stopped-model at epoch 1
  :
-2018-09-02 17:54:53,246 - main - INFO - [ 30] T/loss=2.718759 T/f1=0.942709 T/acc=0.990452 T/sec= 301.511632 V/loss=1.500667 V/f1=0.808454 V/acc=0.959200 V/sec= 37.769493 lr=0.012971
-saving early stopped-model at epoch 30
-loading early stopped-model at epoch 30
+2018-09-04 19:21:24,493 - main - INFO - [ 30] T/loss=2.616697 T/f1=0.949855 T/acc=0.988145 T/sec= 259.323202 V/loss=1.440748 V/f1=0.812974 V/acc=0.956680 V/sec= 35.980867 lr=0.012971
+loading early stopped-model at epoch 27
              precision    recall  f1-score   support
 
-       MISC       0.78      0.61      0.69       702
-        LOC       0.84      0.88      0.86      1668
-        PER       0.94      0.86      0.90      1617
-        ORG       0.84      0.67      0.74      1661
+        ORG       0.84      0.69      0.76      1661
+        LOC       0.88      0.86      0.87      1668
+       MISC       0.81      0.62      0.70       702
+        PER       0.94      0.87      0.90      1617
 
-avg / total       0.86      0.78      0.82      5648
+avg / total       0.88      0.78      0.83      5648
 
-2018-09-02 17:55:13,929 - <module> - INFO - time spent: 10482.548023 sec
-
+2018-09-04 19:21:42,537 - <module> - INFO - time spent: 10148.917621 sec
 ```
 
-- train_ner-blstm-cnn.log (use **train_ner-blstm-cnn.py**)
+- iobes-train_ner-blstm-cnn.log (use **train_ner-blstm-cnn.py**)
 ```
-2018-09-02 10:26:49,397 - main - INFO - vocabulary size: 24279
-2018-09-02 10:26:49,397 - main - INFO - number of word embedding dims: 100
-2018-09-02 10:26:49,397 - main - INFO - number of lstm units: 200
-2018-09-02 10:26:49,398 - main - INFO - number of tags: 12
-2018-09-02 10:26:49,398 - main - INFO - train data length: 14986
-2018-09-02 10:26:49,398 - main - INFO - valid data length: 3683
-2018-09-02 10:26:49,398 - main - INFO - test  data length: 3683
+2018-09-04 16:33:49,561 - main - INFO - vocabulary size: 24279
+2018-09-04 16:33:49,561 - main - INFO - number of word embedding dims: 100
+2018-09-04 16:33:49,561 - main - INFO - number of lstm units: 200
+2018-09-04 16:33:49,561 - main - INFO - number of tags: 17
+2018-09-04 16:33:49,561 - main - INFO - train data length: 14986
+2018-09-04 16:33:49,561 - main - INFO - valid data length: 3683
+2018-09-04 16:33:49,561 - main - INFO - test  data length: 3683
 Initialize word embedding by pre-trained model: datasets/glove.6B.100d.txt
-2018-09-02 10:35:19,566 - main - INFO - [  1] T/loss=9.885661 T/f1=0.010051 T/acc=0.794756 T/sec= 452.820981 V/loss=5.874088 V/f1=0.019874 V/acc=0.808041 V/sec= 56.707849 lr=0.015000
+2018-09-04 16:39:04,904 - main - INFO - [  1] T/loss=11.104684 T/f1=0.015134 T/acc=0.799322 T/sec= 274.267547 V/loss=6.626841 V/f1=0.021359 V/acc=0.809365 V/sec= 40.667884 lr=0.015000
+saving early stopped-model at epoch 1
  :
-loading early stopped-model at epoch 30
+2018-09-04 19:13:21,999 - main - INFO - [ 30] T/loss=2.611063 T/f1=0.951635 T/acc=0.988530 T/sec= 278.114111 V/loss=1.488794 V/f1=0.813527 V/acc=0.955321 V/sec= 44.068302 lr=0.012971
+loading early stopped-model at epoch 26
              precision    recall  f1-score   support
 
-        PER       0.93      0.82      0.87      1617
-        ORG       0.86      0.63      0.73      1661
-       MISC       0.80      0.60      0.68       702
-        LOC       0.87      0.87      0.87      1668
+       MISC       0.81      0.62      0.70       702
+        PER       0.96      0.82      0.89      1617
+        ORG       0.86      0.69      0.77      1661
+        LOC       0.90      0.86      0.88      1668
 
-avg / total       0.87      0.75      0.81      5648
+avg / total       0.89      0.77      0.83      5648
 
-2018-09-02 14:37:45,574 - <module> - INFO - time spent: 15131.272154 sec
+2018-09-04 19:13:44,030 - <module> - INFO - time spent: 9672.676817 sec
 ```
 
-- result-{blstm,blstm-lstm,blstm-cnn}.png (use **train_ner-{blstm,blstm-lstm,blstm-cnn}.py**)
+- iobes-result-{blstm,blstm-lstm,blstm-cnn}.png (use **train_ner-{blstm,blstm-lstm,blstm-cnn}.py**)
 
 |Words only<br>BiLSTM-CRF|Chars (w/BiLSTM) + Words<br>BiLSTM-CRF|Chars (w/CNN) + Words<br>BiLSTM-CRF|
 |---|---|---|
-|![blstm](results/result-blstm.png "blstm")|![blstm-lstm](results/result-blstm-lstm.png "blstm-lstm")|![blstm-cnn](results/result-blstm-cnn.png "blstm-cnn")|
+|![blstm](results/iobes-result-blstm.png "blstm")|![blstm-lstm](results/iobes-result-blstm-lstm.png "blstm-lstm")|![blstm-cnn](results/iobes-result-blstm-cnn.png "blstm-cnn")|

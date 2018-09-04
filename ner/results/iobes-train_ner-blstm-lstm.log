@@ -1,0 +1,84 @@
+{
+  "gpu": 0,
+  "train": "datasets/train-iobes.txt",
+  "valid": "datasets/test-iobes.txt",
+  "test": "datasets/test-iobes.txt",
+  "glove": "datasets/glove.6B.100d.txt",
+  "w2v": "",
+  "unit": 200,
+  "batchsize": 100,
+  "epoch": 30,
+  "out": "results/iobes-result-blstm-lstm"
+}
+2018-09-04 16:33:50,094 - main - INFO - vocabulary size: 24279
+2018-09-04 16:33:50,094 - main - INFO - number of word embedding dims: 100
+2018-09-04 16:33:50,094 - main - INFO - number of lstm units: 200
+2018-09-04 16:33:50,094 - main - INFO - number of tags: 17
+2018-09-04 16:33:50,094 - main - INFO - train data length: 14986
+2018-09-04 16:33:50,094 - main - INFO - valid data length: 3683
+2018-09-04 16:33:50,094 - main - INFO - test  data length: 3683
+Initialize word embedding by pre-trained model: datasets/glove.6B.100d.txt
+2018-09-04 16:39:22,682 - main - INFO - [  1] T/loss=11.556778 T/f1=0.017740 T/acc=0.791779 T/sec= 292.626435 V/loss=6.595389 V/f1=0.030442 V/acc=0.810334 V/sec= 39.536179 lr=0.015000
+saving early stopped-model at epoch 1
+2018-09-04 16:44:58,461 - main - INFO - [  2] T/loss=6.706783 T/f1=0.320660 T/acc=0.864628 T/sec= 294.548026 V/loss=4.062697 V/f1=0.476062 V/acc=0.886462 V/sec= 41.231188 lr=0.014925
+saving early stopped-model at epoch 2
+2018-09-04 16:50:33,452 - main - INFO - [  3] T/loss=5.515225 T/f1=0.508794 T/acc=0.900029 T/sec= 294.981633 V/loss=3.277411 V/f1=0.553640 V/acc=0.900495 V/sec= 40.009570 lr=0.014850
+saving early stopped-model at epoch 3
+2018-09-04 16:56:09,737 - main - INFO - [  4] T/loss=4.917501 T/f1=0.597504 T/acc=0.914540 T/sec= 296.636579 V/loss=2.739977 V/f1=0.614095 V/acc=0.912562 V/sec= 39.648258 lr=0.014776
+saving early stopped-model at epoch 4
+2018-09-04 17:01:43,727 - main - INFO - [  5] T/loss=4.501213 T/f1=0.668509 T/acc=0.926530 T/sec= 293.451041 V/loss=2.443546 V/f1=0.650766 V/acc=0.919837 V/sec= 40.538782 lr=0.014702
+saving early stopped-model at epoch 5
+2018-09-04 17:07:19,400 - main - INFO - [  6] T/loss=4.190256 T/f1=0.723173 T/acc=0.937190 T/sec= 295.751845 V/loss=2.226031 V/f1=0.676977 V/acc=0.925949 V/sec= 39.920831 lr=0.014629
+saving early stopped-model at epoch 6
+2018-09-04 17:12:53,617 - main - INFO - [  7] T/loss=3.996604 T/f1=0.757673 T/acc=0.944061 T/sec= 293.735632 V/loss=2.160546 V/f1=0.690935 V/acc=0.927623 V/sec= 40.481800 lr=0.014556
+saving early stopped-model at epoch 7
+2018-09-04 17:18:31,415 - main - INFO - [  8] T/loss=3.825196 T/f1=0.787143 T/acc=0.950178 T/sec= 297.361121 V/loss=1.951625 V/f1=0.724294 V/acc=0.934462 V/sec= 40.437216 lr=0.014483
+saving early stopped-model at epoch 8
+2018-09-04 17:24:09,117 - main - INFO - [  9] T/loss=3.685799 T/f1=0.808989 T/acc=0.954959 T/sec= 296.744211 V/loss=1.934636 V/f1=0.725591 V/acc=0.934960 V/sec= 40.957116 lr=0.014410
+saving early stopped-model at epoch 9
+2018-09-04 17:29:46,821 - main - INFO - [ 10] T/loss=3.567736 T/f1=0.827199 T/acc=0.959147 T/sec= 297.033216 V/loss=1.776854 V/f1=0.752889 V/acc=0.941424 V/sec= 40.671421 lr=0.014338
+saving early stopped-model at epoch 10
+2018-09-04 17:35:22,952 - main - INFO - [ 11] T/loss=3.447448 T/f1=0.848203 T/acc=0.963767 T/sec= 295.523370 V/loss=1.824953 V/f1=0.750974 V/acc=0.940166 V/sec= 40.607023 lr=0.014267
+2018-09-04 17:41:01,133 - main - INFO - [ 12] T/loss=3.343766 T/f1=0.861884 T/acc=0.966844 T/sec= 297.603875 V/loss=1.776897 V/f1=0.755147 V/acc=0.941416 V/sec= 40.576873 lr=0.014195
+2018-09-04 17:46:40,038 - main - INFO - [ 13] T/loss=3.296126 T/f1=0.871844 T/acc=0.968804 T/sec= 298.220801 V/loss=1.616797 V/f1=0.779674 V/acc=0.948282 V/sec= 40.684707 lr=0.014124
+saving early stopped-model at epoch 13
+2018-09-04 17:52:18,563 - main - INFO - [ 14] T/loss=3.197202 T/f1=0.884717 T/acc=0.971987 T/sec= 296.806061 V/loss=1.656897 V/f1=0.776254 V/acc=0.947258 V/sec= 41.719288 lr=0.014054
+2018-09-04 17:57:54,130 - main - INFO - [ 15] T/loss=3.111199 T/f1=0.892154 T/acc=0.973752 T/sec= 295.546203 V/loss=1.588322 V/f1=0.784528 V/acc=0.949274 V/sec= 40.020791 lr=0.013983
+saving early stopped-model at epoch 15
+2018-09-04 18:03:28,091 - main - INFO - [ 16] T/loss=3.099503 T/f1=0.899974 T/acc=0.975488 T/sec= 293.612381 V/loss=1.572457 V/f1=0.786522 V/acc=0.949622 V/sec= 40.348047 lr=0.013914
+saving early stopped-model at epoch 16
+2018-09-04 18:09:03,819 - main - INFO - [ 17] T/loss=3.007749 T/f1=0.907288 T/acc=0.977179 T/sec= 295.259999 V/loss=1.529361 V/f1=0.795726 V/acc=0.951978 V/sec= 40.467723 lr=0.013844
+saving early stopped-model at epoch 17
+2018-09-04 18:14:39,479 - main - INFO - [ 18] T/loss=2.996125 T/f1=0.910496 T/acc=0.978005 T/sec= 295.432856 V/loss=1.510434 V/f1=0.794595 V/acc=0.952550 V/sec= 40.228056 lr=0.013775
+saving early stopped-model at epoch 18
+2018-09-04 18:20:17,065 - main - INFO - [ 19] T/loss=2.927632 T/f1=0.920017 T/acc=0.980491 T/sec= 297.062588 V/loss=1.509828 V/f1=0.799619 V/acc=0.952816 V/sec= 40.522733 lr=0.013706
+saving early stopped-model at epoch 19
+2018-09-04 18:25:54,677 - main - INFO - [ 20] T/loss=2.896233 T/f1=0.920103 T/acc=0.980606 T/sec= 296.940338 V/loss=1.468281 V/f1=0.798138 V/acc=0.953216 V/sec= 40.672170 lr=0.013637
+saving early stopped-model at epoch 20
+2018-09-04 18:31:32,472 - main - INFO - [ 21] T/loss=2.833309 T/f1=0.926628 T/acc=0.982180 T/sec= 296.985174 V/loss=1.449243 V/f1=0.809579 V/acc=0.955689 V/sec= 40.809285 lr=0.013569
+saving early stopped-model at epoch 21
+/Users/haradatm/.pyenv/versions/miniconda3-latest/envs/py3/lib/python3.6/site-packages/matplotlib/pyplot.py:537: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+  max_open_warning, RuntimeWarning)
+2018-09-04 18:37:12,761 - main - INFO - [ 22] T/loss=2.828948 T/f1=0.928339 T/acc=0.982490 T/sec= 299.060041 V/loss=1.495377 V/f1=0.805456 V/acc=0.953948 V/sec= 41.229108 lr=0.013501
+2018-09-04 18:42:52,274 - main - INFO - [ 23] T/loss=2.771547 T/f1=0.933372 T/acc=0.983955 T/sec= 298.282461 V/loss=1.457365 V/f1=0.808027 V/acc=0.954926 V/sec= 41.230884 lr=0.013434
+2018-09-04 18:48:29,180 - main - INFO - [ 24] T/loss=2.761695 T/f1=0.936199 T/acc=0.984494 T/sec= 296.927639 V/loss=1.407736 V/f1=0.812615 V/acc=0.956114 V/sec= 39.978517 lr=0.013367
+saving early stopped-model at epoch 24
+2018-09-04 18:54:06,848 - main - INFO - [ 25] T/loss=2.728102 T/f1=0.937872 T/acc=0.985001 T/sec= 296.731251 V/loss=1.407899 V/f1=0.809715 V/acc=0.955793 V/sec= 40.936238 lr=0.013300
+2018-09-04 18:59:48,669 - main - INFO - [ 26] T/loss=2.683129 T/f1=0.942334 T/acc=0.986061 T/sec= 300.882273 V/loss=1.521605 V/f1=0.808402 V/acc=0.955200 V/sec= 40.938737 lr=0.013233
+2018-09-04 19:05:30,461 - main - INFO - [ 27] T/loss=2.668224 T/f1=0.943641 T/acc=0.986557 T/sec= 300.596004 V/loss=1.399574 V/f1=0.815261 V/acc=0.957494 V/sec= 41.195821 lr=0.013167
+saving early stopped-model at epoch 27
+2018-09-04 19:11:12,735 - main - INFO - [ 28] T/loss=2.669554 T/f1=0.943871 T/acc=0.986556 T/sec= 300.932991 V/loss=1.422511 V/f1=0.813797 V/acc=0.956747 V/sec= 41.341540 lr=0.013101
+2018-09-04 19:16:29,189 - main - INFO - [ 29] T/loss=2.640117 T/f1=0.948879 T/acc=0.987924 T/sec= 280.571625 V/loss=1.481811 V/f1=0.811285 V/acc=0.956252 V/sec= 35.882302 lr=0.013036
+2018-09-04 19:21:24,493 - main - INFO - [ 30] T/loss=2.616697 T/f1=0.949855 T/acc=0.988145 T/sec= 259.323202 V/loss=1.440748 V/f1=0.812974 V/acc=0.956680 V/sec= 35.980867 lr=0.012971
+loading early stopped-model at epoch 27
+             precision    recall  f1-score   support
+
+        ORG       0.84      0.69      0.76      1661
+        LOC       0.88      0.86      0.87      1668
+       MISC       0.81      0.62      0.70       702
+        PER       0.94      0.87      0.90      1617
+
+avg / total       0.88      0.78      0.83      5648
+
+2018-09-04 19:21:42,537 - <module> - INFO - time spent: 10148.917621 sec
+
