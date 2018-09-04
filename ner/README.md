@@ -74,6 +74,22 @@ Blackburn   I-PER
 ...
 ```
 
+- train-iobes.txt
+```
+EU	S-ORG
+rejects	O
+German	S-MISC
+call	O
+to	O
+boycott	O
+British	S-MISC
+lamb	O
+.	O
+
+Peter	B-PER
+Blackburn	E-PER
+...
+```
 
 ***Output***
 
