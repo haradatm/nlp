@@ -9,7 +9,7 @@ Bidirectional LSTM-CRF for Sequence Labeling like Named-Entity Recognition
 
 __version__ = '0.0.1'
 
-import sys, time, logging, os, json
+import sys, time, logging, os, json, re
 import numpy as np
 
 np.set_printoptions(precision=20)
@@ -108,6 +108,10 @@ def load_w2v_model(path):
     return M, vocab
 
 
+def zero_digits(s):
+    return re.sub('\d', '0', s)
+
+
 def load_data(path, vocab_word, vocab_char, vocab_tag):
     X_word, X_char, y = [], [], []
     words, chars, tags = [], [], []
@@ -120,6 +124,7 @@ def load_data(path, vocab_word, vocab_char, vocab_tag):
         if line != '':
             word, tag = line.split('\t')
             word = word.lower()
+            word = zero_digits(word)
 
             if word not in vocab_word:
                 vocab_word += [word]
@@ -379,7 +384,7 @@ def main():
     test_loss = []
     test_accuracy1 = []
     test_accuracy2 = []
-    min_loss = float('inf')
+    best_accuracy = .0
     min_epoch = 0
 
     # 最初の時間情報を取得する
@@ -491,8 +496,8 @@ def main():
         sys.stdout.flush()
 
         # model と optimizer を保存する
-        if mean_test_loss < min_loss:
-            min_loss = mean_test_loss
+        if mean_test_accuracy1 > best_accuracy:
+            best_accuracy = mean_test_accuracy1
             min_epoch = epoch
             print('saving early stopped-model at epoch {}'.format(min_epoch))
             if args.gpu >= 0: model.to_cpu()
