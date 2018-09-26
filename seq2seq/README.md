@@ -164,6 +164,11 @@ No.4	(bleu 1.0000)
 2018-09-27 08:07:28,492 - main - INFO - [  1] T/loss=74.773455 T/perp=303.238386 T/bleu=0.000610 T/sec= 33.265002 D/loss=63.409412 D/perp=124.721887 D/bleu=0.000681 D/sec= 17.227816 lr=0.001000
 2018-09-27 08:07:28,492 - main - INFO - saving early stopped-model at epoch 1
  :
+2018-09-27 08:42:29,764 - main - INFO - # source : め ぐ り あ ひ て 見 し や そ れ と も わ か ぬ 間 に
+2018-09-27 08:42:29,765 - main - INFO - #  result : 雲 が く れ に し 世 半 の 月 か な
+2018-09-27 08:42:29,765 - main - INFO - #  expect : 雲 が く れ に し 世 半 の 月 か な
+2018-09-27 08:42:29,765 - main - INFO - [ 30] T/loss=1.252662 T/perp=1.100753 T/bleu=1.000000 T/sec= 37.455061 D/loss=0.702746 D/perp=1.054942 D/bleu=1.000000 D/sec= 19.626164 lr=0.001000
+2018-09-27 08:42:30,015 - main - INFO - saving final-model at epoch 30
 ```
 
 - results/test_seq2seq-soseki.log (use **test_seq2seq.py**)
@@ -221,6 +226,5 @@ No.4	(bleu 1.0000)
 
 - train_seq2seq-{soseki,ogura}.png (use **train_seq2seq.py**)
 
-|---|---|
 |![soseki](results/train_seq2seq-soseki.png "soseki")|![ogura](results/train_seq2seq-ogura.png "ogura")|
 |---|---|
