@@ -43,10 +43,19 @@ python test_seq2seq.py --gpu=-1 --VOCAB results/soseki/word_ids.bin --validation
 
 ***Input***
 
-- format (space-separated test)
+- format for encode texts (use **preprocess.py**)
 ```
-[token] [token] ... [token] 。
-[token] [token] ... [token] 。[token] [token] ... [token] 。
+[sentence 1]
+[sentence 1] [sentence 2]
+[sentence 1] [sentence 2] [sentence 3]
+ :
+```
+
+- format for decode texts (use **preprocess.py**)
+```
+[sentence 2]
+[sentence 3]
+[sentence 4]
  :
 ```
 
@@ -62,8 +71,7 @@ python test_seq2seq.py --gpu=-1 --VOCAB results/soseki/word_ids.bin --validation
 ```
 名前 は まだ 無い 。
 どこ で 生れ た か とんと 見当 が つか ぬ 。
-何 でも 薄暗い じめじめ し た 所 で ニャーニャー 泣い て いた事 だけ は 記憶 し
-て いる 。
+何 でも 薄暗い じめじめ し た 所 で ニャーニャー 泣い て いた事 だけ は 記憶 して いる 。
  :
 ```
 
