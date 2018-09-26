@@ -39,6 +39,7 @@ python train_seq2seq.py --gpu=0 --SOURCE datasets/soseki/soseki.preprocess.en --
 - test (your own text-generating)
 ```
 python test_seq2seq.py --gpu=-1 --VOCAB results/soseki/word_ids.bin --validation-source datasets/soseki/test.preprocess.en --validation-target datasets/soseki/test.preprocess.de --model results/soseki/early_stopped.model 2>&1 | tee results/test_seq2seq-soseki.log```
+```
 
 ***Input***
 
