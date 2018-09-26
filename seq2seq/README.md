@@ -120,7 +120,7 @@ No.4	(bleu 1.0000)
  result: ありがたい ありがたい 。
  expect: ありがたい ありがたい 。
 
-### with preceding words ###
+### output the word following the ”lead” words. ###
 
 No.1	(bleu 1.0000)
  source: 吾輩 は 猫 で ある 。
@@ -195,7 +195,7 @@ No.4	(bleu 1.0000)
  result: 富 士 の 高 嶺 に 雪 は 降 り つ つ
  expect: 富 士 の 高 嶺 に 雪 は 降 り つ つ
 
-### with preceding words ###
+### output the word following the ”lead” words. ###
 
 No.1	(bleu 1.0000)
  source: 秋 の 田 の 仮 庵 の 庵 の 苫 を あ ら み
@@ -221,4 +221,6 @@ No.4	(bleu 1.0000)
 
 - train_seq2seq-{soseki,ogura}.png (use **train_seq2seq.py**)
 
+|---|---|
 |![soseki](results/train_seq2seq-soseki.png "soseki")|![ogura](results/train_seq2seq-ogura.png "ogura")|
+|---|---|
