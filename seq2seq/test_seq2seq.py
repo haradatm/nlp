@@ -290,7 +290,7 @@ def main():
                 print(' expect: {}'.format(target_sentence))
                 count += 1
 
-    print('\n### with preceding words ###\n')
+    print('\n### output the word following the ”lead” words. ###\n')
 
     test_iter = batch_iter(test_data, args.batchsize)
 
