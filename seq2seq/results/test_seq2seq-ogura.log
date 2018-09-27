@@ -1,0 +1,59 @@
+2018-09-27 08:59:52,355 - main - INFO - {
+  "VOCAB": "results/ogura/word_ids.bin",
+  "validation_source": "datasets/ogura/test.preprocess.en",
+  "validation_target": "datasets/ogura/test.preprocess.de",
+  "batchsize": 64,
+  "gpu": -1,
+  "unit": 1024,
+  "layer": 3,
+  "model": "results/ogura/early_stopped.model"
+}
+2018-09-27 08:59:52,355 - main - INFO - Source vocabulary size: 317
+2018-09-27 08:59:52,355 - main - INFO - Target vocabulary size: 317
+2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
+2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
+2018-09-27 08:59:52,357 - main - INFO - Validation data: 4
+2018-09-27 08:59:52,357 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-27 08:59:52,357 - main - INFO - Validation target unknown ratio: 0.00%
+
+### full enc-dec ###
+
+No.1	(bleu 1.0000)
+ source: 秋 の 田 の 仮 庵 の 庵 の 苫 を あ ら み
+ result: わ が 衣 手 は 露 に ぬ れ つ つ
+ expect: わ が 衣 手 は 露 に ぬ れ つ つ
+No.2	(bleu 1.0000)
+ source: 春 過 ぎ て 夏 来 に け ら し 白 妙 の
+ result: 衣 ほ す て ふ 天 の 香 具 山
+ expect: 衣 ほ す て ふ 天 の 香 具 山
+No.3	(bleu 1.0000)
+ source: あ し び き の 山 鳥 の 尾 の し だ り 尾 の
+ result: な が な が し 夜 を ひ と り か も 寝 む
+ expect: な が な が し 夜 を ひ と り か も 寝 む
+No.4	(bleu 1.0000)
+ source: 田 子 の 浦 に う ち 出 で て み れ ば 白 妙 の
+ result: 富 士 の 高 嶺 に 雪 は 降 り つ つ
+ expect: 富 士 の 高 嶺 に 雪 は 降 り つ つ
+
+### output the word following the ”lead” words. ###
+
+No.1	(bleu 1.0000)
+ source: 秋 の 田 の 仮 庵 の 庵 の 苫 を あ ら み
+   lead: わ
+ result: が 衣 手 は 露 に ぬ れ つ つ
+ expect: が 衣 手 は 露 に ぬ れ つ つ
+No.2	(bleu 1.0000)
+ source: 春 過 ぎ て 夏 来 に け ら し 白 妙 の
+   lead: 衣
+ result: ほ す て ふ 天 の 香 具 山
+ expect: ほ す て ふ 天 の 香 具 山
+No.3	(bleu 1.0000)
+ source: あ し び き の 山 鳥 の 尾 の し だ り 尾 の
+   lead: な
+ result: が な が し 夜 を ひ と り か も 寝 む
+ expect: が な が し 夜 を ひ と り か も 寝 む
+No.4	(bleu 1.0000)
+ source: 田 子 の 浦 に う ち 出 で て み れ ば 白 妙 の
+   lead: 富
+ result: 士 の 高 嶺 に 雪 は 降 り つ つ
+ expect: 士 の 高 嶺 に 雪 は 降 り つ つ

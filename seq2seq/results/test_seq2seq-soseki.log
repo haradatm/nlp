@@ -1,0 +1,60 @@
+2018-09-27 09:02:31,762 - main - INFO - {
+  "SOURCE_VOCAB": "results/soseki/source_ids.bin",
+  "TARGET_VOCAB": "results/soseki/target_ids.bin",
+  "validation_source": "datasets/soseki/test.preprocess.en",
+  "validation_target": "datasets/soseki/test.preprocess.de",
+  "batchsize": 64,
+  "gpu": -1,
+  "unit": 1024,
+  "layer": 3,
+  "model": "results/soseki/early_stopped.model"
+}
+2018-09-27 09:02:31,773 - main - INFO - Source vocabulary size: 13949
+2018-09-27 09:02:31,773 - main - INFO - Target vocabulary size: 13949
+2018-09-27 09:02:31,775 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
+2018-09-27 09:02:31,776 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
+2018-09-27 09:02:31,777 - main - INFO - Validation data: 4
+2018-09-27 09:02:31,777 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-27 09:02:31,777 - main - INFO - Validation target unknown ratio: 0.00%
+
+### full enc-dec ###
+
+No.1	(bleu 1.0000)
+ source: 吾輩 は 猫 で ある 。
+ result: 名前 は まだ 無い 。
+ expect: 名前 は まだ 無い 。
+No.2	(bleu 1.0000)
+ source: 吾輩 は 死ぬ 。 死ん で この 太平 を 得る 。
+ result: 太平 は 死な なけれ ば 得 られ ぬ 。
+ expect: 太平 は 死な なけれ ば 得 られ ぬ 。
+No.3	(bleu 1.0000)
+ source: 死ん で この 太平 を 得る 。 太平 は 死な なけれ ば 得 られ ぬ 。
+ result: 南無阿弥陀仏 南無阿弥陀仏 。
+ expect: 南無阿弥陀仏 南無阿弥陀仏 。
+No.4	(bleu 1.0000)
+ source: 太平 は 死な なけれ ば 得 られ ぬ 。 南無阿弥陀仏 南無阿弥陀仏 。
+ result: ありがたい ありがたい 。
+ expect: ありがたい ありがたい 。
+
+### output the word following the ”lead” words. ###
+
+No.1	(bleu 1.0000)
+ source: 吾輩 は 猫 で ある 。
+   lead: 名前
+ result: は まだ 無い 。
+ expect: は まだ 無い 。
+No.2	(bleu 1.0000)
+ source: 吾輩 は 死ぬ 。 死ん で この 太平 を 得る 。
+   lead: 太平
+ result: は 死な なけれ ば 得 られ ぬ 。
+ expect: は 死な なけれ ば 得 られ ぬ 。
+No.3	(bleu 1.0000)
+ source: 死ん で この 太平 を 得る 。 太平 は 死な なけれ ば 得 られ ぬ 。
+   lead: 南無阿弥陀仏
+ result: 南無阿弥陀仏 。
+ expect: 南無阿弥陀仏 。
+No.4	(bleu 1.0000)
+ source: 太平 は 死な なけれ ば 得 られ ぬ 。 南無阿弥陀仏 南無阿弥陀仏 。
+   lead: ありがたい
+ result: ありがたい 。
+ expect: ありがたい 。

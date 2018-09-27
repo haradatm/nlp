@@ -101,13 +101,12 @@ python test_seq2seq.py --gpu=-1 --VOCAB results/soseki/word_ids.bin --validation
 
 - results/test_seq2seq-soseki.log (use **test_seq2seq.py**)
 ```
-2018-09-27 07:34:56,808 - main - INFO - Source vocabulary size: 13949
-2018-09-27 07:34:56,809 - main - INFO - Target vocabulary size: 13949
-2018-09-27 07:34:56,811 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
-2018-09-27 07:34:56,811 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
-2018-09-27 07:34:56,812 - main - INFO - Validation data: 4
-2018-09-27 07:34:56,812 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 07:34:56,812 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-27 09:02:31,773 - main - INFO - Word vocabulary size: 13949
+2018-09-27 09:02:31,775 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
+2018-09-27 09:02:31,776 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
+2018-09-27 09:02:31,777 - main - INFO - Validation data: 4
+2018-09-27 09:02:31,777 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-27 09:02:31,777 - main - INFO - Validation target unknown ratio: 0.00%
 
 ### full enc-dec ###
 
@@ -181,13 +180,13 @@ No.4	(bleu 1.0000)
 
 - results/test_seq2seq-soseki.log (use **test_seq2seq.py**)
 ```
-2018-09-27 07:30:35,707 - main - INFO - Source vocabulary size: 317
-2018-09-27 07:30:35,707 - main - INFO - Target vocabulary size: 317
-2018-09-27 07:30:35,707 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
-2018-09-27 07:30:35,707 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
-2018-09-27 07:30:35,708 - main - INFO - Validation data: 4
-2018-09-27 07:30:35,708 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 07:30:35,708 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-27 08:59:52,355 - main - INFO - Source vocabulary size: 317
+2018-09-27 08:59:52,355 - main - INFO - Target vocabulary size: 317
+2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
+2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
+2018-09-27 08:59:52,357 - main - INFO - Validation data: 4
+2018-09-27 08:59:52,357 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-27 08:59:52,357 - main - INFO - Validation target unknown ratio: 0.00%
 
 ### full enc-dec ###
 
