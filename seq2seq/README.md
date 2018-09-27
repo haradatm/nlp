@@ -79,40 +79,46 @@ python test_seq2seq.py --gpu=-1 --VOCAB results/soseki/word_ids.bin --validation
 
 - results/train_seq2seq-soseki.log (use **train_seq2seq.py**)
 ```
-2018-09-26 21:48:14,347 - load_data - INFO - loading...: datasets/soseki.preprocess.en
-2018-09-26 21:48:15,178 - load_data - INFO - loading...: datasets/soseki.preprocess.de
-2018-09-26 21:48:16,094 - main - INFO - Source vocabulary size: 13949
-2018-09-26 21:48:16,096 - main - INFO - Target vocabulary size: 13949
-2018-09-26 21:48:16,097 - main - INFO - Train data size: 18099
-2018-09-26 21:48:16,104 - main - INFO - Train source unknown ratio: 0.00%
-2018-09-26 21:48:16,116 - main - INFO - Train target unknown ratio: 0.00%
-2018-09-26 21:48:16,127 - load_data - INFO - loading...: datasets/soseki.preprocess.en
-2018-09-26 21:48:16,452 - load_data - INFO - loading...: datasets/soseki.preprocess.de
-2018-09-26 21:48:16,856 - main - INFO - Validation data: 18099
-2018-09-26 21:48:16,857 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-26 21:48:16,858 - main - INFO - Validation target unknown ratio: 0.00%
-2018-09-26 22:03:50,848 - main - INFO - # source : 是非 連れ て 行っ て やり たい が こう 悪寒 が し て 眼 が くらん で は 電車 へ 乗る どころか 、 靴 脱 へ 降りる 事 も 出来 ない 。 ああ 気の毒 だ 気の毒 だ と 思う と なお 悪寒 が し て なお 眼 が くらん で くる 。
-2018-09-26 22:03:50,850 - main - INFO - #  result : 僕 は 寒月 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 人 の よう に なる 。
-2018-09-26 22:03:50,855 - main - INFO - #  expect : 早く 医者 に 見 て もらっ て 服薬 で も し たら 四 時 前 に は 全快 する だろ う と 、 それから 細君 と 相談 を し て 甘木 医 学士 を 迎い に やる と 生憎 昨夜 が 当番 で まだ 大学 から 帰ら ない 。
-2018-09-26 22:03:50,857 - main - INFO - [  1] T/loss=126.399814 T/perp=363.387040 T/bleu=0.002134 T/sec= 532.145668 D/loss=77.886993 D/perp=100.838013 D/bleu=0.001123 D/sec= 370.861677 lr=0.001000
-2018-09-26 22:03:50,861 - main - INFO - saving early stopped-model at epoch 1
+2018-09-27 02:10:26,509 - load_data - INFO - loading...: datasets/soseki.preprocess.en
+2018-09-27 02:10:27,181 - load_data - INFO - loading...: datasets/soseki.preprocess.de
+2018-09-27 02:10:28,039 - main - INFO - Source vocabulary size: 13949
+2018-09-27 02:10:28,041 - main - INFO - Target vocabulary size: 13949
+2018-09-27 02:10:28,042 - main - INFO - Train data size: 18099
+2018-09-27 02:10:28,047 - main - INFO - Train source unknown ratio: 0.00%
+2018-09-27 02:10:28,050 - main - INFO - Train target unknown ratio: 0.00%
+2018-09-27 02:10:28,062 - load_data - INFO - loading...: datasets/soseki.preprocess.en
+2018-09-27 02:10:28,368 - load_data - INFO - loading...: datasets/soseki.preprocess.de
+2018-09-27 02:10:28,742 - main - INFO - Validation data: 18099
+2018-09-27 02:10:28,743 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-27 02:10:28,750 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-27 02:25:23,913 - main - INFO - # source : 是非 連れ て 行っ て やり たい が こう 悪寒 が し て 眼 が くらん で は 電車 へ 乗る どころか 、 靴 脱 へ 降りる 事 も 出来 ない 。 ああ 気の毒 だ 気の毒 だ と 思う と なお 悪寒 が し て なお 眼 が くらん で くる 。
+2018-09-27 02:25:23,915 - main - INFO - #  result : 僕 は 寒月 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君 が 、 仙 君
+2018-09-27 02:25:23,916 - main - INFO - #  expect : 早く 医者 に 見 て もらっ て 服薬 で も し たら 四 時 前 に は 全快 する だろ う と 、 それから 細君 と 相談 を し て 甘木 医 学士 を 迎い に やる と 生憎 昨夜 が 当番 で まだ 大学 から 帰ら ない 。
+2018-09-27 02:25:23,920 - main - INFO - [  1] T/loss=126.768052 T/perp=367.548169 T/bleu=0.001850 T/sec= 510.013070 D/loss=77.964592 D/perp=101.302551 D/bleu=0.000283 D/sec= 355.721428 lr=0.001000
+2018-09-27 02:25:23,931 - main - INFO - saving early stopped-model at epoch 1
  :
+2018-09-27 11:54:00,175 - main - INFO - # source : 可 愛想 に 。 打ちゃ って 置く と 巌 頭 の 吟 でも 書い て 華厳滝 から 飛び込む かも 知れ ない 。
+2018-09-27 11:54:00,177 - main - INFO - #  result : 元 を 糺せ ば 金田 令嬢 の ハイカラ と 生意気 から 起っ た 事 だ 。
+2018-09-27 11:54:00,184 - main - INFO - #  expect : 元 を 糺せ ば 金田 令嬢 の ハイカラ と 生意気 から 起っ た 事 だ 。
+2018-09-27 11:54:00,186 - main - INFO - [ 39] T/loss=2.947978 T/perp=1.139057 T/bleu=0.602102 T/sec= 561.811887 D/loss=0.507743 D/perp=1.030532 D/bleu=0.929834 D/sec= 362.962193 lr=0.001000
+2018-09-27 11:54:00,193 - main - INFO - saving early stopped-model at epoch 39
 ```
 
 - results/test_seq2seq-soseki.log (use **test_seq2seq.py**)
 ```
-2018-09-27 09:02:31,773 - main - INFO - Word vocabulary size: 13949
-2018-09-27 09:02:31,775 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
-2018-09-27 09:02:31,776 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
-2018-09-27 09:02:31,777 - main - INFO - Validation data: 4
-2018-09-27 09:02:31,777 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 09:02:31,777 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-28 07:57:08,254 - main - INFO - Source vocabulary size: 13949
+2018-09-28 07:57:08,254 - main - INFO - Target vocabulary size: 13949
+2018-09-28 07:57:08,256 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
+2018-09-28 07:57:08,257 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
+2018-09-28 07:57:08,257 - main - INFO - Validation data: 4
+2018-09-28 07:57:08,257 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-28 07:57:08,257 - main - INFO - Validation target unknown ratio: 0.00%
 
 ### full enc-dec ###
 
-No.1	(bleu 1.0000)
+No.1	(bleu 0.0254)
  source: 吾輩 は 猫 で ある 。
- result: 名前 は まだ 無い 。
+ result: 人間 と は しいて 苦痛 を 求める もの で ある と 一言 に 評し て も よかろ う 。
  expect: 名前 は まだ 無い 。
 No.2	(bleu 1.0000)
  source: 吾輩 は 死ぬ 。 死ん で この 太平 を 得る 。
@@ -129,10 +135,10 @@ No.4	(bleu 1.0000)
 
 ### output the word following the ”lead” words. ###
 
-No.1	(bleu 1.0000)
+No.1	(bleu 0.0441)
  source: 吾輩 は 猫 で ある 。
    lead: 名前
- result: は まだ 無い 。
+ result: は まだ ない から 懐手 を し て 盤 を 眺め て いる か と 思う と 、 金 子 の ごとき つらい が 欲しい 気 に なっ て 、 足 の 隅 の 方 に 控え て いる 。
  expect: は まだ 無い 。
 No.2	(bleu 1.0000)
  source: 吾輩 は 死ぬ 。 死ん で この 太平 を 得る 。
@@ -149,7 +155,7 @@ No.4	(bleu 1.0000)
    lead: ありがたい
  result: ありがたい 。
  expect: ありがたい 。
-```
+ ```
 
 - results/train_seq2seq-ogra.log (use **train_seq2seq.py**)
 ```
@@ -178,7 +184,7 @@ No.4	(bleu 1.0000)
 2018-09-27 08:42:30,015 - main - INFO - saving final-model at epoch 30
 ```
 
-- results/test_seq2seq-soseki.log (use **test_seq2seq.py**)
+- results/test_seq2seq-ogura.log (use **test_seq2seq.py**)
 ```
 2018-09-27 08:59:52,355 - main - INFO - Source vocabulary size: 317
 2018-09-27 08:59:52,355 - main - INFO - Target vocabulary size: 317
