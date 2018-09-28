@@ -350,10 +350,10 @@ def main():
                 hypotheses = [y.tolist() for y in model.translate(xs, max_length=100)]
                 bleu = bleu_score.corpus_bleu(references, hypotheses, smoothing_function=bleu_score.SmoothingFunction().method1)
 
-            sum_test_loss += float(loss.data) * len(ys)
-            sum_test_accuracy1 += float(perp) * len(ys)
-            sum_test_accuracy2 += float(bleu) * len(ys)
-            K += len(ys)
+                sum_test_loss += float(loss.data) * len(ys)
+                sum_test_accuracy1 += float(perp) * len(ys)
+                sum_test_accuracy2 += float(bleu) * len(ys)
+                K += len(ys)
 
         # テストデータでの誤差と正解精度を表示
         mean_test_loss = sum_test_loss / K

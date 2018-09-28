@@ -1,4 +1,4 @@
-2018-09-27 08:59:52,355 - main - INFO - {
+2018-09-28 09:06:05,742 - main - INFO - {
   "VOCAB": "results/ogura/word_ids.bin",
   "validation_source": "datasets/ogura/test.preprocess.en",
   "validation_target": "datasets/ogura/test.preprocess.de",
@@ -8,13 +8,13 @@
   "layer": 3,
   "model": "results/ogura/early_stopped.model"
 }
-2018-09-27 08:59:52,355 - main - INFO - Source vocabulary size: 317
-2018-09-27 08:59:52,355 - main - INFO - Target vocabulary size: 317
-2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
-2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
-2018-09-27 08:59:52,357 - main - INFO - Validation data: 4
-2018-09-27 08:59:52,357 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 08:59:52,357 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-28 09:06:05,743 - main - INFO - Source vocabulary size: 317
+2018-09-28 09:06:05,743 - main - INFO - Target vocabulary size: 317
+2018-09-28 09:06:05,743 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
+2018-09-28 09:06:05,743 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
+2018-09-28 09:06:05,746 - main - INFO - Validation data: 4
+2018-09-28 09:06:05,746 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-28 09:06:05,746 - main - INFO - Validation target unknown ratio: 0.00%
 
 ### full enc-dec ###
 

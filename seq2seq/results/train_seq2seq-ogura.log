@@ -1,4 +1,4 @@
-2018-09-27 08:06:32,287 - main - INFO - {
+2018-09-28 08:12:28,160 - main - INFO - {
   "SOURCE": "datasets/ogura/ogura.preprocess.en",
   "TARGET": "datasets/ogura/ogura.preprocess.de",
   "VOCAB": "datasets/ogura/vocab.txt",
@@ -18,157 +18,160 @@
   "validation_interval": 4000,
   "out": "results-ogura"
 }
-2018-09-27 08:06:32,288 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
-2018-09-27 08:06:32,288 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
-2018-09-27 08:06:32,290 - main - INFO - Source vocabulary size: 317
-2018-09-27 08:06:32,290 - main - INFO - Target vocabulary size: 317
-2018-09-27 08:06:32,290 - main - INFO - Train data size: 100
-2018-09-27 08:06:32,290 - main - INFO - Train source unknown ratio: 0.00%
-2018-09-27 08:06:32,290 - main - INFO - Train target unknown ratio: 0.00%
-2018-09-27 08:06:32,290 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
-2018-09-27 08:06:32,291 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
-2018-09-27 08:06:32,293 - main - INFO - Validation data: 100
-2018-09-27 08:06:32,293 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 08:06:32,293 - main - INFO - Validation target unknown ratio: 0.00%
-2018-09-27 08:07:28,491 - main - INFO - # source : 浅 茅 生 の 小 野 の 篠 原 し の ぶ れ ど
-2018-09-27 08:07:28,492 - main - INFO - #  result : の の の の
-2018-09-27 08:07:28,492 - main - INFO - #  expect : あ ま り て な ど か 人 の 恋 し き
-2018-09-27 08:07:28,492 - main - INFO - [  1] T/loss=74.773455 T/perp=303.238386 T/bleu=0.000610 T/sec= 33.265002 D/loss=63.409412 D/perp=124.721887 D/bleu=0.000681 D/sec= 17.227816 lr=0.001000
-2018-09-27 08:07:28,492 - main - INFO - saving early stopped-model at epoch 1
-2018-09-27 08:08:45,948 - main - INFO - # source : 春 の 夜 の 夢 ば か り な る 手 枕 に
-2018-09-27 08:08:45,949 - main - INFO - #  result : 人 か に に し し し
-2018-09-27 08:08:45,949 - main - INFO - #  expect : か ひ な く 立 た む 名 こ そ 惜 し け れ
-2018-09-27 08:08:45,949 - main - INFO - [  2] T/loss=62.491016 T/perp=118.531061 T/bleu=0.000709 T/sec= 59.251195 D/loss=58.066399 D/perp=83.048927 D/bleu=0.002097 D/sec= 17.819995 lr=0.001000
-2018-09-27 08:08:45,949 - main - INFO - saving early stopped-model at epoch 2
-2018-09-27 08:10:04,480 - main - INFO - # source : 恨 み わ び ほ さ ぬ 袖 だ に あ る も の を
-2018-09-27 08:10:04,480 - main - INFO - #  result : わ く く に に り り り り り り り り り り り り り り り り り り り
-2018-09-27 08:10:04,480 - main - INFO - #  expect : 恋 に 朽 ち な む 名 こ そ 惜 し け れ
-2018-09-27 08:10:04,480 - main - INFO - [  3] T/loss=59.410147 T/perp=94.031061 T/bleu=0.002646 T/sec= 59.119891 D/loss=57.483356 D/perp=79.444178 D/bleu=0.000989 D/sec= 19.449388 lr=0.001000
-2018-09-27 08:10:58,813 - main - INFO - # source : い に し へ の 奈 良 の 都 の 八 重 桜
-2018-09-27 08:10:58,813 - main - INFO - #  result : わ の の の の も
-2018-09-27 08:10:58,813 - main - INFO - #  expect : け ふ 九 重 に に ほ ひ ぬ る か な
-2018-09-27 08:10:58,813 - main - INFO - [  4] T/loss=57.828679 T/perp=83.633587 T/bleu=0.000976 T/sec= 35.730889 D/loss=54.057800 D/perp=61.211541 D/bleu=0.001124 D/sec= 18.318993 lr=0.001000
-2018-09-27 08:11:52,127 - main - INFO - # source : 心 に も あ ら で う き 世 に な が ら へ ば
-2018-09-27 08:11:52,127 - main - INFO - #  result : か の の の の も し し
-2018-09-27 08:11:52,127 - main - INFO - #  expect : 恋 し か る べ き 夜 半 の 月 か な
-2018-09-27 08:11:52,127 - main - INFO - [  5] T/loss=54.611190 T/perp=65.282892 T/bleu=0.001755 T/sec= 35.843419 D/loss=51.183369 D/perp=49.183733 D/bleu=0.003178 D/sec= 17.763932 lr=0.001000
-2018-09-27 08:11:52,128 - main - INFO - saving early stopped-model at epoch 5
-2018-09-27 08:13:10,475 - main - INFO - # source : 嘆 け と て 月 や は も の を 思 は す る
-2018-09-27 08:13:10,475 - main - INFO - #  result : か か か も な な な
-2018-09-27 08:13:10,475 - main - INFO - #  expect : か こ ち 顔 な る わ が 涙 か な
-2018-09-27 08:13:10,475 - main - INFO - [  6] T/loss=53.329637 T/perp=59.485033 T/bleu=0.002682 T/sec= 60.168866 D/loss=49.077103 D/perp=41.898716 D/bleu=0.004112 D/sec= 18.094041 lr=0.001000
-2018-09-27 08:13:10,475 - main - INFO - saving early stopped-model at epoch 6
-2018-09-27 08:14:30,396 - main - INFO - # source : ほ と と ぎ す 鳴 き つ る 方 を な が む れ ば
-2018-09-27 08:14:30,396 - main - INFO - #  result : た た の の に に な な
-2018-09-27 08:14:30,396 - main - INFO - #  expect : た だ 有 明 の 月 ぞ 残 れ る
-2018-09-27 08:14:30,396 - main - INFO - [  7] T/loss=50.604026 T/perp=48.250558 T/bleu=0.002805 T/sec= 60.976952 D/loss=45.884998 D/perp=32.861584 D/bleu=0.004884 D/sec= 18.987887 lr=0.001000
-2018-09-27 08:14:30,397 - main - INFO - saving early stopped-model at epoch 7
-2018-09-27 08:15:55,288 - main - INFO - # source : あ は れ と も い ふ べ き 人 は 思 ほ え で
-2018-09-27 08:15:55,288 - main - INFO - #  result : 花 の の に に に る る な
-2018-09-27 08:15:55,288 - main - INFO - #  expect : 身 の い た づ ら に な り ぬ べ き か な
-2018-09-27 08:15:55,288 - main - INFO - [  8] T/loss=47.882288 T/perp=39.481934 T/bleu=0.005690 T/sec= 66.244466 D/loss=42.055943 D/perp=24.554008 D/bleu=0.011183 D/sec= 18.282744 lr=0.001000
-2018-09-27 08:15:55,288 - main - INFO - saving early stopped-model at epoch 8
-2018-09-27 08:17:14,566 - main - INFO - # source : 夜 も す が ら も の 思 ふ こ ろ は 明 け や ら で
-2018-09-27 08:17:14,566 - main - INFO - #  result : 閨 の ま ま ま ま に れ な
-2018-09-27 08:17:14,566 - main - INFO - #  expect : 閨 の ひ ま さ へ つ れ な か り け り
-2018-09-27 08:17:14,566 - main - INFO - [  9] T/loss=44.330278 T/perp=30.245621 T/bleu=0.007607 T/sec= 60.807469 D/loss=37.796852 D/perp=17.755867 D/bleu=0.014859 D/sec= 18.843262 lr=0.001000
-2018-09-27 08:17:14,566 - main - INFO - saving early stopped-model at epoch 9
-2018-09-27 08:18:36,241 - main - INFO - # source : 春 過 ぎ て 夏 来 に け ら し 白 妙 の
-2018-09-27 08:18:36,241 - main - INFO - #  result : 衣 衣 衣 の の ふ ふ
-2018-09-27 08:18:36,241 - main - INFO - #  expect : 衣 ほ す て ふ 天 の 香 具 山
-2018-09-27 08:18:36,241 - main - INFO - [ 10] T/loss=40.342068 T/perp=22.410968 T/bleu=0.009488 T/sec= 62.108267 D/loss=33.589886 D/perp=12.890931 D/bleu=0.021457 D/sec= 19.334251 lr=0.001000
-2018-09-27 08:18:36,241 - main - INFO - saving early stopped-model at epoch 10
-2018-09-27 08:19:57,706 - main - INFO - # source : ひ さ か た の 光 の ど け き 春 の 日 に
-2018-09-27 08:19:57,706 - main - INFO - #  result : な な く く く な な
-2018-09-27 08:19:57,706 - main - INFO - #  expect : 静 心 な く 花 の 散 る ら む
-2018-09-27 08:19:57,706 - main - INFO - [ 11] T/loss=36.658404 T/perp=17.162922 T/bleu=0.015976 T/sec= 63.030416 D/loss=28.378113 D/perp=8.669892 D/bleu=0.065605 D/sec= 18.723612 lr=0.001000
-2018-09-27 08:19:57,706 - main - INFO - saving early stopped-model at epoch 11
-2018-09-27 08:21:15,678 - main - INFO - # source : 夜 も す が ら も の 思 ふ こ ろ は 明 け や ら で
-2018-09-27 08:21:15,678 - main - INFO - #  result : 閨 の ひ ま ま ま れ れ れ な り り り
-2018-09-27 08:21:15,678 - main - INFO - #  expect : 閨 の ひ ま さ へ つ れ な か り け り
-2018-09-27 08:21:15,678 - main - INFO - [ 12] T/loss=33.869009 T/perp=13.667928 T/bleu=0.027504 T/sec= 59.327866 D/loss=24.491106 D/perp=6.449590 D/bleu=0.126007 D/sec= 18.049437 lr=0.001000
-2018-09-27 08:21:15,678 - main - INFO - saving early stopped-model at epoch 12
-2018-09-27 08:22:33,597 - main - INFO - # source : 朝 ぼ ら け 有 明 の 月 と み る ま で に
-2018-09-27 08:22:33,598 - main - INFO - #  result : 吉 野 の に に る る る
-2018-09-27 08:22:33,598 - main - INFO - #  expect : 吉 野 の 里 に ふ れ る 白 雪
-2018-09-27 08:22:33,598 - main - INFO - [ 13] T/loss=28.678101 T/perp=9.207848 T/bleu=0.091326 T/sec= 60.512342 D/loss=21.347408 D/perp=5.077149 D/bleu=0.178244 D/sec= 18.133908 lr=0.001000
-2018-09-27 08:22:33,598 - main - INFO - saving early stopped-model at epoch 13
-2018-09-27 08:23:49,836 - main - INFO - # source : 天 の 原 ふ り さ け 見 れ ば 春 日 な る
-2018-09-27 08:23:49,836 - main - INFO - #  result : 三 笠 の の に に に し る る
-2018-09-27 08:23:49,836 - main - INFO - #  expect : 三 笠 の 山 に 出 で し 月 か も
-2018-09-27 08:23:49,836 - main - INFO - [ 14] T/loss=24.556840 T/perp=6.779789 T/bleu=0.125036 T/sec= 58.286852 D/loss=17.348871 D/perp=3.745000 D/bleu=0.316483 D/sec= 17.680838 lr=0.001000
-2018-09-27 08:23:49,836 - main - INFO - saving early stopped-model at epoch 14
-2018-09-27 08:25:07,885 - main - INFO - # source : 誰 を か も 知 る 人 に せ む 高 砂 の
-2018-09-27 08:25:07,885 - main - INFO - #  result : 松 も も の な な な け け
-2018-09-27 08:25:07,886 - main - INFO - #  expect : 松 も 昔 の 友 な ら な く に
-2018-09-27 08:25:07,886 - main - INFO - [ 15] T/loss=20.944308 T/perp=5.151940 T/bleu=0.222339 T/sec= 60.492034 D/loss=13.876813 D/perp=2.875318 D/bleu=0.532146 D/sec= 17.740744 lr=0.001000
-2018-09-27 08:25:07,886 - main - INFO - saving early stopped-model at epoch 15
-2018-09-27 08:26:26,229 - main - INFO - # source : 有 明 の つ れ な く 見 え し 別 れ よ り
-2018-09-27 08:26:26,229 - main - INFO - #  result : あ つ つ き き か か り き き も は は な り
-2018-09-27 08:26:26,229 - main - INFO - #  expect : あ か つ き ば か り 憂 き も の は な し
-2018-09-27 08:26:26,229 - main - INFO - [ 16] T/loss=17.009625 T/perp=3.759625 T/bleu=0.338603 T/sec= 59.619522 D/loss=11.178998 D/perp=2.341596 D/bleu=0.671388 D/sec= 18.416562 lr=0.001000
-2018-09-27 08:26:26,229 - main - INFO - saving early stopped-model at epoch 16
-2018-09-27 08:27:44,235 - main - INFO - # source : ほ と と ぎ す 鳴 き つ る 方 を な が む れ ば
-2018-09-27 08:27:44,235 - main - INFO - #  result : た だ 有 明 の 月 ぞ 残 れ る
-2018-09-27 08:27:44,235 - main - INFO - #  expect : た だ 有 明 の 月 ぞ 残 れ る
-2018-09-27 08:27:44,235 - main - INFO - [ 17] T/loss=13.873996 T/perp=2.929877 T/bleu=0.492285 T/sec= 59.945082 D/loss=9.185254 D/perp=2.011919 D/bleu=0.804740 D/sec= 17.659262 lr=0.001000
-2018-09-27 08:27:44,235 - main - INFO - saving early stopped-model at epoch 17
-2018-09-27 08:29:09,897 - main - INFO - # source : わ が 袖 は 潮 干 に 見 え ぬ 沖 の 石 の
-2018-09-27 08:29:09,897 - main - INFO - #  result : 人 こ そ 知 ら ね か わ く も な し
-2018-09-27 08:29:09,897 - main - INFO - #  expect : 人 こ そ 知 ら ね か わ く 間 も な し
-2018-09-27 08:29:09,897 - main - INFO - [ 18] T/loss=11.353091 T/perp=2.412052 T/bleu=0.632660 T/sec= 68.502562 D/loss=7.773365 D/perp=1.806932 D/bleu=0.900434 D/sec= 17.783276 lr=0.001000
-2018-09-27 08:29:09,897 - main - INFO - saving early stopped-model at epoch 18
-2018-09-27 08:30:31,388 - main - INFO - # source : わ が 庵 は 都 の た つ み し か ぞ す む
-2018-09-27 08:30:31,388 - main - INFO - #  result : 世 を う 山 山 と 人 は い ふ な
-2018-09-27 08:30:31,388 - main - INFO - #  expect : 世 を う ぢ 山 と 人 は い ふ な り
-2018-09-27 08:30:31,388 - main - INFO - [ 19] T/loss=11.256068 T/perp=2.386397 T/bleu=0.606577 T/sec= 61.701671 D/loss=6.298974 D/perp=1.615128 D/bleu=0.893852 D/sec= 19.180535 lr=0.001000
-2018-09-27 08:31:29,259 - main - INFO - # source : 思 ひ わ び さ て も 命 は あ る も の を
-2018-09-27 08:31:29,260 - main - INFO - #  result : 憂 き に た へ ぬ は 涙 な り け り
-2018-09-27 08:31:29,260 - main - INFO - #  expect : 憂 き に た へ ぬ は 涙 な り け り
-2018-09-27 08:31:29,260 - main - INFO - [ 20] T/loss=9.882895 T/perp=2.132316 T/bleu=0.632102 T/sec= 40.039482 D/loss=7.026352 D/perp=1.707064 D/bleu=0.842867 D/sec= 18.354029 lr=0.001000
-2018-09-27 08:32:26,982 - main - INFO - # source : 忘 ら る る 身 を ば 思 は ず 誓 ひ て し
-2018-09-27 08:32:26,982 - main - INFO - #  result : 人 の 命 の 惜 し く も あ る か な
-2018-09-27 08:32:26,982 - main - INFO - #  expect : 人 の 命 の 惜 し く も あ る か な
-2018-09-27 08:32:26,982 - main - INFO - [ 21] T/loss=7.770412 T/perp=1.818909 T/bleu=0.753261 T/sec= 38.311868 D/loss=5.006645 D/perp=1.463829 D/bleu=0.956871 D/sec= 19.467920 lr=0.001000
-2018-09-27 08:32:26,982 - main - INFO - saving early stopped-model at epoch 21
+2018-09-28 08:12:28,160 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
+2018-09-28 08:12:28,161 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
+2018-09-28 08:12:28,163 - main - INFO - Source vocabulary size: 317
+2018-09-28 08:12:28,163 - main - INFO - Target vocabulary size: 317
+2018-09-28 08:12:28,163 - main - INFO - Train data size: 100
+2018-09-28 08:12:28,163 - main - INFO - Train source unknown ratio: 0.00%
+2018-09-28 08:12:28,163 - main - INFO - Train target unknown ratio: 0.00%
+2018-09-28 08:12:28,164 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
+2018-09-28 08:12:28,164 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
+2018-09-28 08:12:28,166 - main - INFO - Validation data: 100
+2018-09-28 08:12:28,166 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-28 08:12:28,166 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-28 08:13:21,483 - main - INFO - # source : 浅 茅 生 の 小 野 の 篠 原 し の ぶ れ ど
+2018-09-28 08:13:21,483 - main - INFO - #  result : の の の の
+2018-09-28 08:13:21,483 - main - INFO - #  expect : あ ま り て な ど か 人 の 恋 し き
+2018-09-28 08:13:21,483 - main - INFO - [  1] T/loss=74.773455 T/perp=303.238386 T/bleu=0.000610 T/sec= 30.353869 D/loss=62.988200 D/perp=122.972371 D/bleu=0.000516 D/sec= 17.097511 lr=0.001000
+2018-09-28 08:13:21,483 - main - INFO - saving early stopped-model at epoch 1
+2018-09-28 08:14:38,349 - main - INFO - # source : 春 の 夜 の 夢 ば か り な る 手 枕 に
+2018-09-28 08:14:38,349 - main - INFO - #  result : 人 か に に し し し
+2018-09-28 08:14:38,349 - main - INFO - #  expect : か ひ な く 立 た む 名 こ そ 惜 し け れ
+2018-09-28 08:14:38,349 - main - INFO - [  2] T/loss=62.491014 T/perp=118.531038 T/bleu=0.000709 T/sec= 60.952100 D/loss=58.219074 D/perp=85.445757 D/bleu=0.003223 D/sec= 16.102266 lr=0.001000
+2018-09-28 08:14:38,349 - main - INFO - saving early stopped-model at epoch 2
+2018-09-28 08:15:46,571 - main - INFO - # source : 恨 み わ び ほ さ ぬ 袖 だ に あ る も の を
+2018-09-28 08:15:46,572 - main - INFO - #  result : わ く く に に り り り り り り り り り り り り り り り り り り り
+2018-09-28 08:15:46,572 - main - INFO - #  expect : 恋 に 朽 ち な む 名 こ そ 惜 し け れ
+2018-09-28 08:15:46,572 - main - INFO - [  3] T/loss=59.410147 T/perp=94.031061 T/bleu=0.002646 T/sec= 53.659201 D/loss=58.431672 D/perp=87.027452 D/bleu=0.000900 D/sec= 14.806254 lr=0.001000
+2018-09-28 08:16:34,413 - main - INFO - # source : い に し へ の 奈 良 の 都 の 八 重 桜
+2018-09-28 08:16:34,413 - main - INFO - #  result : わ の の の の も
+2018-09-28 08:16:34,413 - main - INFO - #  expect : け ふ 九 重 に に ほ ひ ぬ る か な
+2018-09-28 08:16:34,413 - main - INFO - [  4] T/loss=57.828679 T/perp=83.633587 T/bleu=0.000976 T/sec= 31.429493 D/loss=55.057898 D/perp=67.265133 D/bleu=0.001369 D/sec= 16.422293 lr=0.001000
+2018-09-28 08:17:21,113 - main - INFO - # source : 心 に も あ ら で う き 世 に な が ら へ ば
+2018-09-28 08:17:21,113 - main - INFO - #  result : か の の の の も し し
+2018-09-28 08:17:21,113 - main - INFO - #  expect : 恋 し か る べ き 夜 半 の 月 か な
+2018-09-28 08:17:21,113 - main - INFO - [  5] T/loss=54.611187 T/perp=65.282879 T/bleu=0.001755 T/sec= 31.321957 D/loss=53.434514 D/perp=59.860273 D/bleu=0.002283 D/sec= 15.251631 lr=0.001000
+2018-09-28 08:18:08,288 - main - INFO - # source : 嘆 け と て 月 や は も の を 思 は す る
+2018-09-28 08:18:08,288 - main - INFO - #  result : か か か も な な な
+2018-09-28 08:18:08,288 - main - INFO - #  expect : か こ ち 顔 な る わ が 涙 か な
+2018-09-28 08:18:08,288 - main - INFO - [  6] T/loss=53.329635 T/perp=59.485020 T/bleu=0.002682 T/sec= 31.955039 D/loss=50.876806 D/perp=49.074245 D/bleu=0.002987 D/sec= 15.244649 lr=0.001000
+2018-09-28 08:19:00,068 - main - INFO - # source : ほ と と ぎ す 鳴 き つ る 方 を な が む れ ば
+2018-09-28 08:19:00,068 - main - INFO - #  result : た た の の に に な な
+2018-09-28 08:19:00,068 - main - INFO - #  expect : た だ 有 明 の 月 ぞ 残 れ る
+2018-09-28 08:19:00,068 - main - INFO - [  7] T/loss=50.604023 T/perp=48.250549 T/bleu=0.002805 T/sec= 35.268484 D/loss=48.262167 D/perp=40.355443 D/bleu=0.003867 D/sec= 16.510101 lr=0.001000
+2018-09-28 08:19:00,068 - main - INFO - saving early stopped-model at epoch 7
+2018-09-28 08:20:10,694 - main - INFO - # source : あ は れ と も い ふ べ き 人 は 思 ほ え で
+2018-09-28 08:20:10,694 - main - INFO - #  result : 花 の の に に に る る な
+2018-09-28 08:20:10,694 - main - INFO - #  expect : 身 の い た づ ら に な り ぬ べ き か な
+2018-09-28 08:20:10,694 - main - INFO - [  8] T/loss=47.882284 T/perp=39.481920 T/bleu=0.005690 T/sec= 55.187731 D/loss=44.757148 D/perp=30.958004 D/bleu=0.006666 D/sec= 15.394128 lr=0.001000
+2018-09-28 08:20:10,694 - main - INFO - saving early stopped-model at epoch 8
+2018-09-28 08:21:24,209 - main - INFO - # source : 夜 も す が ら も の 思 ふ こ ろ は 明 け や ら で
+2018-09-28 08:21:24,210 - main - INFO - #  result : 閨 の ま ま ま ま に れ な
+2018-09-28 08:21:24,210 - main - INFO - #  expect : 閨 の ひ ま さ へ つ れ な か り け り
+2018-09-28 08:21:24,210 - main - INFO - [  9] T/loss=44.330276 T/perp=30.245615 T/bleu=0.007607 T/sec= 55.023293 D/loss=40.811387 D/perp=22.966227 D/bleu=0.008163 D/sec= 18.267848 lr=0.001000
+2018-09-28 08:21:24,210 - main - INFO - saving early stopped-model at epoch 9
+2018-09-28 08:22:39,020 - main - INFO - # source : 春 過 ぎ て 夏 来 に け ら し 白 妙 の
+2018-09-28 08:22:39,021 - main - INFO - #  result : 衣 衣 衣 の の ふ ふ
+2018-09-28 08:22:39,021 - main - INFO - #  expect : 衣 ほ す て ふ 天 の 香 具 山
+2018-09-28 08:22:39,021 - main - INFO - [ 10] T/loss=40.342041 T/perp=22.410932 T/bleu=0.009488 T/sec= 57.475643 D/loss=37.285410 D/perp=17.670483 D/bleu=0.016240 D/sec= 17.270461 lr=0.001000
+2018-09-28 08:22:39,021 - main - INFO - saving early stopped-model at epoch 10
+2018-09-28 08:23:48,673 - main - INFO - # source : ひ さ か た の 光 の ど け き 春 の 日 に
+2018-09-28 08:23:48,673 - main - INFO - #  result : な な く く く な な
+2018-09-28 08:23:48,673 - main - INFO - #  expect : 静 心 な く 花 の 散 る ら む
+2018-09-28 08:23:48,673 - main - INFO - [ 11] T/loss=36.658402 T/perp=17.162928 T/bleu=0.015976 T/sec= 55.168865 D/loss=33.236740 D/perp=13.169187 D/bleu=0.042039 D/sec= 14.975387 lr=0.001000
+2018-09-28 08:23:48,673 - main - INFO - saving early stopped-model at epoch 11
+2018-09-28 08:25:01,310 - main - INFO - # source : 夜 も す が ら も の 思 ふ こ ろ は 明 け や ら で
+2018-09-28 08:25:01,310 - main - INFO - #  result : 閨 の ひ ま ま ま れ れ れ な り り り
+2018-09-28 08:25:01,310 - main - INFO - #  expect : 閨 の ひ ま さ へ つ れ な か り け り
+2018-09-28 08:25:01,310 - main - INFO - [ 12] T/loss=33.869054 T/perp=13.667996 T/bleu=0.027504 T/sec= 55.806473 D/loss=28.538403 D/perp=9.093572 D/bleu=0.085087 D/sec= 16.534386 lr=0.001000
+2018-09-28 08:25:01,310 - main - INFO - saving early stopped-model at epoch 12
+2018-09-28 08:26:10,503 - main - INFO - # source : 朝 ぼ ら け 有 明 の 月 と み る ま で に
+2018-09-28 08:26:10,503 - main - INFO - #  result : 吉 野 の に に る る る
+2018-09-28 08:26:10,503 - main - INFO - #  expect : 吉 野 の 里 に ふ れ る 白 雪
+2018-09-28 08:26:10,503 - main - INFO - [ 13] T/loss=28.678302 T/perp=9.208027 T/bleu=0.091454 T/sec= 54.253428 D/loss=25.036253 D/perp=6.927636 D/bleu=0.118025 D/sec= 15.124464 lr=0.001000
+2018-09-28 08:26:10,503 - main - INFO - saving early stopped-model at epoch 13
+2018-09-28 08:27:21,099 - main - INFO - # source : 天 の 原 ふ り さ け 見 れ ば 春 日 な る
+2018-09-28 08:27:21,099 - main - INFO - #  result : 三 笠 の の に に に し る る
+2018-09-28 08:27:21,099 - main - INFO - #  expect : 三 笠 の 山 に 出 で し 月 か も
+2018-09-28 08:27:21,099 - main - INFO - [ 14] T/loss=24.557050 T/perp=6.779902 T/bleu=0.125027 T/sec= 55.289616 D/loss=21.273721 D/perp=5.210786 D/bleu=0.204550 D/sec= 15.394106 lr=0.001000
+2018-09-28 08:27:21,099 - main - INFO - saving early stopped-model at epoch 14
+2018-09-28 08:28:28,922 - main - INFO - # source : 誰 を か も 知 る 人 に せ む 高 砂 の
+2018-09-28 08:28:28,922 - main - INFO - #  result : 松 も も の な な な け け
+2018-09-28 08:28:28,922 - main - INFO - #  expect : 松 も 昔 の 友 な ら な く に
+2018-09-28 08:28:28,922 - main - INFO - [ 15] T/loss=20.944173 T/perp=5.151867 T/bleu=0.222339 T/sec= 53.213576 D/loss=17.139758 D/perp=3.770741 D/bleu=0.350310 D/sec= 14.690595 lr=0.001000
+2018-09-28 08:28:28,922 - main - INFO - saving early stopped-model at epoch 15
+2018-09-28 08:29:40,828 - main - INFO - # source : 有 明 の つ れ な く 見 え し 別 れ よ り
+2018-09-28 08:29:40,828 - main - INFO - #  result : あ つ つ き き か か り き き も は は な り
+2018-09-28 08:29:40,828 - main - INFO - #  expect : あ か つ き ば か り 憂 き も の は な し
+2018-09-28 08:29:40,828 - main - INFO - [ 16] T/loss=17.009423 T/perp=3.759566 T/bleu=0.338603 T/sec= 55.188936 D/loss=13.795877 D/perp=2.902649 D/bleu=0.476596 D/sec= 16.410270 lr=0.001000
+2018-09-28 08:29:40,828 - main - INFO - saving early stopped-model at epoch 16
+2018-09-28 08:30:52,811 - main - INFO - # source : ほ と と ぎ す 鳴 き つ る 方 を な が む れ ば
+2018-09-28 08:30:52,811 - main - INFO - #  result : た だ 有 明 の 月 ぞ 残 れ る
+2018-09-28 08:30:52,811 - main - INFO - #  expect : た だ 有 明 の 月 ぞ 残 れ る
+2018-09-28 08:30:52,811 - main - INFO - [ 17] T/loss=13.873892 T/perp=2.929866 T/bleu=0.492285 T/sec= 55.821712 D/loss=11.365594 D/perp=2.402455 D/bleu=0.617596 D/sec= 16.131152 lr=0.001000
+2018-09-28 08:30:52,811 - main - INFO - saving early stopped-model at epoch 17
+2018-09-28 08:32:02,960 - main - INFO - # source : わ が 袖 は 潮 干 に 見 え ぬ 沖 の 石 の
+2018-09-28 08:32:02,960 - main - INFO - #  result : 人 こ そ 知 ら ね か わ く も な し
+2018-09-28 08:32:02,960 - main - INFO - #  expect : 人 こ そ 知 ら ね か わ く 間 も な し
+2018-09-28 08:32:02,960 - main - INFO - [ 18] T/loss=11.353446 T/perp=2.412120 T/bleu=0.632660 T/sec= 54.772519 D/loss=10.785487 D/perp=2.314324 D/bleu=0.677630 D/sec= 15.539775 lr=0.001000
+2018-09-28 08:32:02,960 - main - INFO - saving early stopped-model at epoch 18
+2018-09-28 08:33:15,911 - main - INFO - # source : わ が 庵 は 都 の た つ み し か ぞ す む
+2018-09-28 08:33:15,912 - main - INFO - #  result : 世 を う 山 山 と 人 は い ふ な
+2018-09-28 08:33:15,912 - main - INFO - #  expect : 世 を う ぢ 山 と 人 は い ふ な り
+2018-09-28 08:33:15,912 - main - INFO - [ 19] T/loss=11.257505 T/perp=2.386592 T/bleu=0.608475 T/sec= 56.075961 D/loss=8.744739 D/perp=1.970312 D/bleu=0.701221 D/sec= 16.287306 lr=0.001000
+2018-09-28 08:33:15,912 - main - INFO - saving early stopped-model at epoch 19
+2018-09-28 08:34:30,817 - main - INFO - # source : 思 ひ わ び さ て も 命 は あ る も の を
+2018-09-28 08:34:30,817 - main - INFO - #  result : 憂 き に た へ ぬ は 涙 な り け り
+2018-09-28 08:34:30,817 - main - INFO - #  expect : 憂 き に た へ ぬ は 涙 な り け り
+2018-09-28 08:34:30,817 - main - INFO - [ 20] T/loss=9.881573 T/perp=2.132074 T/bleu=0.633062 T/sec= 58.539472 D/loss=7.991409 D/perp=1.844579 D/bleu=0.758423 D/sec= 16.536404 lr=0.001000
+2018-09-28 08:34:30,817 - main - INFO - saving early stopped-model at epoch 20
+2018-09-28 08:35:45,008 - main - INFO - # source : 忘 ら る る 身 を ば 思 は ず 誓 ひ て し
+2018-09-28 08:35:45,008 - main - INFO - #  result : 人 の 命 の 惜 し く も あ る か な
+2018-09-28 08:35:45,008 - main - INFO - #  expect : 人 の 命 の 惜 し く も あ る か な
+2018-09-28 08:35:45,008 - main - INFO - [ 21] T/loss=7.769661 T/perp=1.818788 T/bleu=0.758842 T/sec= 57.177382 D/loss=6.326374 D/perp=1.626479 D/bleu=0.866560 D/sec= 16.936463 lr=0.001000
+2018-09-28 08:35:45,009 - main - INFO - saving early stopped-model at epoch 21
 /Users/haradatm/.pyenv/versions/miniconda3-latest/envs/py3/lib/python3.6/site-packages/matplotlib/pyplot.py:522: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
   max_open_warning, RuntimeWarning)
-2018-09-27 08:33:56,148 - main - INFO - # source : 八 重 葎 し げ れ る 宿 の さ び し き に
-2018-09-27 08:33:56,148 - main - INFO - #  result : 人 こ そ 見 え ね 秋 は 来 に け り
-2018-09-27 08:33:56,148 - main - INFO - #  expect : 人 こ そ 見 え ね 秋 は 来 に け り
-2018-09-27 08:33:56,148 - main - INFO - [ 22] T/loss=6.518160 T/perp=1.652137 T/bleu=0.863789 T/sec= 68.509916 D/loss=4.141756 D/perp=1.370573 D/bleu=0.973118 D/sec= 20.619171 lr=0.001000
-2018-09-27 08:33:56,148 - main - INFO - saving early stopped-model at epoch 22
-2018-09-27 08:35:17,242 - main - INFO - # source : 難 波 江 の 芦 の か り ね の ひ と よ ゆ ゑ
-2018-09-27 08:35:17,242 - main - INFO - #  result : み を つ く し て や 恋 ひ わ た る べ き
-2018-09-27 08:35:17,242 - main - INFO - #  expect : み を つ く し て や 恋 ひ わ た る べ き
-2018-09-27 08:35:17,242 - main - INFO - [ 23] T/loss=5.274820 T/perp=1.500976 T/bleu=0.932422 T/sec= 62.037880 D/loss=3.119119 D/perp=1.267943 D/bleu=1.000000 D/sec= 19.126877 lr=0.001000
-2018-09-27 08:35:17,242 - main - INFO - saving early stopped-model at epoch 23
-2018-09-27 08:36:34,401 - main - INFO - # source : 契 り お き し さ せ も が 露 を 命 に て
-2018-09-27 08:36:34,401 - main - INFO - #  result : あ は れ 今 年 の 秋 も い ぬ め り
-2018-09-27 08:36:34,401 - main - INFO - #  expect : あ は れ 今 年 の 秋 も い ぬ め り
-2018-09-27 08:36:34,401 - main - INFO - [ 24] T/loss=4.116967 T/perp=1.372145 T/bleu=0.972654 T/sec= 59.948078 D/loss=2.566832 D/perp=1.215750 D/bleu=0.987423 D/sec= 17.356411 lr=0.001000
-2018-09-27 08:37:27,096 - main - INFO - # source : 君 が た め 春 の 野 に 出 で て 若 菜 つ む
-2018-09-27 08:37:27,096 - main - INFO - #  result : わ が 衣 手 に 雪 は 降 り つ つ
-2018-09-27 08:37:27,096 - main - INFO - #  expect : わ が 衣 手 に 雪 は 降 り つ つ
-2018-09-27 08:37:27,097 - main - INFO - [ 25] T/loss=3.452221 T/perp=1.303794 T/bleu=0.980927 T/sec= 35.252257 D/loss=2.014665 D/perp=1.165717 D/bleu=1.000000 D/sec= 17.361990 lr=0.001000
-2018-09-27 08:38:37,989 - main - INFO - # source : 浅 茅 生 の 小 野 の 篠 原 し の ぶ れ ど
-2018-09-27 08:38:37,989 - main - INFO - #  result : あ ま り て な ど か 人 の 恋 し き
-2018-09-27 08:38:37,989 - main - INFO - #  expect : あ ま り て な ど か 人 の 恋 し き
-2018-09-27 08:38:37,989 - main - INFO - [ 26] T/loss=2.779774 T/perp=1.238055 T/bleu=0.990334 T/sec= 41.198809 D/loss=1.599465 D/perp=1.129455 D/bleu=1.000000 D/sec= 28.333492 lr=0.001000
-2018-09-27 08:39:39,813 - main - INFO - # source : も も し き や 古 き 軒 端 の し の ぶ に も
-2018-09-27 08:39:39,813 - main - INFO - #  result : な ほ あ ま り あ る 昔 な り け り
-2018-09-27 08:39:39,813 - main - INFO - #  expect : な ほ あ ま り あ る 昔 な り け り
-2018-09-27 08:39:39,813 - main - INFO - [ 27] T/loss=2.225959 T/perp=1.186219 T/bleu=1.000000 T/sec= 43.709424 D/loss=1.279353 D/perp=1.102270 D/bleu=1.000000 D/sec= 19.267066 lr=0.001000
-2018-09-27 08:40:36,024 - main - INFO - # source : 忘 ら る る 身 を ば 思 は ず 誓 ひ て し
-2018-09-27 08:40:36,025 - main - INFO - #  result : 人 の 命 の 惜 し く も あ る か な
-2018-09-27 08:40:36,025 - main - INFO - #  expect : 人 の 命 の 惜 し く も あ る か な
-2018-09-27 08:40:36,025 - main - INFO - [ 28] T/loss=1.824883 T/perp=1.150223 T/bleu=1.000000 T/sec= 37.613238 D/loss=1.037541 D/perp=1.082169 D/bleu=1.000000 D/sec= 18.838607 lr=0.001000
-2018-09-27 08:41:32,321 - main - INFO - # source : わ が 庵 は 都 の た つ み し か ぞ す む
-2018-09-27 08:41:32,321 - main - INFO - #  result : 世 を う ぢ 山 と 人 は い ふ な り
-2018-09-27 08:41:32,321 - main - INFO - #  expect : 世 を う ぢ 山 と 人 は い ふ な り
-2018-09-27 08:41:32,321 - main - INFO - [ 29] T/loss=1.525841 T/perp=1.124104 T/bleu=1.000000 T/sec= 37.892682 D/loss=0.851387 D/perp=1.066945 D/bleu=1.000000 D/sec= 18.509536 lr=0.001000
-2018-09-27 08:42:29,764 - main - INFO - # source : め ぐ り あ ひ て 見 し や そ れ と も わ か ぬ 間 に
-2018-09-27 08:42:29,765 - main - INFO - #  result : 雲 が く れ に し 世 半 の 月 か な
-2018-09-27 08:42:29,765 - main - INFO - #  expect : 雲 が く れ に し 世 半 の 月 か な
-2018-09-27 08:42:29,765 - main - INFO - [ 30] T/loss=1.252662 T/perp=1.100753 T/bleu=1.000000 T/sec= 37.455061 D/loss=0.702746 D/perp=1.054942 D/bleu=1.000000 D/sec= 19.626164 lr=0.001000
-2018-09-27 08:42:30,015 - main - INFO - saving final-model at epoch 30
+2018-09-28 08:36:56,016 - main - INFO - # source : 八 重 葎 し げ れ る 宿 の さ び し き に
+2018-09-28 08:36:56,016 - main - INFO - #  result : 人 こ そ 見 え え 秋 は 来 に け り
+2018-09-28 08:36:56,016 - main - INFO - #  expect : 人 こ そ 見 え ね 秋 は 来 に け り
+2018-09-28 08:36:56,016 - main - INFO - [ 22] T/loss=6.519111 T/perp=1.652271 T/bleu=0.861205 T/sec= 55.447748 D/loss=5.212866 D/perp=1.492306 D/bleu=0.927443 D/sec= 15.927781 lr=0.001000
+2018-09-28 08:36:56,017 - main - INFO - saving early stopped-model at epoch 22
+2018-09-28 08:38:06,929 - main - INFO - # source : 難 波 江 の 芦 の か り ね の ひ と よ ゆ ゑ
+2018-09-28 08:38:06,929 - main - INFO - #  result : み を つ く し て や 恋 ひ わ た る べ き
+2018-09-28 08:38:06,929 - main - INFO - #  expect : み を つ く し て や 恋 ひ わ た る べ き
+2018-09-28 08:38:06,929 - main - INFO - [ 23] T/loss=5.276714 T/perp=1.501206 T/bleu=0.929833 T/sec= 54.746672 D/loss=3.999364 D/perp=1.359301 D/bleu=0.972654 D/sec= 15.292778 lr=0.001000
+2018-09-28 08:38:06,929 - main - INFO - saving early stopped-model at epoch 23
+2018-09-28 08:39:20,435 - main - INFO - # source : 契 り お き し さ せ も が 露 を 命 に て
+2018-09-28 08:39:20,436 - main - INFO - #  result : あ は れ 今 年 の 秋 も い ぬ め り
+2018-09-28 08:39:20,436 - main - INFO - #  expect : あ は れ 今 年 の 秋 も い ぬ め り
+2018-09-28 08:39:20,436 - main - INFO - [ 24] T/loss=4.117527 T/perp=1.372207 T/bleu=0.972654 T/sec= 58.009454 D/loss=3.315037 D/perp=1.289569 D/bleu=0.979432 D/sec= 16.240338 lr=0.001000
+2018-09-28 08:39:20,436 - main - INFO - saving early stopped-model at epoch 24
+2018-09-28 08:40:35,636 - main - INFO - # source : 君 が た め 春 の 野 に 出 で て 若 菜 つ む
+2018-09-28 08:40:35,637 - main - INFO - #  result : わ が 衣 手 に 雪 は 降 り つ つ
+2018-09-28 08:40:35,637 - main - INFO - #  expect : わ が 衣 手 に 雪 は 降 り つ つ
+2018-09-28 08:40:35,637 - main - INFO - [ 25] T/loss=3.450809 T/perp=1.303645 T/bleu=0.980927 T/sec= 58.565781 D/loss=2.653284 D/perp=1.225663 D/bleu=0.992700 D/sec= 16.431757 lr=0.001000
+2018-09-28 08:40:35,637 - main - INFO - saving early stopped-model at epoch 25
+2018-09-28 08:41:50,241 - main - INFO - # source : 浅 茅 生 の 小 野 の 篠 原 し の ぶ れ ど
+2018-09-28 08:41:50,241 - main - INFO - #  result : あ ま り て な ど か 人 の 恋 し き
+2018-09-28 08:41:50,241 - main - INFO - #  expect : あ ま り て な ど か 人 の 恋 し き
+2018-09-28 08:41:50,242 - main - INFO - [ 26] T/loss=2.781968 T/perp=1.238264 T/bleu=0.990334 T/sec= 57.789632 D/loss=2.103236 D/perp=1.174895 D/bleu=1.000000 D/sec= 16.921701 lr=0.001000
+2018-09-28 08:41:50,242 - main - INFO - saving early stopped-model at epoch 26
+2018-09-28 08:43:03,002 - main - INFO - # source : も も し き や 古 き 軒 端 の し の ぶ に も
+2018-09-28 08:43:03,002 - main - INFO - #  result : な ほ あ ま り あ る 昔 な り け り
+2018-09-28 08:43:03,002 - main - INFO - #  expect : な ほ あ ま り あ る 昔 な り け り
+2018-09-28 08:43:03,002 - main - INFO - [ 27] T/loss=2.226794 T/perp=1.186292 T/bleu=1.000000 T/sec= 56.647154 D/loss=1.708547 D/perp=1.139854 D/bleu=1.000000 D/sec= 16.348271 lr=0.001000
+2018-09-28 08:43:57,470 - main - INFO - # source : 忘 ら る る 身 を ば 思 は ず 誓 ひ て し
+2018-09-28 08:43:57,470 - main - INFO - #  result : 人 の 命 の 惜 し く も あ る か な
+2018-09-28 08:43:57,470 - main - INFO - #  expect : 人 の 命 の 惜 し く も あ る か な
+2018-09-28 08:43:57,470 - main - INFO - [ 28] T/loss=1.823934 T/perp=1.150137 T/bleu=1.000000 T/sec= 36.381112 D/loss=1.410659 D/perp=1.114114 D/bleu=1.000000 D/sec= 17.790053 lr=0.001000
+2018-09-28 08:44:48,560 - main - INFO - # source : わ が 庵 は 都 の た つ み し か ぞ す む
+2018-09-28 08:44:48,560 - main - INFO - #  result : 世 を う ぢ 山 と 人 は い ふ な り
+2018-09-28 08:44:48,560 - main - INFO - #  expect : 世 を う ぢ 山 と 人 は い ふ な り
+2018-09-28 08:44:48,560 - main - INFO - [ 29] T/loss=1.526204 T/perp=1.124133 T/bleu=1.000000 T/sec= 34.383780 D/loss=1.156503 D/perp=1.092595 D/bleu=1.000000 D/sec= 16.854262 lr=0.001000
+2018-09-28 08:45:42,816 - main - INFO - # source : め ぐ り あ ひ て 見 し や そ れ と も わ か ぬ 間 に
+2018-09-28 08:45:42,816 - main - INFO - #  result : 雲 が く れ に し 世 半 の 月 か な
+2018-09-28 08:45:42,816 - main - INFO - #  expect : 雲 が く れ に し 世 半 の 月 か な
+2018-09-28 08:45:42,816 - main - INFO - [ 30] T/loss=1.252660 T/perp=1.100752 T/bleu=1.000000 T/sec= 36.302938 D/loss=0.956569 D/perp=1.075973 D/bleu=1.000000 D/sec= 17.272949 lr=0.001000
+2018-09-28 08:45:43,041 - main - INFO - saving final-model at epoch 30

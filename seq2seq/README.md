@@ -159,40 +159,40 @@ No.4	(bleu 1.0000)
 
 - results/train_seq2seq-ogra.log (use **train_seq2seq.py**)
 ```
-2018-09-27 08:06:32,288 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
-2018-09-27 08:06:32,288 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
-2018-09-27 08:06:32,290 - main - INFO - Source vocabulary size: 317
-2018-09-27 08:06:32,290 - main - INFO - Target vocabulary size: 317
-2018-09-27 08:06:32,290 - main - INFO - Train data size: 100
-2018-09-27 08:06:32,290 - main - INFO - Train source unknown ratio: 0.00%
-2018-09-27 08:06:32,290 - main - INFO - Train target unknown ratio: 0.00%
-2018-09-27 08:06:32,290 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
-2018-09-27 08:06:32,291 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
-2018-09-27 08:06:32,293 - main - INFO - Validation data: 100
-2018-09-27 08:06:32,293 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 08:06:32,293 - main - INFO - Validation target unknown ratio: 0.00%
-2018-09-27 08:07:28,491 - main - INFO - # source : 浅 茅 生 の 小 野 の 篠 原 し の ぶ れ ど
-2018-09-27 08:07:28,492 - main - INFO - #  result : の の の の
-2018-09-27 08:07:28,492 - main - INFO - #  expect : あ ま り て な ど か 人 の 恋 し き
-2018-09-27 08:07:28,492 - main - INFO - [  1] T/loss=74.773455 T/perp=303.238386 T/bleu=0.000610 T/sec= 33.265002 D/loss=63.409412 D/perp=124.721887 D/bleu=0.000681 D/sec= 17.227816 lr=0.001000
-2018-09-27 08:07:28,492 - main - INFO - saving early stopped-model at epoch 1
+2018-09-28 08:12:28,160 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
+2018-09-28 08:12:28,161 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
+2018-09-28 08:12:28,163 - main - INFO - Source vocabulary size: 317
+2018-09-28 08:12:28,163 - main - INFO - Target vocabulary size: 317
+2018-09-28 08:12:28,163 - main - INFO - Train data size: 100
+2018-09-28 08:12:28,163 - main - INFO - Train source unknown ratio: 0.00%
+2018-09-28 08:12:28,163 - main - INFO - Train target unknown ratio: 0.00%
+2018-09-28 08:12:28,164 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.en
+2018-09-28 08:12:28,164 - load_data - INFO - loading...: datasets/ogura/ogura.preprocess.de
+2018-09-28 08:12:28,166 - main - INFO - Validation data: 100
+2018-09-28 08:12:28,166 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-28 08:12:28,166 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-28 08:13:21,483 - main - INFO - # source : 浅 茅 生 の 小 野 の 篠 原 し の ぶ れ ど
+2018-09-28 08:13:21,483 - main - INFO - #  result : の の の の
+2018-09-28 08:13:21,483 - main - INFO - #  expect : あ ま り て な ど か 人 の 恋 し き
+2018-09-28 08:13:21,483 - main - INFO - [  1] T/loss=74.773455 T/perp=303.238386 T/bleu=0.000610 T/sec= 30.353869 D/loss=62.988200 D/perp=122.972371 D/bleu=0.000516 D/sec= 17.097511 lr=0.001000
+2018-09-28 08:13:21,483 - main - INFO - saving early stopped-model at epoch 1
  :
-2018-09-27 08:42:29,764 - main - INFO - # source : め ぐ り あ ひ て 見 し や そ れ と も わ か ぬ 間 に
-2018-09-27 08:42:29,765 - main - INFO - #  result : 雲 が く れ に し 世 半 の 月 か な
-2018-09-27 08:42:29,765 - main - INFO - #  expect : 雲 が く れ に し 世 半 の 月 か な
-2018-09-27 08:42:29,765 - main - INFO - [ 30] T/loss=1.252662 T/perp=1.100753 T/bleu=1.000000 T/sec= 37.455061 D/loss=0.702746 D/perp=1.054942 D/bleu=1.000000 D/sec= 19.626164 lr=0.001000
-2018-09-27 08:42:30,015 - main - INFO - saving final-model at epoch 30
+2018-09-28 08:45:42,816 - main - INFO - # source : め ぐ り あ ひ て 見 し や そ れ と も わ か ぬ 間 に
+2018-09-28 08:45:42,816 - main - INFO - #  result : 雲 が く れ に し 世 半 の 月 か な
+2018-09-28 08:45:42,816 - main - INFO - #  expect : 雲 が く れ に し 世 半 の 月 か な
+2018-09-28 08:45:42,816 - main - INFO - [ 30] T/loss=1.252660 T/perp=1.100752 T/bleu=1.000000 T/sec= 36.302938 D/loss=0.956569 D/perp=1.075973 D/bleu=1.000000 D/sec= 17.272949 lr=0.001000
+2018-09-28 08:45:43,041 - main - INFO - saving final-model at epoch 30
 ```
 
 - results/test_seq2seq-ogura.log (use **test_seq2seq.py**)
 ```
-2018-09-27 08:59:52,355 - main - INFO - Source vocabulary size: 317
-2018-09-27 08:59:52,355 - main - INFO - Target vocabulary size: 317
-2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
-2018-09-27 08:59:52,356 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
-2018-09-27 08:59:52,357 - main - INFO - Validation data: 4
-2018-09-27 08:59:52,357 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-27 08:59:52,357 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-28 09:06:05,743 - main - INFO - Source vocabulary size: 317
+2018-09-28 09:06:05,743 - main - INFO - Target vocabulary size: 317
+2018-09-28 09:06:05,743 - load_data - INFO - loading...: datasets/ogura/test.preprocess.en
+2018-09-28 09:06:05,743 - load_data - INFO - loading...: datasets/ogura/test.preprocess.de
+2018-09-28 09:06:05,746 - main - INFO - Validation data: 4
+2018-09-28 09:06:05,746 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-28 09:06:05,746 - main - INFO - Validation target unknown ratio: 0.00%
 
 ### full enc-dec ###
 
