@@ -1,4 +1,4 @@
-2018-09-28 07:57:08,247 - main - INFO - {
+2018-09-29 11:28:47,862 - main - INFO - {
   "VOCAB": "results/soseki/word_ids.bin",
   "validation_source": "datasets/soseki/test.preprocess.en",
   "validation_target": "datasets/soseki/test.preprocess.de",
@@ -8,19 +8,19 @@
   "layer": 3,
   "model": "results/soseki/early_stopped.model"
 }
-2018-09-28 07:57:08,254 - main - INFO - Source vocabulary size: 13949
-2018-09-28 07:57:08,254 - main - INFO - Target vocabulary size: 13949
-2018-09-28 07:57:08,256 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
-2018-09-28 07:57:08,257 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
-2018-09-28 07:57:08,257 - main - INFO - Validation data: 4
-2018-09-28 07:57:08,257 - main - INFO - Validation source unknown ratio: 0.00%
-2018-09-28 07:57:08,257 - main - INFO - Validation target unknown ratio: 0.00%
+2018-09-29 11:28:47,868 - main - INFO - Source vocabulary size: 13949
+2018-09-29 11:28:47,868 - main - INFO - Target vocabulary size: 13949
+2018-09-29 11:28:47,871 - load_data - INFO - loading...: datasets/soseki/test.preprocess.en
+2018-09-29 11:28:47,871 - load_data - INFO - loading...: datasets/soseki/test.preprocess.de
+2018-09-29 11:28:47,873 - main - INFO - Validation data: 4
+2018-09-29 11:28:47,873 - main - INFO - Validation source unknown ratio: 0.00%
+2018-09-29 11:28:47,873 - main - INFO - Validation target unknown ratio: 0.00%
 
 ### full enc-dec ###
 
-No.1	(bleu 0.0254)
+No.1	(bleu 1.0000)
  source: 吾輩 は 猫 で ある 。
- result: 人間 と は しいて 苦痛 を 求める もの で ある と 一言 に 評し て も よかろ う 。
+ result: 名前 は まだ 無い 。
  expect: 名前 は まだ 無い 。
 No.2	(bleu 1.0000)
  source: 吾輩 は 死ぬ 。 死ん で この 太平 を 得る 。
@@ -37,10 +37,10 @@ No.4	(bleu 1.0000)
 
 ### output the word following the ”lead” words. ###
 
-No.1	(bleu 0.0441)
+No.1	(bleu 1.0000)
  source: 吾輩 は 猫 で ある 。
    lead: 名前
- result: は まだ ない から 懐手 を し て 盤 を 眺め て いる か と 思う と 、 金 子 の ごとき つらい が 欲しい 気 に なっ て 、 足 の 隅 の 方 に 控え て いる 。
+ result: は まだ 無い 。
  expect: は まだ 無い 。
 No.2	(bleu 1.0000)
  source: 吾輩 は 死ぬ 。 死ん で この 太平 を 得る 。
