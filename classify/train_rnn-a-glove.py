@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: Recurrent Convolutional Neural Networks for Sentence Classification
-
-http://ai2-s2-pdfs.s3.amazonaws.com/eba3/6ac75bf22edf9a1bfd33244d459c75b98305.pdf
+"""Chainer example: LSTM Neural Networks for Sentence Classification plus Self-Attention Mechanism with GloVe pre-trained embedding.
 
 """
 
@@ -70,7 +68,7 @@ def sequence_embed(embed, xs, dropout=0.):
     return exs
 
 
-class RCNNClassifier(chainer.Chain):
+class RNNClassifier(chainer.Chain):
 
     """A classifier using a LSTM-RNN Encoder with Word Embedding.
 
@@ -86,14 +84,19 @@ class RCNNClassifier(chainer.Chain):
 
     """
 
-    def __init__(self, n_layers, n_vocab, n_units, n_class, dropout=0.1):
-        super(RCNNClassifier, self).__init__()
+    def __init__(self, n_layers, n_vocab, n_units, n_class, dropout=0.1, pre_embed=None):
+        super(RNNClassifier, self).__init__()
         with self.init_scope():
             self.embed = L.EmbedID(n_vocab, n_units, initialW=chainer.initializers.Uniform(.25))
-            self.encoder = L.NStepBiLSTM(n_layers, n_units, n_units, dropout)
-            self.output = L.Linear(n_units * 3, n_class)
-        self.n_layers = n_layers
+            self.encoder = L.NStepLSTM(n_layers, n_units, n_units, dropout)
+            self.l1 = L.Linear(n_units, 24)
+            self.l2 = L.Linear(24, 1)
+            self.output = L.Linear(n_units, n_class)
+
         self.dropout = dropout
+
+        if pre_embed is not None:
+            self.embed.W.data = pre_embed
 
     def __call__(self, xs, ys):
         concat_outputs = self.predict(xs)
@@ -105,12 +108,19 @@ class RCNNClassifier(chainer.Chain):
 
     def predict(self, xs, softmax=False, argmax=False):
         # Input is a list of variables whose shapes are (sentence_length, ).
-        # Output is a variable whose shape is "(batchsize, n_units * 3).
+        # Output is a variable whose shape is "(batchsize, n_units).
         exs = sequence_embed(self.embed, xs, self.dropout)
         last_h, last_c, ys = self.encoder(None, None, exs)
+        # h = last_h[-1]
+
+        y_len = [len(y) for y in ys]
+        y_section = np.cumsum(y_len[:-1])
+        ay = self.l2(F.relu(self.l1(F.dropout(F.concat(ys, axis=0), ratio=self.dropout))))
+        ays = F.split_axis(ay, y_section, 0)
+
         h_list = []
-        for y, ex in zip(ys, exs):
-            h_list.append(F.max(F.concat((y, ex), axis=1), axis=0)[None, :])
+        for y, ay in zip(ys, ays):
+            h_list.append(F.sum(y * F.broadcast_to(F.softmax(ay, axis=0), y.shape), axis=0)[None, :])
         h = F.concat(h_list, axis=0)
 
         concat_encodings = F.dropout(h, ratio=self.dropout)
@@ -121,6 +131,27 @@ class RCNNClassifier(chainer.Chain):
             return self.xp.argmax(concat_outputs.data, axis=1)
         else:
             return concat_outputs
+
+
+def load_glove_model(path, vocab, width=100):
+    w_shape = (len(vocab), width)
+    w = np.random.uniform(-np.sqrt(6. / sum(w_shape)), np.sqrt(6. / sum(w_shape)), w_shape).astype(np.float32)
+
+    print('loading...: %s' % path)
+    for i, line in enumerate(open(path, 'r')):
+        line = line.strip()
+        if line == '':
+            continue
+        cols = line.split(' ')
+
+        token = cols[0]
+        if token not in vocab:
+            continue
+
+        w[int(vocab.get(token))] = cols[1:]
+
+    l2 = np.linalg.norm(w, axis=1)
+    return w / l2.repeat(w_shape[1]).reshape(w_shape)
 
 
 def load_data(path, vocab, labels):
@@ -148,7 +179,7 @@ def load_data(path, vocab, labels):
                 vocab[word] = len(vocab)
 
         data.append((
-            np.array([vocab.get(w) for w in words.split(' ')], 'i'),
+            np.array([vocab.get(w) for w in words.split(' ') if w != ''], 'i'),
             np.array([labels.get(label)], 'i')
         ))
 
@@ -184,14 +215,15 @@ def to_device(device, x):
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Chainer example: RCNN Classifier')
+    parser = ArgumentParser(description='Chainer example: LSTM+Attention Classifier w/GloVe')
     parser.add_argument('--train',           default='',  type=str, help='training file (.txt)')
     parser.add_argument('--test',            default='',  type=str, help='evaluating file (.txt)')
+    parser.add_argument('--glove',           default='',  type=str, help='initialize word embedding layer with glove (.txt)')
     parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--epoch',     '-e', default=30,  type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=300, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
-    parser.add_argument('--out',       '-o', default='model-rcn-embed-py3',  type=str, help='output directory')
+    parser.add_argument('--out',       '-o', default='model-rnn_a-embed',  type=str, help='output directory')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     print(json.dumps(args.__dict__, indent=2))
@@ -219,18 +251,31 @@ if __name__ == '__main__':
     if not os.path.exists(args.out):
         os.mkdir(args.out)
 
+    with open(os.path.join(args.out, 'vocab.bin'), 'wb') as f:
+        pickle.dump(vocab, f)
+
     # 学習の繰り返し回数
     n_epoch = args.epoch
+
+    # 中間層の数
+    n_units = args.unit
 
     # 確率的勾配降下法で学習させる際の1回分のバッチサイズ
     batchsize = args.batchsize
 
+    input_channel = 1
+    output_channel = 50
     n_units = args.unit
     n_vocab = len(vocab)
     n_class = len(labels)
 
+    pre_embed = None
+    if args.glove:
+        pre_embed = load_glove_model(args.glove, vocab)
+        n_units = pre_embed.shape[1]
+
     # Setup model
-    model = RCNNClassifier(n_layers=1, n_vocab=n_vocab, n_units=n_units, dropout=0.4, n_class=n_class)
+    model = RNNClassifier(n_layers=1, n_vocab=n_vocab, n_units=n_units, dropout=0.4, n_class=n_class, pre_embed=pre_embed)
     if args.gpu >= 0:
         model.to_gpu()
 
@@ -258,6 +303,7 @@ if __name__ == '__main__':
 
     start_at = time.time()
     cur_at = start_at
+    sys.stdout.flush()
 
     # Learning loop
     for epoch in range(1, args.epoch + 1):
@@ -357,6 +403,17 @@ if __name__ == '__main__':
         )
         sys.stdout.flush()
 
+        # model と optimizer を保存する
+        if mean_test_accuracy1 > best_accuracy:
+            best_accuracy = mean_test_accuracy1
+            min_epoch = epoch
+            print('saving early stopped-model at epoch {}'.format(min_epoch))
+            if args.gpu >= 0: model.to_cpu()
+            chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
+            chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.state'), optimizer)
+            if args.gpu >= 0: model.to_gpu()
+            sys.stdout.flush()
+
         # 精度と誤差をグラフ描画
         if True:
             ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
@@ -379,7 +436,7 @@ if __name__ == '__main__':
             plt.yticks(np.arange(ylim2[0], ylim2[1], .1))
             plt.grid(True)
             # plt.ylabel('accuracy')
-            plt.legend(['train turn', 'train call'], loc="upper right")
+            plt.legend(['train acc1', 'train acc2'], loc="upper right")
             plt.title('Loss and accuracy of train.')
 
             # グラフ右
@@ -388,7 +445,7 @@ if __name__ == '__main__':
             plt.plot(range(1, len(test_loss) + 1), test_loss, color='C1', marker='x')
             # plt.grid()
             # plt.ylabel('loss')
-            plt.legend(['dev loss'], loc="lower left")
+            plt.legend(['test loss'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
             plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, color='C0', marker='x')
@@ -396,8 +453,8 @@ if __name__ == '__main__':
             plt.yticks(np.arange(ylim2[0], ylim2[1], .1))
             plt.grid(True)
             plt.ylabel('accuracy')
-            plt.legend(['dev turn', 'dev call'], loc="upper right")
-            plt.title('Loss and accuracy of dev.')
+            plt.legend(['test acc1', 'test acc2'], loc="upper right")
+            plt.title('Loss and accuracy of test.')
 
             # plt.savefig('{}.png'.format(args.out))
             plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
@@ -405,5 +462,12 @@ if __name__ == '__main__':
             plt.close()
 
         cur_at = now
+
+    print('saving final-model at epoch {}'.format(epoch))
+    if args.gpu >= 0: model.to_cpu()
+    chainer.serializers.save_npz(os.path.join(args.out, 'final.model'), model)
+    chainer.serializers.save_npz(os.path.join(args.out, 'final.state'), optimizer)
+    if args.gpu >= 0: model.to_gpu()
+    sys.stdout.flush()
 
 print('time spent:', time.time() - start_time)

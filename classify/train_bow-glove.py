@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: Convolutional Neural Networks with SPP for Sentence Classification
-
-http://emnlp2014.org/papers/pdf/EMNLP2014181.pdf
-https://arxiv.org/pdf/1406.4729v4.pdf
+"""Chainer example: Text classifier using a BoW encoder with GloVe pre-trained embedding.
 
 """
 
@@ -69,38 +66,12 @@ def block_embed(embed, x, dropout=0.):
     return e
 
 
-class MLP(chainer.ChainList):
+class BoWClassifier(chainer.Chain):
 
-    """A multilayer perceptron.
-
-    Args:
-        n_vocab (int): The size of vocabulary.
-        n_units (int): The number of units in a hidden or output layer.
-        dropout (float): The dropout ratio.
-
-    """
-
-    def __init__(self, n_layers, n_units, dropout=0.1):
-        super(MLP, self).__init__()
-        for i in range(n_layers):
-            self.add_link(L.Linear(None, n_units))
-        self.dropout = dropout
-
-    def __call__(self, x):
-        for i, link in enumerate(self.children()):
-            x = F.dropout(x, ratio=self.dropout)
-            x = F.relu(link(x))
-        return x
-
-
-class CNNClassifier(chainer.Chain):
-
-    """A classifier using a CNN encoder with word embedding.
+    """A classifier using a BoW encoder with word embedding.
 
     This chain encodes a sentence and classifies it into classes.
-    This model encodes a sentence as a set of n-gram chunks using convolutional filters.
-    Following the convolution, max-pooling is applied over time.
-    Finally, the output is fed into a multilayer perceptron.
+    This model encodes a sentence as just a set of words by averaging.
 
      Args:
         n_layers (int): The number of layers of MLP.
@@ -111,17 +82,16 @@ class CNNClassifier(chainer.Chain):
 
      """
 
-    def __init__(self, n_layers, n_vocab, n_units, n_class, dropout=0.1):
-        super(CNNClassifier, self).__init__()
+    def __init__(self, n_layers, n_vocab, n_units, n_class, dropout=0.1, pre_embed=None):
+        super(BoWClassifier, self).__init__()
         with self.init_scope():
             self.embed = L.EmbedID(n_vocab, n_units, ignore_label=-1, initialW=chainer.initializers.Uniform(.25))
-            self.cnn_w3 = L.Convolution2D(n_units, n_units // 3, ksize=(3, 1), stride=1, pad=(2, 0), nobias=True)
-            self.cnn_w4 = L.Convolution2D(n_units, n_units // 3, ksize=(4, 1), stride=1, pad=(3, 0), nobias=True)
-            self.cnn_w5 = L.Convolution2D(n_units, n_units // 3, ksize=(5, 1), stride=1, pad=(4, 0), nobias=True)
-            self.mlp = MLP(n_layers, n_units, dropout)
             self.output = L.Linear(n_units, n_class)
 
         self.dropout = dropout
+
+        if pre_embed is not None:
+            self.embed.W.data = pre_embed
 
     def __call__(self, xs, ts):
         concat_outputs = self.predict(xs)
@@ -135,14 +105,9 @@ class CNNClassifier(chainer.Chain):
         # Input is a list of variables whose shapes are (sentence_length, ).
         # Output is a variable whose shape is "(batchsize, n_units).
         x_block = chainer.dataset.convert.concat_examples(xs, padding=-1)
-        ex_block = block_embed(self.embed, x_block, self.dropout)
-        h_w3 = F.max(self.cnn_w3(ex_block), axis=2)
-        h_w4 = F.max(self.cnn_w4(ex_block), axis=2)
-        h_w5 = F.max(self.cnn_w5(ex_block), axis=2)
-        h = F.concat([h_w3, h_w4, h_w5], axis=1)
-        h = F.relu(h)
-        h = F.dropout(h, ratio=self.dropout)
-        h = self.mlp(h)
+        ex_block = block_embed(self.embed, x_block)
+        x_len = self.xp.array([len(x) for x in xs], np.int32)[:, None, None]
+        h = F.sum(ex_block, axis=2) / x_len
 
         concat_encodings = F.dropout(h, ratio=self.dropout)
         concat_outputs = self.output(concat_encodings)
@@ -179,11 +144,32 @@ def load_data(path, vocab, labels):
                 vocab[word] = len(vocab)
 
         data.append((
-            np.array([vocab.get(w) for w in words.split(' ')], 'i'),
+            np.array([vocab.get(w) for w in words.split(' ') if w != ''], 'i'),
             np.array([labels.get(label)], 'i')
         ))
 
     return data, vocab, labels
+
+
+def load_glove_model(path, vocab, width=100):
+    w_shape = (len(vocab), width)
+    w = np.random.uniform(-np.sqrt(6. / sum(w_shape)), np.sqrt(6. / sum(w_shape)), w_shape).astype(np.float32)
+
+    print('loading...: %s' % path)
+    for i, line in enumerate(open(path, 'r')):
+        line = line.strip()
+        if line == '':
+            continue
+        cols = line.split(' ')
+
+        token = cols[0]
+        if token not in vocab:
+            continue
+
+        w[int(vocab.get(token))] = cols[1:]
+
+    l2 = np.linalg.norm(w, axis=1)
+    return w / l2.repeat(w_shape[1]).reshape(w_shape)
 
 
 def batch_iter(data, batch_size, shuffle=True):
@@ -215,14 +201,15 @@ def to_device(device, x):
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Chainer example: CNN Classifier')
+    parser = ArgumentParser(description='Chainer example: BoW Classifier w/GloVe')
     parser.add_argument('--train',           default='',  type=str, help='training file (.txt)')
     parser.add_argument('--test',            default='',  type=str, help='evaluating file (.txt)')
+    parser.add_argument('--glove',           default='',  type=str, help='initialize word embedding layer with glove (.txt)')
     parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--epoch',     '-e', default=30,  type=int, help='number of epochs to learn')
     parser.add_argument('--unit',      '-u', default=300, type=int, help='number of output channels')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
-    parser.add_argument('--out',       '-o', default='model-cnn-embed-py3',  type=str, help='output directory')
+    parser.add_argument('--out',       '-o', default='model-bow-embed',  type=str, help='output directory')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     print(json.dumps(args.__dict__, indent=2))
@@ -250,6 +237,9 @@ if __name__ == '__main__':
     if not os.path.exists(args.out):
         os.mkdir(args.out)
 
+    with open(os.path.join(args.out, 'vocab.bin'), 'wb') as f:
+        pickle.dump(vocab, f)
+
     # 学習の繰り返し回数
     n_epoch = args.epoch
 
@@ -260,8 +250,13 @@ if __name__ == '__main__':
     n_vocab = len(vocab)
     n_class = len(labels)
 
+    pre_embed = None
+    if args.glove:
+        pre_embed = load_glove_model(args.glove, vocab)
+        n_units = pre_embed.shape[1]
+
     # Setup model
-    model = CNNClassifier(n_layers=1, n_vocab=n_vocab, n_units=n_units, dropout=0.4, n_class=n_class)
+    model = BoWClassifier(n_layers=1, n_vocab=n_vocab, n_units=n_units, dropout=0.4, n_class=n_class, pre_embed=pre_embed)
     if args.gpu >= 0:
         model.to_gpu()
 
@@ -289,6 +284,7 @@ if __name__ == '__main__':
 
     start_at = time.time()
     cur_at = start_at
+    sys.stdout.flush()
 
     # Learning loop
     for epoch in range(1, args.epoch + 1):
@@ -388,6 +384,17 @@ if __name__ == '__main__':
         )
         sys.stdout.flush()
 
+        # model と optimizer を保存する
+        if mean_test_accuracy1 > best_accuracy:
+            best_accuracy = mean_test_accuracy1
+            min_epoch = epoch
+            print('saving early stopped-model at epoch {}'.format(min_epoch))
+            if args.gpu >= 0: model.to_cpu()
+            chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
+            chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.state'), optimizer)
+            if args.gpu >= 0: model.to_gpu()
+            sys.stdout.flush()
+
         # 精度と誤差をグラフ描画
         if True:
             ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
@@ -410,7 +417,7 @@ if __name__ == '__main__':
             plt.yticks(np.arange(ylim2[0], ylim2[1], .1))
             plt.grid(True)
             # plt.ylabel('accuracy')
-            plt.legend(['train turn', 'train call'], loc="upper right")
+            plt.legend(['train acc1', 'train acc2'], loc="upper right")
             plt.title('Loss and accuracy of train.')
 
             # グラフ右
@@ -419,7 +426,7 @@ if __name__ == '__main__':
             plt.plot(range(1, len(test_loss) + 1), test_loss, color='C1', marker='x')
             # plt.grid()
             # plt.ylabel('loss')
-            plt.legend(['dev loss'], loc="lower left")
+            plt.legend(['test loss'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
             plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, color='C0', marker='x')
@@ -427,8 +434,8 @@ if __name__ == '__main__':
             plt.yticks(np.arange(ylim2[0], ylim2[1], .1))
             plt.grid(True)
             plt.ylabel('accuracy')
-            plt.legend(['dev turn', 'dev call'], loc="upper right")
-            plt.title('Loss and accuracy of dev.')
+            plt.legend(['test acc1', 'test acc2'], loc="upper right")
+            plt.title('Loss and accuracy of test.')
 
             # plt.savefig('{}.png'.format(args.out))
             plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
@@ -436,5 +443,13 @@ if __name__ == '__main__':
             plt.close()
 
         cur_at = now
+
+    # model と optimizer を保存する
+    print('saving final-model at epoch {}'.format(epoch))
+    if args.gpu >= 0: model.to_cpu()
+    chainer.serializers.save_npz(os.path.join(args.out, 'final.model'), model)
+    chainer.serializers.save_npz(os.path.join(args.out, 'final.state'), optimizer)
+    if args.gpu >= 0: model.to_gpu()
+    sys.stdout.flush()
 
 print('time spent:', time.time() - start_time)

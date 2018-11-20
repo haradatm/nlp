@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Chainer example: Bi-LSTM Neural Networks for Sentence Classification
+"""Chainer example: LSTM Neural Networks for Sentence Classification plus Self-Attention Mechanism with BERT pre-trained embedding.
 
 """
 
@@ -39,35 +39,6 @@ import pickle
 from sklearn.utils import shuffle as skshuffle
 
 
-def sequence_embed(embed, xs, dropout=0.):
-    """Efficient embedding function for variable-length sequences
-
-    This output is equally to
-    "return [F.dropout(embed(x), ratio=dropout) for x in xs]".
-    However, calling the functions is one-shot and faster.
-
-    Args:
-        embed (callable): A :func:`~chainer.functions.embed_id` function
-            or :class:`~chainer.links.EmbedID` link.
-        xs (list of :class:`~chainer.Variable` or :class:`numpy.ndarray` or \
-        :class:`cupy.ndarray`): i-th element in the list is an input variable,
-            which is a :math:`(L_i, )`-shaped int array.
-        dropout (float): Dropout ratio.
-
-    Returns:
-        list of ~chainer.Variable: Output variables. i-th element in the
-        list is an output variable, which is a :math:`(L_i, N)`-shaped
-        float array. :math:`(N)` is the number of dimensions of word embedding.
-
-    """
-    x_len = [len(x) for x in xs]
-    x_section = np.cumsum(x_len[:-1])
-    ex = embed(F.concat(xs, axis=0))
-    ex = F.dropout(ex, ratio=dropout)
-    exs = F.split_axis(ex, x_section, 0)
-    return exs
-
-
 class RNNClassifier(chainer.Chain):
 
     """A classifier using a LSTM-RNN Encoder with Word Embedding.
@@ -84,43 +55,54 @@ class RNNClassifier(chainer.Chain):
 
     """
 
-    def __init__(self, n_layers, n_vocab, n_units, n_class, dropout=0.1):
+    def __init__(self, n_layers, n_dims, n_units, n_class, dropout=0.1, pre_embed=None):
         super(RNNClassifier, self).__init__()
         with self.init_scope():
-            self.embed = L.EmbedID(n_vocab, n_units, initialW=chainer.initializers.Uniform(.25))
-            self.encoder = L.NStepBiLSTM(n_layers, n_units, n_units, dropout)
-            self.output = L.Linear(n_units * 2, n_class)
+            self.bert = pre_embed.bert
+            self.encoder = L.NStepLSTM(n_layers, n_dims, n_units, dropout)
+            self.l1 = L.Linear(n_units, 24)
+            self.l2 = L.Linear(24, 1)
+            self.output = L.Linear(n_units, n_class)
 
         self.dropout = dropout
 
-    def __call__(self, xs, ys):
-        concat_outputs = self.predict(xs)
-        concat_truths = F.concat(ys, axis=0)
-
-        loss = F.softmax_cross_entropy(concat_outputs, concat_truths)
-        accuracy = F.accuracy(concat_outputs, concat_truths)
+    def __call__(self, xs1, xs2, xs3, ts):
+        outputs = self.predict(xs1, xs2, xs3)
+        loss = F.softmax_cross_entropy(outputs, ts)
+        accuracy = F.accuracy(outputs, ts)
         return loss, accuracy
 
-    def predict(self, xs, softmax=False, argmax=False):
-        # Input is a list of variables whose shapes are (sentence_length, ).
-        # Output is a variable whose shape is "(batchsize, n_units).
-        exs = sequence_embed(self.embed, xs, self.dropout)
-        last_h, last_c, ys = self.encoder(None, None, exs)
+    def predict(self, xs1, xs2, xs3, softmax=False, argmax=False):
+        embedding = self.bert.get_embedding_output(xs1, xs2, xs3)
+        x_len = [len(x) for x in xs1]
+        x_section = np.cumsum(x_len[:-1])
+        ex_block = F.split_axis(F.concat(embedding, axis=0), x_section, 0)
+
+        last_h, last_c, ys = self.encoder(None, None, ex_block)
         # h = last_h[-1]
-        h = F.concat(last_h[-2:], axis=1)
 
-        concat_encodings = F.dropout(h, ratio=self.dropout)
-        concat_outputs = self.output(concat_encodings)
+        y_len = [len(y) for y in ys]
+        y_section = np.cumsum(y_len[:-1])
+        ay = self.l2(F.relu(self.l1(F.dropout(F.concat(ys, axis=0), ratio=self.dropout))))
+        ays = F.split_axis(ay, y_section, 0)
+
+        h_list = []
+        for y, ay in zip(ys, ays):
+            h_list.append(F.sum(y * F.broadcast_to(F.softmax(ay, axis=0), y.shape), axis=0)[None, :])
+        h = F.concat(h_list, axis=0)
+
+        encodings = F.dropout(h, ratio=self.dropout)
+        outputs = self.output(encodings)
         if softmax:
-            return F.softmax(concat_outputs).data
+            return F.softmax(outputs).data
         elif argmax:
-            return self.xp.argmax(concat_outputs.data, axis=1)
+            return self.xp.argmax(outputs.data, axis=1)
         else:
-            return concat_outputs
+            return outputs
 
 
-def load_data(path, vocab, labels):
-    data = []
+def load_data(path, labels, tokenizer):
+    features = []
 
     print('loading...: %s' % path)
     for i, line in enumerate(open(path)):
@@ -132,23 +114,54 @@ def load_data(path, vocab, labels):
         if line == '':
             continue
 
-        label, words = line.split('\t')
+        label, text = line.split('\t')
 
         if label not in labels:
-            labels[label] = len(labels)
+            labels += [label]
 
-        for word in words.split(' '):
-            if word == '':
-                continue
-            if word not in vocab:
-                vocab[word] = len(vocab)
+        tokens_a = tokenizer.tokenize(text)
+        tokens = ["[CLS]"]
+        segment_ids = [0]
 
-        data.append((
-            np.array([vocab.get(w) for w in words.split(' ')], 'i'),
-            np.array([labels.get(label)], 'i')
-        ))
+        for token in tokens_a:
+            tokens.append(token)
+            segment_ids.append(0)
 
-    return data, vocab, labels
+        tokens.append("[SEP]")
+        segment_ids.append(0)
+
+        input_ids = tokenizer.convert_tokens_to_ids(tokens)
+        input_mask = [1] * len(input_ids)
+        label_id = labels.index(label)
+
+        feature = (np.array(input_ids, 'i'),
+                   np.array(input_mask, 'f'),
+                   np.array(segment_ids, 'i'),
+                   np.array([label_id], 'i'))
+        features.append(feature)
+
+    return features
+
+
+def load_glove_model(path, vocab, width=100):
+    w_shape = (len(vocab), width)
+    w = np.random.uniform(-np.sqrt(6. / sum(w_shape)), np.sqrt(6. / sum(w_shape)), w_shape).astype(np.float32)
+
+    print('loading...: %s' % path)
+    for i, line in enumerate(open(path, 'r')):
+        line = line.strip()
+        if line == '':
+            continue
+        cols = line.split(' ')
+
+        token = cols[0]
+        if token not in vocab:
+            continue
+
+        w[int(vocab.get(token))] = cols[1:]
+
+    l2 = np.linalg.norm(w, axis=1)
+    return w / l2.repeat(w_shape[1]).reshape(w_shape)
 
 
 def batch_iter(data, batch_size, shuffle=True):
@@ -177,17 +190,32 @@ def to_device(device, x):
         return cuda.to_gpu(x, device)
 
 
+class BertEmbedding(chainer.Chain):
+
+    def __init__(self, bert):
+        super(BertEmbedding, self).__init__()
+        with self.init_scope():
+            self.bert = bert
+
+    def __call__(self, x1, x2, x3, ts):
+        output_layer = self.bert.get_embedding_output(x1, x2, x3)
+        return output_layer
+
+
 if __name__ == '__main__':
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description='Chainer example: Bi-LSTM Classifier')
-    parser.add_argument('--train',           default='',  type=str, help='training file (.txt)')
-    parser.add_argument('--test',            default='',  type=str, help='evaluating file (.txt)')
-    parser.add_argument('--gpu',       '-g', default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--epoch',     '-e', default=30,  type=int, help='number of epochs to learn')
-    parser.add_argument('--unit',      '-u', default=300, type=int, help='number of output channels')
-    parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
-    parser.add_argument('--out',       '-o', default='model-rnn_b-embed-py3',  type=str, help='output directory')
+    parser = ArgumentParser(description='Chainer example: LSTM+Attention Classifier w/BERT')
+    parser.add_argument('--train',            default='',  type=str, help='training file (.txt)')
+    parser.add_argument('--test',             default='',  type=str, help='evaluating file (.txt)')
+    parser.add_argument('--init_checkpoint',  default='',  type=str, help='initial checkpoint (usually from a pre-trained BERT model (.npz)')
+    parser.add_argument('--bert_config_file', default='',  type=str, help='json file corresponding to the pre-trained BERT model (.json)')
+    parser.add_argument('--vocab_file',       default='',  type=str, help='vocabulary file that the BERT model was trained on (.txt)')
+    parser.add_argument('--gpu',       '-g',  default=-1,  type=int, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--epoch',     '-e',  default=50,  type=int, help='number of epochs to learn')
+    parser.add_argument('--unit',      '-u',  default=300, type=int, help='number of output channels')
+    parser.add_argument('--batchsize', '-b',  default=64, type=int, help='learning batchsize size')
+    parser.add_argument('--out',       '-o', default='model-rnn-a-bert',  type=str, help='output directory')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     print(json.dumps(args.__dict__, indent=2))
@@ -202,9 +230,18 @@ if __name__ == '__main__':
         chainer.backends.cuda.get_device_from_id(args.gpu).use()
         cuda.cupy.random.seed(seed)
 
-    vocab, labels = {'<eos>': 0, '<unk>': 1, '<pad>': -1}, {}
-    train, vocab, labels = load_data(args.train, vocab, labels)
-    test,  vocab, labels = load_data(args.test,  vocab, labels)
+    vocab_file = args.vocab_file
+    bert_config_file = args.bert_config_file
+    init_checkpoint = args.init_checkpoint
+
+    from tokenization import FullTokenizer
+    tokenizer = FullTokenizer(vocab_file=vocab_file, do_lower_case=True)
+    vocab = tokenizer.vocab
+    labels = []
+
+    train = load_data(args.train, labels, tokenizer)
+    test  = load_data(args.test,  labels, tokenizer)
+    # assert labels == ["0", "1"]
 
     print('# train data: {}'.format(len(train)))
     print('# test  data: {}'.format(len(test)))
@@ -218,21 +255,24 @@ if __name__ == '__main__':
     # 学習の繰り返し回数
     n_epoch = args.epoch
 
-    # 中間層の数
-    n_units = args.unit
-
     # 確率的勾配降下法で学習させる際の1回分のバッチサイズ
     batchsize = args.batchsize
 
-    input_channel = 1
-    output_channel = 50
-    width = 300
     n_units = args.unit
     n_vocab = len(vocab)
     n_class = len(labels)
 
+    # Setup bert
+    pre_embed = None
+    import modeling
+    bert_config = modeling.BertConfig.from_json_file(bert_config_file)
+    bert = BertEmbedding(modeling.BertModel(config=bert_config))
+    with np.load(init_checkpoint) as f:
+        d = chainer.serializers.NpzDeserializer(f, path='', strict=True)
+        d.load(bert)
+
     # Setup model
-    model = RNNClassifier(n_layers=1, n_vocab=n_vocab, n_units=n_units, dropout=0.4, n_class=n_class)
+    model = RNNClassifier(n_layers=1, n_dims=bert_config.hidden_size, n_units=n_units, dropout=0.4, n_class=n_class, pre_embed=bert)
     if args.gpu >= 0:
         model.to_gpu()
 
@@ -260,6 +300,7 @@ if __name__ == '__main__':
 
     start_at = time.time()
     cur_at = start_at
+    sys.stdout.flush()
 
     # Learning loop
     for epoch in range(1, args.epoch + 1):
@@ -274,15 +315,17 @@ if __name__ == '__main__':
         sum_train_accuracy2 = 0.
         K = 0
 
-        for x, t in train_iter:
-            x = to_device(args.gpu, x)
-            t = to_device(args.gpu, t)
+        for x1, x2, x3, t in train_iter:
+            x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
+            x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
+            x3 = to_device(args.gpu, F.pad_sequence(x3, length=None, padding=0).array).astype('i')
+            t  = to_device(args.gpu, F.pad_sequence(t , length=None, padding=0).array).astype('i')[:, 0]
 
             # 勾配を初期化
             model.cleargrads()
 
             # 順伝播させて誤差と精度を算出
-            loss, accuracy = model(x, t)
+            loss, accuracy = model(x1, x2, x3, t)
             sum_train_loss += float(loss.data) * len(t)
             sum_train_accuracy1 += float(accuracy.data) * len(t)
             sum_train_accuracy2 += .0
@@ -312,12 +355,14 @@ if __name__ == '__main__':
 
         # evaluation
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
-            for x, t in test_iter:
-                x = to_device(args.gpu, x)
-                t = to_device(args.gpu, t)
+            for x1, x2, x3, t in test_iter:
+                x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
+                x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
+                x3 = to_device(args.gpu, F.pad_sequence(x3, length=None, padding=0).array).astype('i')
+                t =  to_device(args.gpu, F.pad_sequence(t,  length=None, padding=0).array).astype('i')[:, 0]
 
                 # 順伝播させて誤差と精度を算出
-                loss, accuracy = model(x, t)
+                loss, accuracy = model(x1, x2, x3, t)
                 sum_test_loss += float(loss.data) * len(t)
                 sum_test_accuracy1 += float(accuracy.data) * len(t)
                 sum_test_accuracy2 += .0
@@ -359,6 +404,17 @@ if __name__ == '__main__':
         )
         sys.stdout.flush()
 
+        # model と optimizer を保存する
+        if mean_test_accuracy1 > best_accuracy:
+            best_accuracy = mean_test_accuracy1
+            min_epoch = epoch
+            print('saving early stopped-model at epoch {}'.format(min_epoch))
+            if args.gpu >= 0: model.to_cpu()
+            chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.model'), model)
+            chainer.serializers.save_npz(os.path.join(args.out, 'early_stopped.state'), optimizer)
+            if args.gpu >= 0: model.to_gpu()
+            sys.stdout.flush()
+
         # 精度と誤差をグラフ描画
         if True:
             ylim1 = [min(train_loss + test_loss), max(train_loss + test_loss)]
@@ -381,7 +437,7 @@ if __name__ == '__main__':
             plt.yticks(np.arange(ylim2[0], ylim2[1], .1))
             plt.grid(True)
             # plt.ylabel('accuracy')
-            plt.legend(['train turn', 'train call'], loc="upper right")
+            plt.legend(['train acc1', 'train acc2'], loc="upper right")
             plt.title('Loss and accuracy of train.')
 
             # グラフ右
@@ -390,7 +446,7 @@ if __name__ == '__main__':
             plt.plot(range(1, len(test_loss) + 1), test_loss, color='C1', marker='x')
             # plt.grid()
             # plt.ylabel('loss')
-            plt.legend(['dev loss'], loc="lower left")
+            plt.legend(['test loss'], loc="lower left")
             plt.twinx()
             plt.ylim(ylim2)
             plt.plot(range(1, len(test_accuracy1) + 1), test_accuracy1, color='C0', marker='x')
@@ -398,8 +454,8 @@ if __name__ == '__main__':
             plt.yticks(np.arange(ylim2[0], ylim2[1], .1))
             plt.grid(True)
             plt.ylabel('accuracy')
-            plt.legend(['dev turn', 'dev call'], loc="upper right")
-            plt.title('Loss and accuracy of dev.')
+            plt.legend(['test acc1', 'test acc2'], loc="upper right")
+            plt.title('Loss and accuracy of test.')
 
             # plt.savefig('{}.png'.format(args.out))
             plt.savefig('{}.png'.format(os.path.splitext(os.path.basename(__file__))[0]))
@@ -407,5 +463,13 @@ if __name__ == '__main__':
             plt.close()
 
         cur_at = now
+
+    # model と optimizer を保存する
+    print('saving final-model at epoch {}'.format(epoch))
+    if args.gpu >= 0: model.to_cpu()
+    chainer.serializers.save_npz(os.path.join(args.out, 'final.model'), model)
+    chainer.serializers.save_npz(os.path.join(args.out, 'final.state'), optimizer)
+    if args.gpu >= 0: model.to_gpu()
+    sys.stdout.flush()
 
 print('time spent:', time.time() - start_time)
