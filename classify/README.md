@@ -77,3 +77,5 @@ python train_rnn-ba-bert.py --train datasets/mlit/04-train.txt --test datasets/m
 python train_rcnn-bert.py   --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rcnn   2>&1 | tee train_rcnn-bert.log  
 python train_bow-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_bow    2>&1 | tee train_bow-bert.log   
 ```
+
+<img src="results/accuracy.png"/> <img src="results/elaps.png"/>
