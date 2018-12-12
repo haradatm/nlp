@@ -181,7 +181,7 @@ if __name__ == '__main__':
     parser.add_argument('--docs',     default='', type=str, help='document data file (.txt)')
     parser.add_argument('--queries',  default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',    default='', type=str, help='query relevance file (.qrel)')
-    parser.add_argument('--type',     default='w2v', choices=['w2v', 'fast'], help='type of hybrid')
+    parser.add_argument('--type',     default='bert', choices=['w2v', 'fast', 'bert'], help='type of hybrid')
     parser.add_argument('--bm_type',  default='qtf', choices=['qtf', 'qbm'], help='type of query vectorize')
     parser.add_argument('--beta',     default=0.40, type=float, help='value of interpolation coefficient')
     parser.add_argument('--K',        default=20,   type=int, help='score for top-k results')

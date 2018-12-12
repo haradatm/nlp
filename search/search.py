@@ -6,7 +6,7 @@
 
 __version__ = '0.0.1'
 
-import sys, time, logging
+import sys, time, os, logging, random
 import numpy as np
 np.set_printoptions(precision=20)
 logger = logging.getLogger(__name__)
@@ -37,8 +37,8 @@ def load_data(filename):
 
     text, labels = [], []
 
-    for i, line in enumerate(open(filename, 'rU')):
-        # if i == 0:
+    for i, line in enumerate(open(filename, 'r')):
+        # if i == 100:
         #     continue
 
         try:
@@ -181,11 +181,16 @@ if __name__ == '__main__':
     parser.add_argument('--docs',     default='', type=str, help='document data file (.txt)')
     parser.add_argument('--queries',  default='', type=str, help='query data file (.txt)')
     parser.add_argument('--qrels',    default='', type=str, help='query relevance file (.qrel)')
-    parser.add_argument('--type',     default='w2v', choices=['tfidf', 'bm25', 'w2v', 'fast'], help='type of vectorizer')
+    parser.add_argument('--type',     default='bert', choices=['tfidf', 'bm25', 'w2v', 'fast', 'bert'], help='type of vectorizer')
     parser.add_argument('--bm_type',  default='qtf', choices=['qtf', 'qbm'], help='type of query vectorize')
     parser.add_argument('--K',        default=20,   type=int, help='score for top-k results')
     parser.add_argument('--max_eval', default=1000, type=int, help='number of evaluations')
     args = parser.parse_args()
+
+    seed = 123
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
 
     # データの読み込み
     docs, doc_labels = load_data(args.docs)
