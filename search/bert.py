@@ -18,24 +18,46 @@ logger.addHandler(handler)
 import sys, struct
 import numpy as np
 
+BOS_TOKEN = '<s>'
+EOS_TOKEN = '</s>'
+UNK_TOKEN = '<unk>'
+PAD_TOKEN = '<pad>'
+UNK_VEC = None
+PAD_VEC = None
 
-vocab_file = '/Data/haradatm/DATA/Google-BERT/uncased_L-12_H-768_A-12/vocab.txt'
-bert_config_file = '/Data/haradatm/DATA/Google-BERT/uncased_L-12_H-768_A-12/bert_config.json'
-init_checkpoint = '/Data/haradatm/DATA/Google-BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz'
+
+def seeded_vector(bert, seed_string):
+    once = np.random.RandomState(hash(seed_string) & 0xffffffff)
+    return (once.rand(bert.vector_size) - 0.5) / bert.vector_size
+
 
 import chainer
-from chainer import cuda
-import chainer.functions as F
-import chainer.links as L
-import matplotlib.pyplot as plt
-import pickle
-from sklearn.utils import shuffle as skshuffle
 from bertlib.modeling import BertConfig, BertModel
 from bertlib.tokenization import FullTokenizer
+vocab_file = models/uncased_L-12_H-768_A-12/vocab.txt'
+bert_config_file = 'models/uncased_L-12_H-768_A-12/bert_config.json'
+init_checkpoint = 'models/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz'
+
+
+class Bert:
+    def __init__(self, init_checkpoint, vocab_file, bert_config_file):
+        bert_config = BertConfig.from_json_file(bert_config_file)
+        bert = BertEmbedding(BertModel(config=bert_config))
+        with np.load(init_checkpoint) as f:
+            d = chainer.serializers.NpzDeserializer(f, path='', strict=True)
+            d.load(bert)
+
+        self.tokenizer = FullTokenizer(vocab_file=vocab_file, do_lower_case=True)
+
+        self.vocab = self.tokenizer.vocab
+        self.vectors = bert.bert.word_embeddings.W.data
+        self.vocab_size, self.vector_size = self.vectors.shape
+
+    def __getitem__(self, word):
+        return self.vectors[self.vocab[word]]
 
 
 class BertEmbedding(chainer.Chain):
-
     def __init__(self, bert):
         super(BertEmbedding, self).__init__()
         with self.init_scope():
@@ -46,49 +68,27 @@ class BertEmbedding(chainer.Chain):
         return output_layer
 
 
-def load_bert_model():
+def load_bert_model(init_checkpoint, vocab_file, bert_config_file):
 
-    logger.info('loading bert pre-trained model: {}'.format(init_checkpoint))
+    logger.info('loading bert model: {}'.format(init_checkpoint))
     sys.stdout.flush()
 
-    bert_config = BertConfig.from_json_file(bert_config_file)
-    bert = BertEmbedding(BertModel(config=bert_config))
-    with np.load(init_checkpoint) as f:
-        d = chainer.serializers.NpzDeserializer(f, path='', strict=True)
-        d.load(bert)
+    bert = Bert(init_checkpoint, vocab_file, bert_config_file)
 
-    # if gpu >= 0:
-    #     bert.to_gpu()
+    global UNK_VEC, PAD_VEC
+    UNK_VEC = seeded_vector(bert, UNK_TOKEN)
+    PAD_VEC = seeded_vector(bert, PAD_TOKEN)
 
     return bert
 
 
-# def batch_iter(data, batch_size):
-#     batch = []
-#     for line in data:
-#         batch.append(line)
-#         if len(batch) == batch_size:
-#             yield tuple(list(x) for x in zip(*batch))
-#             batch = []
-#     if batch:
-#         yield tuple(list(x) for x in zip(*batch))
-#
-#
-# def to_device(device, x):
-#     if device is None:
-#         return x
-#     elif device < 0:
-#         return cuda.to_cpu(x)
-#     else:
-#         return cuda.to_gpu(x, device)
-
-
 class Vectorizer():
     def __init__(self, **params):
-        self.bert = load_bert_model().bert
+        self.bert = load_bert_model(init_checkpoint, vocab_file, bert_config_file)
         self.feature_names = []
-        self.tokenizer = FullTokenizer(vocab_file=vocab_file, do_lower_case=True)
-        self.vocab = self.tokenizer.vocab
+        self.analyzer = self.bert.tokenizer.tokenize
+        self.alpha, self.beta = 0.001, 4.0
+        self.tf = {}
         self.count = 0
 
     def fit_transform(self, documents):
@@ -96,42 +96,32 @@ class Vectorizer():
         return self.transform(documents)
 
     def fit(self, documents):
-        self.count = len(documents)
+        self.count = 0
+        for document in documents:
+            words = self.analyzer(document)
+            for word in words:
+                if word in self.tf:
+                    self.tf[word] += 1.0
+                else:
+                    self.tf[word] = 1.0
+            self.count += len(words)
 
-    def transform(self, documents, batch_size=1000):
-        max_position_embeddings = self.bert.position_embeddings.W.shape[0]
-        ndims = self.bert.word_embeddings.W.shape[1]
-        results = np.zeros((len(documents), ndims), dtype='f')
-
-        with chainer.no_backprop_mode(), chainer.using_config('train', False):
-            start = 0
-
-            for document in documents:
-                tokens_a = self.tokenizer.tokenize(document)
-                tokens = ["[CLS]"]
-                segment_ids = [0]
-
-                for token in tokens_a:
-                    tokens.append(token)
-                    segment_ids.append(0)
-
-                tokens.append("[SEP]")
-                segment_ids.append(0)
-
-                input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
-                input_mask = [1] * len(input_ids)
-
-                x1 = np.array([input_ids[:max_position_embeddings]], 'i')
-                x2 = np.array([input_mask[:max_position_embeddings]], 'f')
-                x3 = np.array([segment_ids[:max_position_embeddings]], 'i')
-
-                embedding = self.bert.get_embedding_output(x1, x2, x3)
-
-                end = start + embedding.shape[0]
-                results[start:end] = F.sum(embedding, axis=1).data / embedding.shape[1]
-                start = end
-
-        return results
+    def transform(self, documents):
+        results = []
+        for document in documents:
+            vec = []
+            words = self.analyzer(document)
+            for word in words:
+                try:
+                    # v = self.alpha * self.bert[word] / (self.alpha + self.tf[word] / self.count)
+                    p = (self.tf[word] / self.count) if word in self.tf else (1. / self.count)
+                    v = self.alpha * self.bert[word] / (self.alpha + p)
+                    vec.append(v)
+                except KeyError:
+                    logger.warning('unk: {}'.format(word))
+                    vec.append(UNK_VEC)
+            results.append(np.average(np.asarray(vec, dtype=np.float32), axis=0))
+        return np.asarray(results)
 
     def get_feature_names(self):
         return self.feature_names
