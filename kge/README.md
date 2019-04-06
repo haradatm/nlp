@@ -1,4 +1,4 @@
-# Exercises for the Analysis of Knowledge Graphs
+# KGE (Knowledge Graphs Embedding) examples for research and evaluation
 
 ## Description
 
