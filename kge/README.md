@@ -36,6 +36,6 @@ python train_kge-7-2-2_TransE.py         | tee train_kge-7-2-2_TransE.log       
 
 ## Outputs
 
-<img src="results/results-1.png"/>
-<img src="results/results-2.png"/>
-<img src="results/results-3.png"/>
+<img src="results/results-a.png"/>
+<img src="results/results-b.png"/>
+<img src="results/results-c.png"/>
