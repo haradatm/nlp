@@ -39,5 +39,3 @@ python train_kge-7-2-2_TransE.py         | tee train_kge-7-2-2_TransE.log       
 <img src="results/results-1.png"/>
 <img src="results/results-2.png"/>
 <img src="results/results-3.png"/>
-<img src="results/results-4.png"/>
-<img src="results/results-5.png"/>
