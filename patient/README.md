@@ -80,9 +80,5 @@ python trainpatient.py \
 
 ***Output***
 
-|A|B|
-|---|---|
-![A](results/result_patient.png)|![B](results/results.png)
-
 <img src="results/result_patient.png"/>
 <img src="results/results.png"/>
