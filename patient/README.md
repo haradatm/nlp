@@ -1,6 +1,8 @@
-# Patient (Convert patient disease expression to standard expression using BERT fine-tuning)
+# Patient (Convert Patient disease expression to Standard expression using BERT fine-tuning)
 
 ### Description
+
+This example code is to convert Patient disease expression to Standard expression using BERT fine-tuning.
 
 ### Dependencies
 - python 3.6
