@@ -67,9 +67,9 @@ python trainpatient.py \
 --test_docs datasets/nfcorpus/test.docs \
 --test_queries datasets/nfcorpus/test.nontopic-titles.queries \
 --test_qrels datasets/nfcorpus/test.2-1-0.qrel
---init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
---bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
---vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
 --max_eval 1000 \
 2>&1 | tee trainpatient.log
 ```
