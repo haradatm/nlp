@@ -49,6 +49,22 @@ paste  test.queries __test-q-wakachi.txt | cut -f 1,3 >  test-wakachi.queries
 paste train.docs    _train-d-wakachi.txt | cut -f 1,3 > train-wakachi.docs   
 paste  test.docs    __test-d-wakachi.txt | cut -f 1,3 >  test-wakachi.docs   
 
+tail -n 3 test-wakachi.queries test-wakachi.docs test.qrel
+==> test-wakachi.queries <==
+Q-0993	右 わき腹 が 痛い
+Q-0994	偏 頭痛
+Q-0995	体重 低下
+
+==> test-wakachi.docs <==
+D-0338	門脈 ガス 血 症
+D-0339	高 ビリルビン 血 症
+D-0340	咽喉 痛
+
+==> test.qrel <==
+Q-0993	0	D-0031	1
+Q-0994	0	D-0198	1
+Q-0995	0	D-0335	1
+
 cd ../../
 ```
 
@@ -76,6 +92,9 @@ python trainpatient.py \
 
 ```
 /Data/haradatm/src/trec_eval.9.0/trec_eval -m all_trec datasets/patient/test.qrel results_patient-6/test.results.txt | grep -E "ndcg|map" | grep "20 "
+
+map_cut_20            	all	0.5032
+ndcg_cut_20           	all	0.5776
 ```
 
 ***Output***
