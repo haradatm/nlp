@@ -80,7 +80,7 @@ python trainpatient.py \
 
 ***Output***
 
-|OpenSMILE|Bert Embeddings|Fusion (OpenSMILE + Bert)|
+|A|B|
 |---|---|
 ![A](results/result_patient.png)|![B](results/results.png)
 
