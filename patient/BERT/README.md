@@ -9,7 +9,7 @@ Downlod [BERT Japanese Pretrained model](http://nlp.ist.i.kyoto-u.ac.jp/index.ph
 In advance, you need to convert a BERT TensorFlow checkpoint in a Chainer save file by using the convert_tf_checkpoint_to_chainer.py script.
 
 ```
-export BERT_BASE_DIR=/path/to/bert/Japanese_L-12_H-768_A-12_E-30_BPE
+export BERT_BASE_DIR=BERT/Japanese_L-12_H-768_A-12_E-30_BPE
 
 python convert_tf_checkpoint_to_chainer.py \
   --tf_checkpoint_path $BERT_BASE_DIR/bert_model.ckpt \
