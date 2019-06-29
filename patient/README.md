@@ -61,12 +61,12 @@ python trainpatient.py \
 --learnrate 5e-05 \
 --weightdecay 0.01 \
 --epoch 50 \
---train_docs datasets/nfcorpus/train.docs \
---train_queries datasets/nfcorpus/train.nontopic-titles.queries \
---train_qrels datasets/nfcorpus/train.2-1-0.qrel \
---test_docs datasets/nfcorpus/test.docs \
---test_queries datasets/nfcorpus/test.nontopic-titles.queries \
---test_qrels datasets/nfcorpus/test.2-1-0.qrel
+--train_docs datasets/nfcorpus/train-wakachi.docs \
+--train_queries datasets/nfcorpus/train-wakachi.queries \
+--train_qrels datasets/nfcorpus/train-wakachi.qrel \
+--test_docs datasets/nfcorpus/test-wakachi.docs \
+--test_queries datasets/nfcorpus/test-wakachi.queries \
+--test_qrels datasets/nfcorpus/test-wakachi.qrel
 --init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
 --bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
