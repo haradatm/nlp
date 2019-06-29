@@ -15,6 +15,10 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 
   - [MEDNLP](http://sociocom.jp/~data/2019-pde/data/D3_20190326.xlsx)
 
+***BERT Pretrained model***
+
+  - [BERT Japanese Pretrained model](http://nlp.ist.i.kyoto-u.ac.jp/index.php?BERT日本語Pretrainedモデル)
+
 ```
 cd datasets/patient
 cat d3_20190326.txt \
