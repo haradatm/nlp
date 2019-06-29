@@ -13,11 +13,11 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 
 ***BERT Pretrained model***
 
-  - [BERT Japanese Pretrained model](http://nlp.ist.i.kyoto-u.ac.jp/index.php?BERT日本語Pretrainedモデル)
+  - Downlod [BERT Japanese Pretrained model](http://nlp.ist.i.kyoto-u.ac.jp/index.php?BERT日本語Pretrainedモデル) and extract them in "BERT".
 
 ***Data***
 
-  - [MEDNLP](http://sociocom.jp/~data/2019-pde/data/D3_20190326.xlsx)
+  - Downlod [Patient Disease Expression](http://sociocom.jp/~data/2019-pde/data/D3_20190326.xlsx), convert them to tsv format, and put in "datasets/patient".
 
 ```
 cd datasets/patient
