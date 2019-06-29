@@ -9,7 +9,7 @@
 In addition, please add the project folder to PYTHONPATH and `conca install` the following packages:
 - `matplotlib`
 
-### Prepare ###
+### Preparation ###
 
 ***BERT Pretrained model***
 
@@ -18,8 +18,6 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 ***Data***
 
   - Downlod [Patient Disease Expression](http://sociocom.jp/~data/2019-pde/data/D3_20190326.xlsx), convert them to tsv format, and put in "datasets/patient".
-
-### Usage ###
 
 ```
 cd datasets/patient
