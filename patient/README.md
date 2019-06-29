@@ -11,13 +11,13 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 
 ### Usage ###
 
-***Data***
-
-  - [MEDNLP](http://sociocom.jp/~data/2019-pde/data/D3_20190326.xlsx)
-
 ***BERT Pretrained model***
 
   - [BERT Japanese Pretrained model](http://nlp.ist.i.kyoto-u.ac.jp/index.php?BERT日本語Pretrainedモデル)
+
+***Data***
+
+  - [MEDNLP](http://sociocom.jp/~data/2019-pde/data/D3_20190326.xlsx)
 
 ```
 cd datasets/patient
