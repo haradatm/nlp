@@ -16,5 +16,3 @@ python convert_tf_checkpoint_to_chainer.py \
   --npz_dump_path $BERT_BASE_DIR/arrays_bert_model.ckpt.npz
 
 ```
-
-[See also] https://github.com/soskek/bert-chainer
