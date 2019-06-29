@@ -75,9 +75,14 @@ python trainpatient.py \
 ```
 
 ```
-/Data/haradatm/src/trec_eval.9.0/trec_eval \
--m all_trec \
-datasets/patient/test.qrel \
-results_patient-6/test.results.txt \
-| grep -E "ndcg|map" | grep "20 "
+/Data/haradatm/src/trec_eval.9.0/trec_eval -m all_trec datasets/patient/test.qrel results_patient-6/test.results.txt | grep -E "ndcg|map" | grep "20 "
 ```
+
+***Output***
+
+|OpenSMILE|Bert Embeddings|Fusion (OpenSMILE + Bert)|
+|---|---|
+![A](results/result_patient.png)|![B](results/results.png)
+
+<img src="results/result_patient.png"/>
+<img src="results/results.png"/>
