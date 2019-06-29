@@ -2,7 +2,7 @@
 
 ### Description
 
-This example code is to convert Patient disease expression to Standard expression using BERT fine-tuning.
+This example code is to convert a patient disease expression to a standard expression using BERT fine-tuning.
 
 ### Dependencies
 - python 3.6
