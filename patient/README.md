@@ -1,4 +1,4 @@
-# Patient (Convert the patient disease expression to standard expression using BERT fine-tuning)
+# Patient (Convert patient disease expression to standard expression using BERT fine-tuning)
 
 ### Description
 
