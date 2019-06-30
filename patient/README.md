@@ -102,5 +102,8 @@ ndcg_cut_20           	all	0.5776
 
 ***Output***
 
-<img src="results/result_patient.png"/>
+|epoch 1-42| epoch 43-84|
+|---|---|
+![](results/result_patient-01_42.png)|![](results/result_patient-43_84.png)
+
 <img src="results/results.png"/>
