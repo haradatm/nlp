@@ -93,11 +93,11 @@ python train_patient.py \
 ```
 /Data/haradatm/src/trec_eval.9.0/trec_eval -m all_trec \
   datasets/patient/test.qrel \
-  results_patient-6/test.results.txt \
+  results/test.results.txt \
 | grep -E "ndcg|map" | grep "20 "
 
-map_cut_20            	all	0.5032
-ndcg_cut_20           	all	0.5776
+map_cut_20            	all	0.5196
+ndcg_cut_20           	all	0.5929
 ```
 
 ***Output***
