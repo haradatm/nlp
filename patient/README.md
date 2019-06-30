@@ -10,6 +10,7 @@ This example code is to convert a patient disease expression to a standard expre
 
 In addition, please add the project folder to PYTHONPATH and `conca install` the following packages:
 - `matplotlib`
+- `pytrec_eval`
 
 ### Preparation ###
 
