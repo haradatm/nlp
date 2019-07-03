@@ -78,4 +78,9 @@ python train_rcnn-bert.py   --train datasets/mlit/04-train.txt --test datasets/m
 python train_bow-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_bow    2>&1 | tee train_bow-bert.log   
 ```
 
+- training and test by BERT fintuning
+```
+python train_finetuning-bert.py --train datasets/rt-polarity/04-train.txt --test datasets/rt-polarity/04-test.txt --vocab_file BERT/uncased_L-12_H-768_A-12/vocab.txt --bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json --init_checkpoint BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz --gpu 0 --epoch 50 --learnrate 5e-05 --weightdecay 0.01 --batchsize 64 --out results_bert-2 2>&1 | tee train_finetuning-bert.log
+```
+
 <img src="results/accuracy.png"/> <img src="results/elaps.png"/>
