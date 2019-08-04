@@ -78,12 +78,12 @@ python train_patient.py \
 --learnrate 5e-05 \
 --weightdecay 0.01 \
 --epoch 50 \
---train_docs datasets/nfcorpus/train-wakachi.docs \
---train_queries datasets/nfcorpus/train-wakachi.queries \
---train_qrels datasets/nfcorpus/train-wakachi.qrel \
---test_docs datasets/nfcorpus/test-wakachi.docs \
---test_queries datasets/nfcorpus/test-wakachi.queries \
---test_qrels datasets/nfcorpus/test-wakachi.qrel
+--train_docs    datasets/patient/train-wakachi.docs \
+--train_queries datasets/patient/train-wakachi.queries \
+--train_qrels   datasets/patient/train.qrel \
+--test_docs     datasets/patient/test-wakachi.docs \
+--test_queries  datasets/patient/test-wakachi.queries \
+--test_qrels    datasets/patient/test.qrel \
 --init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
 --bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
@@ -108,3 +108,5 @@ ndcg_cut_20           	all	0.5929
 ![](results/result_patient-01_42.png)|![](results/result_patient-43_84.png)
 
 <img src="results/results.png"/>
+<img src="results/results-nbest.png"/>
+<img src="results/detail.png"/>
