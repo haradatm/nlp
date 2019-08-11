@@ -88,7 +88,7 @@ python train_patient-triplet.py \
 --bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
 --max_eval 1000 \
-2>&1 | tee trainpatient.log
+2>&1 | tee train_patient-triplet.log
 ```
 
 ```
@@ -101,11 +101,13 @@ ndcg_cut_20           	all	0.6051
 map_cut_20            	all	0.5339
 ```
 
-***Output (train_patient-triplet.py)***
+***Learning Curve (train_patient-triplet.py on Google Colaboratory)***
 
-|epoch 1-42| epoch 43-84|
-|---|---|
-![](results/result_patient-triplet-ep_01_42.png)|![](results/result_patient-triplet-ep_43_84.png)
+|epoch 1-42|epoch 43-84|epoch 85-121| 
+|---|---|---|
+![](results/result_patient-triplet-ep_01_42.png)|![](results/result_patient-triplet-ep_43_84.png)|![](results/result_patient-triplet-ep_85_121.png)
+
+***Summary of results ***
 
 <img src="results/results.png"/>
 <img src="results/results-nbest.png"/>
