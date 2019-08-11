@@ -72,7 +72,7 @@ cd ../../
 ***Run and Evaluate***
 
 ```
-python train_patient.py \
+python train_patient-triplet.py \
 --gpu 0 \
 --batchsize 64 \
 --learnrate 5e-05 \
@@ -95,17 +95,17 @@ python train_patient.py \
 /Data/haradatm/src/trec_eval.9.0/trec_eval -m all_trec \
   datasets/patient/test.qrel \
   results/test.results.txt \
-| grep -E "ndcg|map" | grep "20 "
+| grep -E "ndcg|map" | grep "cut_20 "
 
-map_cut_20            	all	0.5196
-ndcg_cut_20           	all	0.5929
+ndcg_cut_20           	all	0.6051
+map_cut_20            	all	0.5339
 ```
 
-***Output***
+***Output (train_patient-triplet.py)***
 
 |epoch 1-42| epoch 43-84|
 |---|---|
-![](results/result_patient-01_42.png)|![](results/result_patient-43_84.png)
+![](results/result_patient-triplet-ep_01_42.png)|![](results/result_patient-triplet-ep_43_84.png)
 
 <img src="results/results.png"/>
 <img src="results/results-nbest.png"/>
