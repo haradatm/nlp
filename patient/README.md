@@ -107,7 +107,7 @@ map_cut_20            	all	0.5339
 |---|---|---|
 ![](results/result_patient-triplet-ep_01_42.png)|![](results/result_patient-triplet-ep_43_84.png)|![](results/result_patient-triplet-ep_85_121.png)
 
-***Summary of results ***
+***Summary of results***
 
 <img src="results/results.png"/>
 <img src="results/results-nbest.png"/>
