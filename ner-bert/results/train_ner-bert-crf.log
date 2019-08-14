@@ -4,85 +4,89 @@
   "learnrate": 5e-05,
   "weightdecay": 0.01,
   "epoch": 30,
-  "train": "datasets/eng.train.bioes",
-  "test": "datasets/eng.testb.bioes",
+  "train": "datasets/eng.train",
+  "test": "datasets/eng.testb",
   "init_checkpoint": "../../BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz",
   "bert_config_file": "../../BERT/uncased_L-12_H-768_A-12/bert_config.json",
   "vocab_file": "../../BERT/uncased_L-12_H-768_A-12/vocab.txt",
-  "out": "results_ner-4-crf",
-  "max_eval": 1000,
+  "out": "results_ner-5-crf-u",
   "resume": "",
   "start_epoch": 1,
   "crf": true,
   "noplot": false
 }
 
-2019-08-13 02:43:34,698 - load_data - INFO - Loading dataset ... done.
-2019-08-13 02:43:36,154 - load_data - INFO - Loading dataset ... done.
-# train: 14986, test: 3683, class: 20
+2019-08-14 08:11:19,739 - load_conll2003 - INFO - Loading dataset ... done.
+2019-08-14 08:11:21,480 - load_conll2003 - INFO - Loading dataset ... done.
+# train: 14041, test: 3453, class: 11
 # vocab: 30522
-2019-08-13 02:54:53,982 - main - INFO - [  1] T/loss=0.968978 T/f1=0.815481 T/acc=0.961335 T/sec= 611.611175 D/loss=0.640759 D/f1=0.876779 D/acc=0.973406 D/sec= 36.778193 lr=0.779989 eta=0.000050
+2019-08-14 08:21:34,774 - main - INFO - [  1] T/loss=0.738494 T/f1=0.844042 T/acc=0.969108 T/sec= 556.607685 D/loss=0.624295 D/f1=0.877409 D/acc=0.973914 D/sec= 33.413827 lr=0.764571 eta=0.000050
 saving early-stopped model (loss) at epoch 1
 saving early-stopped model (f1) at epoch 1
-2019-08-13 03:07:33,780 - main - INFO - [  2] T/loss=0.281056 T/f1=0.942047 T/acc=0.988745 T/sec= 723.232518 D/loss=0.782314 D/f1=0.886569 D/acc=0.973355 D/sec= 36.565821 lr=0.920128 eta=0.000048
+2019-08-14 08:33:22,308 - main - INFO - [  2] T/loss=0.241301 T/f1=0.942333 T/acc=0.989966 T/sec= 673.506728 D/loss=0.645739 D/f1=0.892507 D/acc=0.976797 D/sec= 34.026600 lr=0.909625 eta=0.000048
 saving early-stopped model (f1) at epoch 2
-2019-08-13 03:19:47,079 - main - INFO - [  3] T/loss=0.167899 T/f1=0.966280 T/acc=0.993648 T/sec= 696.296594 D/loss=0.863432 D/f1=0.886401 D/acc=0.972898 D/sec= 37.002493 lr=0.969505 eta=0.000047
-2019-08-13 03:31:36,363 - main - INFO - [  4] T/loss=0.117865 T/f1=0.975852 T/acc=0.995521 T/sec= 672.319081 D/loss=0.927739 D/f1=0.888325 D/acc=0.975421 D/sec= 36.965390 lr=0.988170 eta=0.000045
-saving early-stopped model (f1) at epoch 4
-2019-08-13 03:43:55,643 - main - INFO - [  5] T/loss=0.083287 T/f1=0.982725 T/acc=0.997091 T/sec= 702.051840 D/loss=1.064216 D/f1=0.889993 D/acc=0.973863 D/sec= 37.228047 lr=0.995384 eta=0.000043
+2019-08-14 08:44:43,559 - main - INFO - [  3] T/loss=0.148610 T/f1=0.965519 T/acc=0.994255 T/sec= 647.232721 D/loss=0.760715 D/f1=0.890954 D/acc=0.976366 D/sec= 34.019097 lr=0.963485 eta=0.000047
+2019-08-14 08:55:36,839 - main - INFO - [  4] T/loss=0.102993 T/f1=0.975601 T/acc=0.996151 T/sec= 619.351990 D/loss=0.915573 D/f1=0.888986 D/acc=0.975502 D/sec= 33.927665 lr=0.984995 eta=0.000045
+2019-08-14 09:06:30,725 - main - INFO - [  5] T/loss=0.069891 T/f1=0.982883 T/acc=0.997393 T/sec= 619.667253 D/loss=0.972593 D/f1=0.893923 D/acc=0.976348 D/sec= 34.218967 lr=0.993794 eta=0.000043
 saving early-stopped model (f1) at epoch 5
-2019-08-13 03:56:10,483 - main - INFO - [  6] T/loss=0.068947 T/f1=0.987954 T/acc=0.997776 T/sec= 698.135037 D/loss=1.122329 D/f1=0.894391 D/acc=0.975895 D/sec= 36.704646 lr=0.998195 eta=0.000042
-saving early-stopped model (f1) at epoch 6
-2019-08-13 04:08:26,109 - main - INFO - [  7] T/loss=0.052119 T/f1=0.988854 T/acc=0.998197 T/sec= 698.889816 D/loss=1.022477 D/f1=0.895711 D/acc=0.975742 D/sec= 36.736426 lr=0.999293 eta=0.000040
-saving early-stopped model (f1) at epoch 7
-2019-08-13 04:20:41,915 - main - INFO - [  8] T/loss=0.041561 T/f1=0.991184 T/acc=0.998625 T/sec= 698.878719 D/loss=1.201550 D/f1=0.900996 D/acc=0.976707 D/sec= 36.926556 lr=0.999723 eta=0.000038
-saving early-stopped model (f1) at epoch 8
-2019-08-13 04:32:57,364 - main - INFO - [  9] T/loss=0.040451 T/f1=0.992454 T/acc=0.998699 T/sec= 698.597851 D/loss=1.315476 D/f1=0.884786 D/acc=0.972035 D/sec= 36.851484 lr=0.999892 eta=0.000037
-2019-08-13 04:44:46,187 - main - INFO - [ 10] T/loss=0.031736 T/f1=0.993243 T/acc=0.999019 T/sec= 671.863197 D/loss=1.473204 D/f1=0.877824 D/acc=0.970816 D/sec= 36.959440 lr=0.999958 eta=0.000035
-2019-08-13 04:56:34,739 - main - INFO - [ 11] T/loss=0.027589 T/f1=0.994281 T/acc=0.999046 T/sec= 671.620330 D/loss=1.387627 D/f1=0.888264 D/acc=0.974896 D/sec= 36.931903 lr=0.999983 eta=0.000033
-2019-08-13 05:08:25,545 - main - INFO - [ 12] T/loss=0.034998 T/f1=0.994153 T/acc=0.999019 T/sec= 673.754880 D/loss=1.275392 D/f1=0.889280 D/acc=0.973796 D/sec= 37.051586 lr=0.999993 eta=0.000032
-2019-08-13 05:20:15,895 - main - INFO - [ 13] T/loss=0.032004 T/f1=0.994028 T/acc=0.998948 T/sec= 673.289203 D/loss=1.418110 D/f1=0.873249 D/acc=0.970799 D/sec= 37.060559 lr=0.999997 eta=0.000030
-2019-08-13 05:32:07,588 - main - INFO - [ 14] T/loss=0.022187 T/f1=0.995280 T/acc=0.999283 T/sec= 674.727736 D/loss=1.465532 D/f1=0.887372 D/acc=0.973220 D/sec= 36.965792 lr=0.999999 eta=0.000028
-2019-08-13 05:43:58,614 - main - INFO - [ 15] T/loss=0.016576 T/f1=0.996364 T/acc=0.999404 T/sec= 674.045994 D/loss=1.473079 D/f1=0.889279 D/acc=0.974337 D/sec= 36.979045 lr=1.000000 eta=0.000027
-2019-08-13 05:55:48,611 - main - INFO - [ 16] T/loss=0.015197 T/f1=0.997065 T/acc=0.999513 T/sec= 672.802254 D/loss=1.545095 D/f1=0.889767 D/acc=0.973508 D/sec= 37.194770 lr=1.000000 eta=0.000025
-2019-08-13 06:07:39,563 - main - INFO - [ 17] T/loss=0.018295 T/f1=0.996427 T/acc=0.999404 T/sec= 673.823505 D/loss=1.428377 D/f1=0.886284 D/acc=0.972915 D/sec= 37.129127 lr=1.000000 eta=0.000023
-2019-08-13 06:19:31,277 - main - INFO - [ 18] T/loss=0.013730 T/f1=0.996853 T/acc=0.999509 T/sec= 675.078720 D/loss=1.470336 D/f1=0.887500 D/acc=0.974134 D/sec= 36.635051 lr=1.000000 eta=0.000022
-2019-08-13 06:31:24,583 - main - INFO - [ 19] T/loss=0.011261 T/f1=0.997532 T/acc=0.999607 T/sec= 676.406611 D/loss=1.416199 D/f1=0.896023 D/acc=0.975302 D/sec= 36.899335 lr=1.000000 eta=0.000020
-2019-08-13 06:43:14,330 - main - INFO - [ 20] T/loss=0.008556 T/f1=0.998234 T/acc=0.999723 T/sec= 672.713352 D/loss=1.543201 D/f1=0.894834 D/acc=0.974557 D/sec= 37.033428 lr=1.000000 eta=0.000018
-2019-08-13 06:55:08,868 - main - INFO - [ 21] T/loss=0.004403 T/f1=0.998766 T/acc=0.999809 T/sec= 677.462160 D/loss=1.566084 D/f1=0.891375 D/acc=0.973897 D/sec= 37.075684 lr=1.000000 eta=0.000017
-2019-08-13 07:07:05,657 - main - INFO - [ 22] T/loss=0.008748 T/f1=0.998298 T/acc=0.999716 T/sec= 679.282442 D/loss=1.571177 D/f1=0.894496 D/acc=0.973965 D/sec= 37.507188 lr=1.000000 eta=0.000015
-2019-08-13 07:19:02,904 - main - INFO - [ 23] T/loss=0.005406 T/f1=0.998830 T/acc=0.999782 T/sec= 680.152857 D/loss=1.528860 D/f1=0.895038 D/acc=0.974794 D/sec= 37.094023 lr=1.000000 eta=0.000013
-2019-08-13 07:31:01,450 - main - INFO - [ 24] T/loss=0.004073 T/f1=0.998532 T/acc=0.999782 T/sec= 681.218193 D/loss=1.521218 D/f1=0.896540 D/acc=0.974760 D/sec= 37.327494 lr=1.000000 eta=0.000012
-2019-08-13 07:43:00,556 - main - INFO - [ 25] T/loss=0.004778 T/f1=0.998809 T/acc=0.999817 T/sec= 681.856732 D/loss=1.482628 D/f1=0.896134 D/acc=0.975268 D/sec= 37.249285 lr=1.000000 eta=0.000010
-2019-08-13 07:55:01,287 - main - INFO - [ 26] T/loss=0.004336 T/f1=0.998830 T/acc=0.999809 T/sec= 683.330169 D/loss=1.470477 D/f1=0.897411 D/acc=0.975251 D/sec= 37.400805 lr=1.000000 eta=0.000008
-2019-08-13 08:06:59,225 - main - INFO - [ 27] T/loss=0.002607 T/f1=0.999021 T/acc=0.999848 T/sec= 680.655178 D/loss=1.544318 D/f1=0.895583 D/acc=0.974913 D/sec= 37.283296 lr=1.000000 eta=0.000007
-2019-08-13 08:18:58,031 - main - INFO - [ 28] T/loss=0.002102 T/f1=0.999255 T/acc=0.999875 T/sec= 681.585293 D/loss=1.472317 D/f1=0.899771 D/acc=0.976081 D/sec= 37.220300 lr=1.000000 eta=0.000005
-2019-08-13 08:30:56,377 - main - INFO - [ 29] T/loss=0.001861 T/f1=0.999170 T/acc=0.999875 T/sec= 681.221945 D/loss=1.536094 D/f1=0.898272 D/acc=0.975404 D/sec= 37.123920 lr=1.000000 eta=0.000003
-2019-08-13 08:42:54,272 - main - INFO - [ 30] T/loss=0.001836 T/f1=0.999319 T/acc=0.999895 T/sec= 680.775155 D/loss=1.549746 D/f1=0.897208 D/acc=0.975099 D/sec= 37.120380 lr=1.000000 eta=0.000002
+2019-08-14 09:17:51,146 - main - INFO - [  6] T/loss=0.054798 T/f1=0.986438 T/acc=0.998024 T/sec= 646.514061 D/loss=0.971780 D/f1=0.882558 D/acc=0.974294 D/sec= 33.906558 lr=0.997427 eta=0.000042
+2019-08-14 09:28:42,785 - main - INFO - [  7] T/loss=0.039882 T/f1=0.990131 T/acc=0.998548 T/sec= 617.188869 D/loss=1.134635 D/f1=0.889105 D/acc=0.975934 D/sec= 34.450337 lr=0.998932 eta=0.000040
+2019-08-14 09:39:38,781 - main - INFO - [  8] T/loss=0.041597 T/f1=0.989326 T/acc=0.998536 T/sec= 621.779470 D/loss=1.069040 D/f1=0.883228 D/acc=0.974864 D/sec= 34.216744 lr=0.999556 eta=0.000038
+2019-08-14 09:50:32,206 - main - INFO - [  9] T/loss=0.039835 T/f1=0.991412 T/acc=0.998603 T/sec= 619.758230 D/loss=1.106825 D/f1=0.891710 D/acc=0.976521 D/sec= 33.666907 lr=0.999816 eta=0.000037
+2019-08-14 10:01:23,939 - main - INFO - [ 10] T/loss=0.027837 T/f1=0.993878 T/acc=0.999091 T/sec= 617.638696 D/loss=1.040715 D/f1=0.890706 D/acc=0.976020 D/sec= 34.094142 lr=0.999923 eta=0.000035
+2019-08-14 10:12:15,541 - main - INFO - [ 11] T/loss=0.026188 T/f1=0.993769 T/acc=0.999127 T/sec= 617.492644 D/loss=1.130354 D/f1=0.895874 D/acc=0.976573 D/sec= 34.109344 lr=0.999968 eta=0.000033
+saving early-stopped model (f1) at epoch 11
+2019-08-14 10:23:36,701 - main - INFO - [ 12] T/loss=0.020031 T/f1=0.994428 T/acc=0.999274 T/sec= 647.368262 D/loss=1.216534 D/f1=0.898190 D/acc=0.977350 D/sec= 33.791982 lr=0.999987 eta=0.000032
+saving early-stopped model (f1) at epoch 12
+2019-08-14 10:34:55,253 - main - INFO - [ 13] T/loss=0.017596 T/f1=0.995363 T/acc=0.999377 T/sec= 645.051271 D/loss=1.319138 D/f1=0.899666 D/acc=0.977332 D/sec= 33.500629 lr=0.999995 eta=0.000030
+saving early-stopped model (f1) at epoch 13
+2019-08-14 10:46:07,374 - main - INFO - [ 14] T/loss=0.014279 T/f1=0.996512 T/acc=0.999492 T/sec= 638.105926 D/loss=1.300135 D/f1=0.898989 D/acc=0.977626 D/sec= 34.015039 lr=0.999998 eta=0.000028
+2019-08-14 10:57:06,127 - main - INFO - [ 15] T/loss=0.016953 T/f1=0.996660 T/acc=0.999488 T/sec= 624.618655 D/loss=1.253408 D/f1=0.900423 D/acc=0.977902 D/sec= 34.134518 lr=0.999999 eta=0.000027
+saving early-stopped model (f1) at epoch 15
+2019-08-14 11:08:30,531 - main - INFO - [ 16] T/loss=0.011288 T/f1=0.996873 T/acc=0.999587 T/sec= 650.392504 D/loss=1.266094 D/f1=0.900238 D/acc=0.977695 D/sec= 34.010710 lr=1.000000 eta=0.000025
+2019-08-14 11:19:26,424 - main - INFO - [ 17] T/loss=0.009383 T/f1=0.997766 T/acc=0.999675 T/sec= 621.899539 D/loss=1.320246 D/f1=0.901715 D/acc=0.977868 D/sec= 33.993514 lr=1.000000 eta=0.000023
+saving early-stopped model (f1) at epoch 17
+2019-08-14 11:30:50,060 - main - INFO - [ 18] T/loss=0.015196 T/f1=0.997447 T/acc=0.999627 T/sec= 649.657301 D/loss=1.201001 D/f1=0.902861 D/acc=0.977954 D/sec= 33.979025 lr=1.000000 eta=0.000022
+saving early-stopped model (f1) at epoch 18
+2019-08-14 11:42:14,660 - main - INFO - [ 19] T/loss=0.008654 T/f1=0.997787 T/acc=0.999710 T/sec= 650.661389 D/loss=1.276672 D/f1=0.898089 D/acc=0.977367 D/sec= 33.938416 lr=1.000000 eta=0.000020
+2019-08-14 11:53:08,225 - main - INFO - [ 20] T/loss=0.006113 T/f1=0.998319 T/acc=0.999774 T/sec= 619.670253 D/loss=1.257352 D/f1=0.901463 D/acc=0.978247 D/sec= 33.894768 lr=1.000000 eta=0.000018
+2019-08-14 12:04:08,006 - main - INFO - [ 21] T/loss=0.004940 T/f1=0.998617 T/acc=0.999817 T/sec= 625.984917 D/loss=1.302071 D/f1=0.902742 D/acc=0.978558 D/sec= 33.795954 lr=1.000000 eta=0.000017
+2019-08-14 12:15:05,846 - main - INFO - [ 22] T/loss=0.005013 T/f1=0.998851 T/acc=0.999829 T/sec= 623.688670 D/loss=1.322002 D/f1=0.902221 D/acc=0.977695 D/sec= 34.151383 lr=1.000000 eta=0.000015
+2019-08-14 12:26:03,827 - main - INFO - [ 23] T/loss=0.004264 T/f1=0.998404 T/acc=0.999810 T/sec= 624.063691 D/loss=1.308698 D/f1=0.904977 D/acc=0.977988 D/sec= 33.917480 lr=1.000000 eta=0.000013
+saving early-stopped model (f1) at epoch 23
+2019-08-14 12:37:30,658 - main - INFO - [ 24] T/loss=0.004444 T/f1=0.998787 T/acc=0.999833 T/sec= 652.715075 D/loss=1.313783 D/f1=0.905793 D/acc=0.977833 D/sec= 34.115746 lr=1.000000 eta=0.000012
+saving early-stopped model (f1) at epoch 24
+2019-08-14 12:48:57,632 - main - INFO - [ 25] T/loss=0.003131 T/f1=0.999085 T/acc=0.999857 T/sec= 653.142581 D/loss=1.317251 D/f1=0.905140 D/acc=0.978403 D/sec= 33.831658 lr=1.000000 eta=0.000010
+2019-08-14 12:59:57,783 - main - INFO - [ 26] T/loss=0.003696 T/f1=0.998638 T/acc=0.999829 T/sec= 626.088854 D/loss=1.290686 D/f1=0.908527 D/acc=0.979024 D/sec= 34.062213 lr=1.000000 eta=0.000008
+saving early-stopped model (f1) at epoch 26
+2019-08-14 13:11:27,268 - main - INFO - [ 27] T/loss=0.002027 T/f1=0.998958 T/acc=0.999877 T/sec= 655.348036 D/loss=1.358478 D/f1=0.907466 D/acc=0.979231 D/sec= 34.136662 lr=1.000000 eta=0.000007
+2019-08-14 13:22:31,228 - main - INFO - [ 28] T/loss=0.002138 T/f1=0.998872 T/acc=0.999865 T/sec= 629.716825 D/loss=1.327501 D/f1=0.906424 D/acc=0.978713 D/sec= 34.243804 lr=1.000000 eta=0.000005
+2019-08-14 13:33:33,807 - main - INFO - [ 29] T/loss=0.001238 T/f1=0.999170 T/acc=0.999897 T/sec= 628.394974 D/loss=1.338738 D/f1=0.906697 D/acc=0.978713 D/sec= 34.183822 lr=1.000000 eta=0.000003
+2019-08-14 13:44:36,019 - main - INFO - [ 30] T/loss=0.001058 T/f1=0.999298 T/acc=0.999901 T/sec= 628.360614 D/loss=1.335464 D/f1=0.907435 D/acc=0.978852 D/sec= 33.850668 lr=1.000000 eta=0.000002
 
 ==== Classification report (early-stopped model) ====
 
            precision    recall  f1-score   support
 
-      PER       0.96      0.96      0.96      1617
-      ORG       0.87      0.87      0.87      1661
-      LOC       0.91      0.93      0.92      1668
-     MISC       0.78      0.80      0.79       702
+      ORG       0.90      0.88      0.89      1661
+     MISC       0.78      0.81      0.79       702
+      PER       0.96      0.97      0.96      1617
+      LOC       0.93      0.92      0.92      1668
 
-micro avg       0.90      0.90      0.90      5648
-macro avg       0.90      0.90      0.90      5648
+micro avg       0.91      0.91      0.91      5648
+macro avg       0.91      0.91      0.91      5648
 
 ==== Classification report (final model) ====
 
            precision    recall  f1-score   support
 
-      PER       0.95      0.95      0.95      1617
-      ORG       0.87      0.87      0.87      1661
-      LOC       0.91      0.92      0.92      1668
-     MISC       0.77      0.80      0.79       702
+      ORG       0.89      0.88      0.89      1661
+      PER       0.97      0.96      0.96      1617
+     MISC       0.78      0.80      0.79       702
+      LOC       0.92      0.93      0.93      1668
 
-micro avg       0.89      0.90      0.90      5648
-macro avg       0.89      0.90      0.90      5648
+micro avg       0.91      0.91      0.91      5648
+macro avg       0.91      0.91      0.91      5648
 
-2019-08-13 08:44:11,232 - <module> - INFO - time spent: 21649.076855 sec
+2019-08-14 13:45:54,326 - <module> - INFO - time spent: 20086.595194 sec
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Sample script of BERT NER
+"""
 """
 
 __version__ = '0.0.1'
@@ -36,19 +36,25 @@ import pickle
 import collections
 
 
-def load_data(path, id_list, tokenizer, bert_config, type_id=0):
+def load_conll2003(path, id_list, tokenizer, bert_config, type_id=0):
     X, y = [], []
 
     data, tokens, labels = [], [], []
     for i, line in enumerate(open(path)):
         line = line.strip()
         line = line.replace(u'. . .', u'…')
-        if line == '':
-            data.append((tokens, labels))
-            tokens, labels = [], []
+
+        if line.startswith("-DOCSTART-"):
             continue
 
-        word, label = line.split()
+        if line == '':
+            if len(tokens) > 0:
+                data.append((tokens, labels))
+                tokens, labels = [], []
+            continue
+
+        cols = line.split()
+        word, label = cols[0], cols[3]
 
         if label not in id_list:
             id_list += [label]
@@ -221,12 +227,12 @@ def main():
     parser.add_argument('--learnrate', '-l', type=float, default=5e-5, help='value of learning rate')
     parser.add_argument('--weightdecay', default=0.01, type=float, help='value of weight decay rate')
     parser.add_argument('--epoch', '-e', default=50, type=int, help='number of epochs to learn')
-    parser.add_argument('--train', default='datasets/eng.train.bioes', type=str, help='dataset to train (.txt)')
-    parser.add_argument('--test', default='datasets/eng.testb.bioes', type=str, help='dataset to validate (.txt)')
+    parser.add_argument('--train', default='datasets/eng.train', type=str, help='dataset to train (.txt)')
+    parser.add_argument('--test', default='datasets/eng.testb', type=str, help='dataset to validate (.txt)')
     parser.add_argument('--init_checkpoint', default='uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz', type=str, help='initial checkpoint (usually from a pre-trained BERT model (.npz)')
     parser.add_argument('--bert_config_file', default='uncased_L-12_H-768_A-12/bert_config.json', type=str, help='json file corresponding to the pre-trained BERT model (.json)')
     parser.add_argument('--vocab_file', default='uncased_L-12_H-768_A-12/vocab.txt', type=str, help='vocabulary file that the BERT model was trained on (.txt)')
-    parser.add_argument('--out', '-o', default='results_ner-2', type=str, help='output directory')
+    parser.add_argument('--out', '-o', default='results_ner-5', type=str, help='output directory')
     parser.add_argument('--resume', default='', type=str, help='path to resume models')
     parser.add_argument('--start_epoch', default=1, type=int, help='epoch number at start')
     parser.add_argument('--crf', action='store_true', help='use crf loss')
@@ -261,8 +267,8 @@ def main():
     tokenizer = FullTokenizer(vocab_file=vocab_file, do_lower_case=True)
 
     id_list = ['[PAD]', '[CLS]', '[SEP]']
-    train, id_list = load_data(args.train, id_list, tokenizer, bert_config, type_id=0)
-    test, id_list = load_data(args.test, id_list, tokenizer, bert_config, type_id=0)
+    train, id_list = load_conll2003(args.train, id_list, tokenizer, bert_config, type_id=0)
+    test, id_list = load_conll2003(args.test, id_list, tokenizer, bert_config, type_id=0)
     n_label = len(id_list)
 
     print('# train: {}, test: {}, class: {}'.format(len(train), len(test), n_label))
@@ -329,6 +335,7 @@ def main():
 
         y_true, y_pred = [], []
         for x1, x2, x3, t in train_iter:
+            # if K > 1: break
             N = len(t)
             x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
             x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
@@ -375,6 +382,7 @@ def main():
         test_y_true, test_y_pred = [], []
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
             for x1, x2, x3, t in test_iter:
+                # if K > 1: break
                 N = len(t)
                 x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
                 x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
