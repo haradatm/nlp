@@ -2,7 +2,7 @@
 
 ### Description
 
-This example code is a method for entity typing.
+This example code is a method to search related entities on Knowledge Graph by a query (mention).
 
 ### Dependencies
 - python 3.7
