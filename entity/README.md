@@ -13,6 +13,12 @@ This toy example is a method to search related entities on Knowledge Graph by a 
 In addition, please add the project folder to PYTHONPATH and `conca install` the following packages:
 - `matplotlib`
 
+### ToDo ###
+
+- [x] A fairly naive implementation.
+- [ ] Using a pre-trained KG embedded model (e.g. TransE).
+- [ ] Using a BERT embedding and fine-tuning.
+
 ### Usage ###
 
 ### Preparation ###
