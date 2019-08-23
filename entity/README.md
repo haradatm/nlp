@@ -186,6 +186,7 @@ obama	10	russ_feingold (m.01nvvl)	0.424668
 Enter query (mention) => 
 ```
 
-|Learning Curve (train_entity.py on Google Colaboratory)|Similarity Search for "Paris" (test_entity.py)| 
+|Learning Curve|Similarity Search for "Paris"| 
+|(train_entity.py on Google Colab)|(test_entity.py)| 
 |---|---|
 ![](results/result_entity.png)|![](results/plot_paris.png)
