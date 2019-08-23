@@ -1,26 +1,24 @@
-# Chainer example code to write for Text Classification research and evaluation
+# Chainer example code to write for Text Classification using BERT fine-tuning)
 
 ### Description
 
-This example code is a recurrent net for language modeling using three kinds of approaches below: 
-- CNN
-- CNN + Self-Attention
-- LSTM
-- LSTM + Self-Attention
-- bi-LSTM
-- bi-LSTM + Self-Attention
-- RCNN
-- BoW
-- using Glove/BERT pre-trained embedding models of those
+This example code is a text entclassification using BERT fine-tuning.
 
 ### Dependencies
-- python 3.6
-- chainer 3.4
+- python 3.7
+- chainer 5.4
 
 In addition, please add the project folder to PYTHONPATH and `conca install` the following packages:
 - `matplotlib`
 
 ### Usage ###
+
+### Preparation ###
+
+***BERT Pretrained model***
+
+  - Downlod [Pretrained model (English)](https://github.com/google-research/bert) and extract them in "BERT".
+  - Downlod [Pretrained model (Japanese)](http://nlp.ist.i.kyoto-u.ac.jp/DLcounter/lime.cgi?down=http://nlp.ist.i.kyoto-u.ac.jp/nl-resource/JapaneseBertPretrainedModel/Japanese_L-12_H-768_A-12_E-30_BPE.zip&name=Japanese_L-12_H-768_A-12_E-30_BPE.zip) and extract them in "BERT".
 
 ***Data***
 
@@ -29,58 +27,77 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
   - Create train and test datasets and put them in the appropriate place.
 
 ```
-cd datasets/soseki
-wc -l rt-polaritydata/rt-polaritydata/rt-polarity.*
-    5331 rt-polaritydata/rt-polaritydata/rt-polarity.neg
-    5331 rt-polaritydata/rt-polaritydata/rt-polarity.pos
+wc -l datasets/rt-polarity/04-{train,test}.txt
+    9596 datasets/rt-polarity/04-train.txt
+    1066 datasets/rt-polarity/04-test.txt
    10662 total
 
-for i in `seq 5331`; do echo "0"; done > label-neg.txt
-for i in `seq 5331`; do echo "1"; done > label-pos.txt
-iconv -f WINDOWS-1252 -t UTF-8 rt-polaritydata/rt-polarity.neg > rt-polarity.neg.utf8
-iconv -f WINDOWS-1252 -t UTF-8 rt-polaritydata/rt-polarity.pos > rt-polarity.pos.utf8
-paste label-neg.txt rt-polarity.neg.utf8 >  rt-polarity.txt
-paste label-pos.txt rt-polarity.pos.utf8 >> rt-polarity.txt
-rm -fr label-neg.txt label-pos.txt
+head -n 3 datasets/rt-polarity/04-train.txt
+==> datasets/rt-polarity/04-train.txt <==
+0	simplistic , silly and tedious .
+0	it's so laddish and juvenile , only teenage boys could possibly find it funny .
+0	exploitative and largely devoid of the depth or sophistication that would make watching such a graphic treatment of the crimes bearable .
 
-python ../skfold_splitter.py rt-polarity.txt
-tar zcvf XX-train_test.tgz ./??-t*.txt
+head -n 3 datasets/rt-polarity/04-test.txt
+0	a visually flashy but narratively opaque and emotionally vapid exercise in style and mystification .
+0	while the performances are often engaging , this loose collection of largely improvised numbers would probably have worked better as a one-hour tv documentary .
+0	on a cutting room floor somewhere lies . . . footage that might have made no such thing a trenchant , ironic cultural satire instead of a frustrating misfire .
+```
 
-wc -l ??-t*.txt
-    1066 04-test.txt
-    9596 04-train.txt
-   10662 total
+```
+wc -l datasets/mlit/04-{train,test}.txt
+   46743 datasets/mlit/04-train.txt
+    5197 datasets/mlit/04-test.txt
+   51940 total
+
+head -n 3 datasets/mlit/04-train.txt
+エンジン	車庫 に いれる ため に 、 右 後方 縦列 駐車 で バック して いた ところ 、 アクセル 操作 を して い ない のに 車 が 急 加速 し 、 右 後方 の 壁 に 激突 した 。
+エンジン	一般 道路 を 走行 中 、 突然 エンジン が 停止 した 。
+制動装置	高速 道路 を １００ ｋｍ／ｈ くらい で 走行 中 、 ＡＢＳ の マーク 、 サイド ブレーキ の マーク が 表示 さ れた 。
+
+head -n 3 datasets/mlit/04-test.txt
+車枠・車体	ダッシュボード が 溶けて ベトベト して いる 。
+排ｶﾞｽ･騒音	ＮＯＸ センサー の 不良に より 、 エンジン 警告 灯 が 点き っぱなし に なった 。
+車枠・車体	電動 オープン の ルーフ を 閉じる とき に 、 エラー メッセージ が 出て 幌 が 閉まら なく なった 。
 ```
 
 ***Run and Evaluate***
-- training and test w/Glove
+- training (for English)
 
 ```
-python train_cnn-glove.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_cnn    2>&1 | tee train_cnn-glove.log   
-python train_cnn-a-glove.py  --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_cnn-a  2>&1 | tee train_cnn-a-glove.log 
-python train_rnn-glove.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn    2>&1 | tee train_rnn-glove.log   
-python train_rnn-a-glove.py  --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-a  2>&1 | tee train_rnn-a-glove.log 
-python train_rnn-b-glove.py  --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-b  2>&1 | tee train_rnn-b-glove.log 
-python train_rnn-ba-glove.py --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-ba 2>&1 | tee train_rnn-ba-glove.log
-python train_rcnn-glove.py   --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rcnn   2>&1 | tee train_rcnn-glove.log  
-python train_bow-glove.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_bow    2>&1 | tee train_bow-glove.log   
+python train_bert.py \
+--train datasets/rt-polarity/04-train.txt \
+--eval  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--gpu 0 \
+--epoch 50 \
+--learnrate 5e-05 \
+--weightdecay 0.01 \
+--batchsize 32 \
+--out results_bert-rt \
+2>&1 | tee train_bert-rt.log
 ```
 
-- training and test w/BERT
-```
-python train_cnn-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_cnn    2>&1 | tee train_cnn-bert.log   
-python train_cnn-a-bert.py  --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_cnn-a  2>&1 | tee train_cnn-a-bert.log 
-python train_rnn-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn    2>&1 | tee train_rnn-bert.log   
-python train_rnn-a-bert.py  --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-a  2>&1 | tee train_rnn-a-bert.log 
-python train_rnn-b-bert.py  --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-b  2>&1 | tee train_rnn-b-bert.log 
-python train_rnn-ba-bert.py --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-ba 2>&1 | tee train_rnn-ba-bert.log
-python train_rcnn-bert.py   --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rcnn   2>&1 | tee train_rcnn-bert.log  
-python train_bow-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_bow    2>&1 | tee train_bow-bert.log   
-```
+- training (for Japanese)
 
-- training and test by BERT fintuning
 ```
-python train_finetuning-bert.py --train datasets/rt-polarity/04-train.txt --test datasets/rt-polarity/04-test.txt --vocab_file BERT/uncased_L-12_H-768_A-12/vocab.txt --bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json --init_checkpoint BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz --gpu 0 --epoch 50 --learnrate 5e-05 --weightdecay 0.01 --batchsize 64 --out results_bert-2 2>&1 | tee train_finetuning-bert.log
+python train_bert.py \
+--train datasets/mlit/04-train.txt \
+--eval  datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--gpu 0 \
+--epoch 50 \
+--learnrate 5e-05 \
+--weightdecay 0.01 \
+--batchsize 16 \
+--out results_bert-mlit \
+2>&1 | tee train_bert-mlit.log
 ```
 
 <img src="results/accuracy.png"/> <img src="results/elaps.png"/>
+
+See also [other classification page](/classify/README.md)
