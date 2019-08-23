@@ -4,4 +4,4 @@
 
 This example code is to convert a patient disease expression to a standard expression using BERT fine-tuning.
 
-See also [Patient (BERT Search)](/bert/search/README.md)
+Go to [Patient (BERT Search)](/nlp/bert/search/README.md)
