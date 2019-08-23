@@ -16,7 +16,7 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 ### ToDo ###
 
 - [x] A fairly naive implementation.
-- [ ] Using some other pre-trained KG embedded model (e.g. TransE) for entities.
+- [ ] Using some other pre-trained KG embedded model (e.g. TransE, GNN, ..) for entities.
 - [ ] Using BERT embedding and fine-tuning for words.
 
 ### Usage ###
