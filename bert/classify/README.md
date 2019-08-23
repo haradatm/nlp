@@ -101,4 +101,7 @@ python train_bert.py \
 
 <img src="results/accuracy.png"/> <img src="results/elaps.png"/>
 
-See also [other classification page](/classify/README.md)
+See also [other classification experiments](/classify/README.md)
+
+<html src="results/lime_show-rt.html"></html>
+<html src="results/lime_show-mlit.html"></html>
