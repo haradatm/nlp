@@ -190,7 +190,7 @@ Enter query (mention) => Ctrl-D
 |Learning Curve<br>(train_entity.py on Google Colab)|Similarity Search for "paris" (test_entity.py)<br>[legend] guery, blue: words, green: entities| 
 |---|---|
 ![](results/result_entity.png)|![](results/plot_paris.png)
-||[legend] guery, blue: words, green: entities| 
+||<center>orange: guery, blue: words, green: entities</center>| 
 
 ***Appendix***
 
