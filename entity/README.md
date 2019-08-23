@@ -17,51 +17,51 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 
 ***Data***
 
-  - Downlod datasets [origin_data.zip](https://pan.baidu.com/s/1q7rctsoJ_YdlLa55yckwbQ) and put them in "datasets/nyt-fb60k".
+  - Downlod datasets [origin_data.zip](https://pan.baidu.com/s/1q7rctsoJ_YdlLa55yckwbQ) and put them in "datasets/nyt-fb60k/".
     - kg/train.txt: the knowledge graph for training, format (e1, e2, rel).
     - text/relation2id.txt: the relation needed to be predicted for RE, format (rel, id).
     - text/train.txt: the text for training, format (e1, e2, name1, name2, rel, sentence).
     - text/vec.txt: the initial word embeddings.
 
 ```
-wc -l datasets/*/*
-  335350 datasets/kg/train.txt
-      53 datasets/text/relation2id.txt
-  172448 datasets/text/test.txt
-  570088 datasets/text/train.txt
-  114043 datasets/text/vec.txt
+wc -l datasets/nyt-fb60k/*/*
+  335350 datasets/nyt-fb60k/kg/train.txt
+      53 datasets/nyt-fb60k/text/relation2id.txt
+  172448 datasets/nyt-fb60k/text/test.txt
+  570088 datasets/nyt-fb60k/text/train.txt
+  114043 datasets/nyt-fb60k/text/vec.txt
  1191982 total
 
-head -n 5 datasets/kg/*.txt
+head -n 5 datasets/nyt-fb60k/kg/*.txt
 m.01063t	m.01063t	/location/hud_county_place/place
 m.01063t	m.07b_l	/location/location/containedby
 m.011hq1	m.03rk0	/location/location/containedby
 m.011hq1	m.04vdf2	/location/in_state/legislative_capital
 m.011hq1	m.04vdf2	/location/in_state/judicial_capital
 
-head -n 5 datasets/text/*.txt
-==> datasets/text/relation2id.txt <==
+head -n 5 datasets/nyt-fb60k/text/*.txt
+==> datasets/nyt-fb60k/text/relation2id.txt <==
 53
 NA 0
 /location/neighborhood/neighborhood_of 1
 /location/fr_region/capital 2
 /location/cn_province/capital 3
 
-==> datasets/text/train.txt <==
+==> datasets/nyt-fb60k/text/train.txt <==
 m.0ccvx	m.05gf08	queens	belle_harbor	/location/location/contains	sen. charles e. schumer called on federal safety officials yesterday to reopen their investigation into the fatal crash of a passenger jet in belle_harbor , queens , because equipment failure , not pilot error , might have been the cause . ###END###
 m.0ccvx	m.05gf08	queens	belle_harbor	/location/location/contains	but instead there was a funeral , at st. francis de sales roman catholic church , in belle_harbor , queens , the parish of his birth . ###END###
 m.0ccvx	m.05gf08	queens	belle_harbor	/location/location/contains	rosemary antonelle , the daughter of teresa l. antonelle and patrick antonelle of belle_harbor , queens , was married yesterday afternoon to lt. thomas joseph quast , a son of peggy b. quast and vice adm. philip m. quast of carmel , calif. . ###END###
 m.0ccvx	m.05gf08	queens	belle_harbor	/location/location/contains	one was for st. francis de sales roman catholic church in belle_harbor ; another board studded with electromechanical magnets will go under the pipes of an organ at the evangelical lutheran church of christ in rosedale , queens . ###END###
 m.0ccvx	m.05gf08	queens	belle_harbor	/location/location/contains	the firefighter , whom a fire department official identified as joseph moore , of belle_harbor , queens , was taken to newyork-presbyterian\/weill cornell hospital , where he was in critical but stable condition last night , the police said . ###END###
 
-==> datasets/text/test.txt <==
+==> datasets/nyt-fb60k/text/nyt-fb60k/test.txt <==
 m.01l443l	m.04t_bj	dave_holland	barry_altschul	NA	the occasion was suitably exceptional : a reunion of the 1970s-era sam rivers trio , with dave_holland on bass and barry_altschul on drums .	###END###
 m.01l443l	m.04t_bj	dave_holland	barry_altschul	NA	tonight he brings his energies and expertise to the miller theater for the festival 's thrilling finale : a reunion of the 1970s sam rivers trio , with dave_holland on bass and barry_altschul on drums .	###END###
 m.04t_bj	m.01l443l	barry_altschul	dave_holland	NA	the occasion was suitably exceptional : a reunion of the 1970s-era sam rivers trio , with dave_holland on bass and barry_altschul on drums .	###END###
 m.04t_bj	m.01l443l	barry_altschul	dave_holland	NA	tonight he brings his energies and expertise to the miller theater for the festival 's thrilling finale : a reunion of the 1970s sam rivers trio , with dave_holland on bass and barry_altschul on drums .	###END###
 m.0frkwp	m.04mh_g	ruth	little_neck	NA	shapiro -- ruth of little_neck , ny .	###END###
 
-==> datasets/text/vec.txt <==
+==> datasets/nyt-fb60k/text/vec.txt <==
 114042 50 #File: vec.bin
 </s> 0.198994 0.219711 -0.190422 -0.162968 0.067939 0.150194 0.046775 0.010506 -0.179149 0.110292 -0.216578 0.062121 -0.037353 -0.047586 -0.164842 -0.093572 0.128232 0.150406 0.147607 0.079417 0.076800 -0.189049 -0.203621 0.247066 0.188980 0.153622 -0.030025 0.199639 -0.024609 0.036526 -0.007419 -0.148312 0.065239 -0.066491 -0.190179 0.236354 0.217716 -0.054444 -0.011242 0.025314 -0.180848 -0.199214 0.226440 0.003133 -0.128384 -0.151240 -0.152947 0.084363 0.010013 0.066172
 , -0.006928 0.031052 -0.140201 0.041724 0.123242 0.190794 0.203675 -0.113365 -0.185090 -0.064685 -0.121526 -0.181298 -0.168961 -0.101821 0.065601 0.017016 0.185144 0.166453 -0.037932 -0.035018 0.085429 0.268255 0.209383 -0.174111 -0.297756 -0.163482 -0.009407 -0.060967 -0.124566 -0.165751 -0.313936 0.067265 -0.071646 0.182648 -0.059417 0.218453 -0.155121 -0.115864 0.083180 0.011243 0.043711 0.126674 -0.200785 0.076185 -0.034229 0.057695 0.143920 -0.106381 -0.098294 -0.119184
