@@ -204,3 +204,5 @@ Enter query (mention) => Ctrl-D
 <img src="results/image.png" />
 
 Train to minimizes the loss of the three models at the same time. (L = L_left + L_center + K_right)
+
+``OUT'' indicated in red is the distributed representation of each word and entity.
