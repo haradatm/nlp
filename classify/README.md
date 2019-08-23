@@ -29,7 +29,7 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
   - Create train and test datasets and put them in the appropriate place.
 
 ```
-cd datasets/soseki
+cd datasets
 wc -l rt-polaritydata/rt-polaritydata/rt-polarity.*
     5331 rt-polaritydata/rt-polaritydata/rt-polarity.neg
     5331 rt-polaritydata/rt-polaritydata/rt-polarity.pos
@@ -41,15 +41,38 @@ iconv -f WINDOWS-1252 -t UTF-8 rt-polaritydata/rt-polarity.neg > rt-polarity.neg
 iconv -f WINDOWS-1252 -t UTF-8 rt-polaritydata/rt-polarity.pos > rt-polarity.pos.utf8
 paste label-neg.txt rt-polarity.neg.utf8 >  rt-polarity.txt
 paste label-pos.txt rt-polarity.pos.utf8 >> rt-polarity.txt
-rm -fr label-neg.txt label-pos.txt
 
-python ../skfold_splitter.py rt-polarity.txt
-tar zcvf XX-train_test.tgz ./??-t*.txt
+python ../tools/skfold_splitter.py rt-polarity.txt
 
-wc -l ??-t*.txt
+wc -l 04-t*.txt
     1066 04-test.txt
     9596 04-train.txt
    10662 total
+```
+
+```
+cd datasets
+python ../tools/mlit-fetch.py --start    1 --end  870 > mlit-1.txt 2> mlit-1.log &
+python ../tools/mlit-fetch.py --start  871 --end 1740 > mlit-2.txt 2> mlit-2.log &
+python ../tools/mlit-fetch.py --start 1741 --end 2610 > mlit-3.txt 2> mlit-3.log &
+python ../tools/mlit-fetch.py --start 2611 --end 3480 > mlit-4.txt 2> mlit-4.log &
+python ../tools/mlit-fetch.py --start 3481 --end 4350 > mlit-5.txt 2> mlit-5.log &
+python ../tools/mlit-fetch.py --start 4351 --end 5194 > mlit-6.txt 2> mlit-6.log &
+cat mlit-?.txt > mlit.txt
+
+cut -f 12 mlit.txt > class.txt
+cut -f 14 mlit.txt | gsed -E "s/<tab>/ /g" | gsed -E "s/ +/ /g" > text.txt
+cat text.txt | mecab -r ../mecabrc -F"%f[6] " -U"%m " -E"\n" > text-wakachi.txt
+paste class.txt text-wakachi.txt > train.txt
+wc -l train.txt
+   51940 train.txt
+
+python ../tools/skfold_splitter.py train.txt
+
+wc -l 04-t*.txt
+    5196 04-test.txt
+   46744 04-train.txt
+   51940 total
 ```
 
 ***Run and Evaluate***
@@ -76,11 +99,6 @@ python train_rnn-b-bert.py  --train datasets/mlit/04-train.txt --test datasets/m
 python train_rnn-ba-bert.py --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rnn-ba 2>&1 | tee train_rnn-ba-bert.log
 python train_rcnn-bert.py   --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_rcnn   2>&1 | tee train_rcnn-bert.log  
 python train_bow-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_bow    2>&1 | tee train_bow-bert.log   
-```
-
-- training and test by BERT fintuning
-```
-python train_finetuning-bert.py --train datasets/rt-polarity/04-train.txt --test datasets/rt-polarity/04-test.txt --vocab_file BERT/uncased_L-12_H-768_A-12/vocab.txt --bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json --init_checkpoint BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz --gpu 0 --epoch 50 --learnrate 5e-05 --weightdecay 0.01 --batchsize 64 --out results_bert-2 2>&1 | tee train_finetuning-bert.log
 ```
 
 <img src="results/accuracy.png"/> <img src="results/elaps.png"/>
