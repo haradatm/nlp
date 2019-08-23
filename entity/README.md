@@ -2,7 +2,7 @@
 
 ### Description
 
-This example code is a method to search related entities on Knowledge Graph by a query (mention) inspired by the following paper.
+This toy example is a method to search related entities on Knowledge Graph by a query (mention) inspired by the following paper.
 - ["Wikipedia2Vec: An Optimized Tool for Learning Embeddings of Words and Entities from Wikipedia" by Yamada, Ikuya and Asai, Akari and Shindo, Hiroyuki and Takeda, Hideaki and Takefuji, Yoshiyasu, (arXiv preprint 1812.06280).](https://arxiv.org/abs/1601.01343)
 
 
