@@ -183,10 +183,9 @@ obama	8	evan_bayh (m.01rcnr)	0.446977
 obama	9	mark_pryor (m.01gb3p)	0.432480
 obama	10	russ_feingold (m.01nvvl)	0.424668
 
-Enter query (mention) => 
+Enter query (mention) => Ctrl-D
 ```
 
-|Learning Curve|Similarity Search for "Paris"| 
-|(train_entity.py on Google Colab)|(test_entity.py)| 
+|Learning Curve<br>(train_entity.py on Google Colab)|Similarity Search for "Paris"<br>(test_entity.py)| 
 |---|---|
 ![](results/result_entity.png)|![](results/plot_paris.png)
