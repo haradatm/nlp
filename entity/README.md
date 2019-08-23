@@ -204,4 +204,5 @@ Enter query (mention) => Ctrl-D
 <img src="results/image.png" />
 
 The training eims to minimizes the loss of the three models at the same time. (L = L_left + L_center + K_right)
-The “OUT” shown in the red frame are trained distributed representation of words and entities.
+
+Then “OUT”s shown in the red frame are trained distributed representation of words and entities.
