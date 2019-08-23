@@ -201,6 +201,6 @@ Enter query (mention) => Ctrl-D
 
 - Illustration of 3 embedding models (word, entity, word-entity)
 
-Train to minimizes the loss of the three models at the same time. ($$ L=L_{w} + L_{e} + K_{ew} $$)
-
 <img src="results/image.png" />
+
+Train to minimizes the loss of the three models at the same time. (L = L_left + L_center + K_right)
