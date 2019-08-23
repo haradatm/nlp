@@ -191,7 +191,7 @@ Enter query (mention) => Ctrl-D
 |---|---|
 ![](results/result_entity.png)|![](results/plot_paris.png)
 
-###Appendix
+***Appendix***
 
 - Illustration of 3 embedding models (word, entity, word-entity)
 
