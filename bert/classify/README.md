@@ -1,4 +1,4 @@
-# Chainer example code to write for Text Classification using BERT fine-tuning)
+# BERT-Classification (Chainer example code for Text Classification using BERT fine-tuning)
 
 ### Description
 
@@ -62,7 +62,8 @@ head -n 3 datasets/mlit/04-test.txt
 ```
 
 ***Run and Evaluate***
-- training (for English)
+
+- training for rt-polarity datasets (for English)
 
 ```
 python train_bert.py \
@@ -80,7 +81,7 @@ python train_bert.py \
 2>&1 | tee train_bert-rt.log
 ```
 
-- training (for Japanese)
+- training for mlit datasets (for Japanese)
 
 ```
 python train_bert.py \

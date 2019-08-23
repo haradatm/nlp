@@ -1,4 +1,4 @@
-# Patient (Convert Patient disease expression to Standard expression using BERT fine-tuning)
+# BERT-Ranking (Chainer example code for Neural Ranking for Ad-Hoc Text Retrieval using BERT fine-tuning)
 
 ### Description
 
@@ -65,8 +65,6 @@ D-0340	咽喉 痛
 Q-0993	0	D-0031	1
 Q-0994	0	D-0198	1
 Q-0995	0	D-0335	1
-
-cd ../../
 ```
 
 ***Run and Evaluate***

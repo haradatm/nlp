@@ -1,4 +1,4 @@
-# BERT-NER (Neural Architectures for Named Entity Recognition using BERT fine-tuning)
+# BERT-NER (Chainer example code for Neural Architectures for Named Entity Recognition using BERT fine-tuning)
 
 ### Description
 
