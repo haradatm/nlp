@@ -2,7 +2,9 @@
 
 ### Description
 
-This example code is a method to search related entities on Knowledge Graph by a query (mention).
+This example code is a method to search related entities on Knowledge Graph by a query (mention) inspired by the following paper.
+- ["ikipedia2Vec: An Optimized Tool for Learning Embeddings of Words and Entities from Wikipedia" by Yamada, Ikuya and Asai, Akari and Shindo, Hiroyuki and Takeda, Hideaki and Takefuji, Yoshiyasu.](https://arxiv.org/abs/1601.01343)
+
 
 ### Dependencies
 - python 3.7
