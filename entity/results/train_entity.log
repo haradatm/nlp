@@ -1,0 +1,115 @@
+[nltk_data] Downloading package stopwords to /root/nltk_data...
+[nltk_data]   Unzipping corpora/stopwords.zip.
+{
+  "gpu": 0,
+  "unit": 100,
+  "window": 5,
+  "batchsize": 1500,
+  "epoch": 100,
+  "model": "cbow",
+  "negative_size": 5,
+  "out_type": "original",
+  "kg": "../datasets/nyt-fb60k/kg/train.txt",
+  "train": "../datasets/nyt-fb60k/text/train.txt",
+  "valid": "../datasets/nyt-fb60k/text/test.txt",
+  "out": "result-kg2v-3",
+  "test": false
+}
+GPU: 0
+# unit: 100
+Window: 5
+Minibatch-size: 1500
+# epoch: 100
+Training model: cbow
+Output type: original
+
+2019-08-21 03:47:00,353 - main - INFO - entity size: 37548
+2019-08-21 03:47:00,355 - main - INFO - vocabulary size: 197080
+2019-08-21 03:47:00,356 - main - INFO - train data length: 1020439
+2019-08-21 03:47:00,357 - main - INFO - vaid  data length: 332263
+2019-08-21 04:01:02,465 - main - INFO - [  1] T/loss=24.359715 T/loss_e=7.451165 T/loss_w=8.673109 T/loss_ew=8.235440 T/accuracy=0.031728 T/sec= 710.147087 D/loss=25.205790 D/loss_e=7.207213 D/loss_w=9.093420 D/loss_ew=8.905157 D/accuracy=0.000000 D/sec= 122.095290 lr=0.001000
+saving early-stopped model (loss) at epoch 1
+2019-08-21 04:15:17,676 - main - INFO - [  2] T/loss=19.294113 T/loss_e=4.564331 T/loss_w=7.416413 T/loss_ew=7.313370 T/accuracy=0.070291 T/sec= 732.637895 D/loss=22.750176 D/loss_e=5.358652 D/loss_w=8.790325 D/loss_ew=8.601198 D/accuracy=0.012553 D/sec= 122.572960 lr=0.001000
+saving early-stopped model (loss) at epoch 2
+saving early-stopped model (accuracy) at epoch 2
+2019-08-21 04:29:40,651 - main - INFO - [  3] T/loss=16.224134 T/loss_e=2.635722 T/loss_w=6.856992 T/loss_ew=6.731419 T/accuracy=0.112277 T/sec= 740.501774 D/loss=20.684534 D/loss_e=3.886729 D/loss_w=8.520212 D/loss_ew=8.277593 D/accuracy=0.027096 D/sec= 122.472603 lr=0.001000
+saving early-stopped model (loss) at epoch 3
+saving early-stopped model (accuracy) at epoch 3
+2019-08-21 04:43:58,617 - main - INFO - [  4] T/loss=14.100330 T/loss_e=1.600166 T/loss_w=6.308752 T/loss_ew=6.191412 T/accuracy=0.156772 T/sec= 735.609782 D/loss=19.577223 D/loss_e=3.200298 D/loss_w=8.309824 D/loss_ew=8.067100 D/accuracy=0.038614 D/sec= 122.356620 lr=0.001000
+saving early-stopped model (loss) at epoch 4
+saving early-stopped model (accuracy) at epoch 4
+2019-08-21 04:58:10,225 - main - INFO - [  5] T/loss=12.655673 T/loss_e=1.110911 T/loss_w=5.809249 T/loss_ew=5.735513 T/accuracy=0.198835 T/sec= 729.249555 D/loss=18.939889 D/loss_e=2.867633 D/loss_w=8.153175 D/loss_ew=7.919081 D/accuracy=0.052082 D/sec= 122.358591 lr=0.001000
+saving early-stopped model (loss) at epoch 5
+saving early-stopped model (accuracy) at epoch 5
+2019-08-21 05:12:26,295 - main - INFO - [  6] T/loss=11.580484 T/loss_e=0.849236 T/loss_w=5.380854 T/loss_ew=5.350394 T/accuracy=0.237267 T/sec= 733.288053 D/loss=18.518947 D/loss_e=2.667917 D/loss_w=8.041407 D/loss_ew=7.809624 D/accuracy=0.063131 D/sec= 122.781420 lr=0.001000
+saving early-stopped model (loss) at epoch 6
+saving early-stopped model (accuracy) at epoch 6
+2019-08-21 05:26:41,230 - main - INFO - [  7] T/loss=10.721055 T/loss_e=0.696148 T/loss_w=5.009966 T/loss_ew=5.014941 T/accuracy=0.271375 T/sec= 728.769722 D/loss=18.254990 D/loss_e=2.557242 D/loss_w=7.964996 D/loss_ew=7.732752 D/accuracy=0.070944 D/sec= 126.165510 lr=0.001000
+saving early-stopped model (loss) at epoch 7
+saving early-stopped model (accuracy) at epoch 7
+2019-08-21 05:40:52,742 - main - INFO - [  8] T/loss=10.003436 T/loss_e=0.600944 T/loss_w=4.684544 T/loss_ew=4.717948 T/accuracy=0.302906 T/sec= 729.178881 D/loss=18.091285 D/loss_e=2.496189 D/loss_w=7.914373 D/loss_ew=7.680723 D/accuracy=0.078086 D/sec= 122.333492 lr=0.001000
+saving early-stopped model (loss) at epoch 8
+saving early-stopped model (accuracy) at epoch 8
+2019-08-21 05:55:08,954 - main - INFO - [  9] T/loss=9.385305 T/loss_e=0.539314 T/loss_w=4.394610 T/loss_ew=4.451381 T/accuracy=0.332138 T/sec= 732.224851 D/loss=18.000078 D/loss_e=2.462333 D/loss_w=7.886948 D/loss_ew=7.650797 D/accuracy=0.081011 D/sec= 123.986571 lr=0.001000
+saving early-stopped model (loss) at epoch 9
+saving early-stopped model (accuracy) at epoch 9
+2019-08-21 06:09:32,679 - main - INFO - [ 10] T/loss=8.838768 T/loss_e=0.497712 T/loss_w=4.132349 T/loss_ew=4.208707 T/accuracy=0.359025 T/sec= 739.540265 D/loss=17.965798 D/loss_e=2.455008 D/loss_w=7.875571 D/loss_ew=7.635219 D/accuracy=0.084873 D/sec= 124.185003 lr=0.001000
+saving early-stopped model (loss) at epoch 10
+saving early-stopped model (accuracy) at epoch 10
+2019-08-21 06:23:54,061 - main - INFO - [ 11] T/loss=8.347365 T/loss_e=0.468889 T/loss_w=3.892622 T/loss_ew=3.985853 T/accuracy=0.384186 T/sec= 737.072819 D/loss=17.961687 D/loss_e=2.452881 D/loss_w=7.875825 D/loss_ew=7.632981 D/accuracy=0.087966 D/sec= 124.308923 lr=0.001000
+saving early-stopped model (loss) at epoch 11
+saving early-stopped model (accuracy) at epoch 11
+2019-08-21 06:38:18,885 - main - INFO - [ 12] T/loss=7.900434 T/loss_e=0.448525 T/loss_w=3.672054 T/loss_ew=3.779855 T/accuracy=0.408477 T/sec= 740.333817 D/loss=17.979657 D/loss_e=2.463220 D/loss_w=7.879526 D/loss_ew=7.636911 D/accuracy=0.091446 D/sec= 124.490108 lr=0.001000
+saving early-stopped model (accuracy) at epoch 12
+2019-08-21 06:52:34,517 - main - INFO - [ 13] T/loss=7.489540 T/loss_e=0.433590 T/loss_w=3.467824 T/loss_ew=3.588126 T/accuracy=0.431663 T/sec= 730.816821 D/loss=18.037785 D/loss_e=2.483699 D/loss_w=7.899756 D/loss_ew=7.654331 D/accuracy=0.093032 D/sec= 124.814943 lr=0.001000
+saving early-stopped model (accuracy) at epoch 13
+2019-08-21 07:06:57,291 - main - INFO - [ 14] T/loss=7.110737 T/loss_e=0.422772 T/loss_w=3.278558 T/loss_ew=3.409406 T/accuracy=0.453935 T/sec= 737.287858 D/loss=18.120611 D/loss_e=2.512308 D/loss_w=7.926764 D/loss_ew=7.681540 D/accuracy=0.094678 D/sec= 125.486907 lr=0.001000
+saving early-stopped model (accuracy) at epoch 14
+2019-08-21 07:21:16,532 - main - INFO - [ 15] T/loss=6.758878 T/loss_e=0.414330 T/loss_w=3.102461 T/loss_ew=3.242087 T/accuracy=0.475534 T/sec= 733.220094 D/loss=18.196238 D/loss_e=2.535358 D/loss_w=7.953080 D/loss_ew=7.707800 D/accuracy=0.096394 D/sec= 126.020590 lr=0.001000
+saving early-stopped model (accuracy) at epoch 15
+2019-08-21 07:35:42,446 - main - INFO - [ 16] T/loss=6.431496 T/loss_e=0.407806 T/loss_w=2.938532 T/loss_ew=3.085159 T/accuracy=0.496650 T/sec= 740.052500 D/loss=18.309611 D/loss_e=2.563164 D/loss_w=7.995656 D/loss_ew=7.750791 D/accuracy=0.096327 D/sec= 125.861765 lr=0.001000
+2019-08-21 07:49:54,770 - main - INFO - [ 17] T/loss=6.126784 T/loss_e=0.403034 T/loss_w=2.785852 T/loss_ew=2.937898 T/accuracy=0.516492 T/sec= 726.929482 D/loss=18.421722 D/loss_e=2.589222 D/loss_w=8.037088 D/loss_ew=7.795412 D/accuracy=0.098064 D/sec= 125.394307 lr=0.001000
+saving early-stopped model (accuracy) at epoch 17
+2019-08-21 08:04:19,288 - main - INFO - [ 18] T/loss=5.842510 T/loss_e=0.399319 T/loss_w=2.643601 T/loss_ew=2.799589 T/accuracy=0.535836 T/sec= 738.162601 D/loss=18.544738 D/loss_e=2.620568 D/loss_w=8.082328 D/loss_ew=7.841842 D/accuracy=0.099000 D/sec= 126.355187 lr=0.001000
+saving early-stopped model (accuracy) at epoch 18
+2019-08-21 08:18:42,474 - main - INFO - [ 19] T/loss=5.577020 T/loss_e=0.396028 T/loss_w=2.511198 T/loss_ew=2.669793 T/accuracy=0.554045 T/sec= 737.133470 D/loss=18.668765 D/loss_e=2.645964 D/loss_w=8.130315 D/loss_ew=7.892486 D/accuracy=0.099460 D/sec= 126.052352 lr=0.001000
+saving early-stopped model (accuracy) at epoch 19
+2019-08-21 08:33:08,248 - main - INFO - [ 20] T/loss=5.328780 T/loss_e=0.393630 T/loss_w=2.387530 T/loss_ew=2.547620 T/accuracy=0.571658 T/sec= 739.664900 D/loss=18.808588 D/loss_e=2.671545 D/loss_w=8.186275 D/loss_ew=7.950768 D/accuracy=0.099605 D/sec= 126.109579 lr=0.001000
+saving early-stopped model (accuracy) at epoch 20
+2019-08-21 08:47:29,384 - main - INFO - [ 21] T/loss=5.096489 T/loss_e=0.391477 T/loss_w=2.272185 T/loss_ew=2.432827 T/accuracy=0.588188 T/sec= 735.091629 D/loss=18.947653 D/loss_e=2.699772 D/loss_w=8.240492 D/loss_ew=8.007388 D/accuracy=0.100074 D/sec= 126.044207 lr=0.001000
+saving early-stopped model (accuracy) at epoch 21
+2019-08-21 09:01:55,647 - main - INFO - [ 22] T/loss=4.879470 T/loss_e=0.389880 T/loss_w=2.164645 T/loss_ew=2.324945 T/accuracy=0.604509 T/sec= 739.661249 D/loss=19.079840 D/loss_e=2.726884 D/loss_w=8.291287 D/loss_ew=8.061668 D/accuracy=0.100917 D/sec= 126.602228 lr=0.001000
+saving early-stopped model (accuracy) at epoch 22
+2019-08-21 09:16:18,728 - main - INFO - [ 23] T/loss=4.675961 T/loss_e=0.388611 T/loss_w=2.064001 T/loss_ew=2.223349 T/accuracy=0.619856 T/sec= 736.837278 D/loss=19.231937 D/loss_e=2.750950 D/loss_w=8.354553 D/loss_ew=8.126434 D/accuracy=0.101429 D/sec= 126.243829 lr=0.001000
+saving early-stopped model (accuracy) at epoch 23
+2019-08-21 09:30:44,410 - main - INFO - [ 24] T/loss=4.484889 T/loss_e=0.387253 T/loss_w=1.969918 T/loss_ew=2.127718 T/accuracy=0.634748 T/sec= 739.712439 D/loss=19.390450 D/loss_e=2.787377 D/loss_w=8.415954 D/loss_ew=8.187119 D/accuracy=0.101609 D/sec= 125.968795 lr=0.001000
+saving early-stopped model (accuracy) at epoch 24
+2019-08-21 09:45:07,056 - main - INFO - [ 25] T/loss=4.305924 T/loss_e=0.386377 T/loss_w=1.881874 T/loss_ew=2.037673 T/accuracy=0.648772 T/sec= 736.833971 D/loss=19.541023 D/loss_e=2.811324 D/loss_w=8.479382 D/loss_ew=8.250317 D/accuracy=0.101934 D/sec= 125.812300 lr=0.001000
+saving early-stopped model (accuracy) at epoch 25
+2019-08-21 09:59:27,323 - main - INFO - [ 26] T/loss=4.137701 T/loss_e=0.385547 T/loss_w=1.799336 T/loss_ew=1.952818 T/accuracy=0.662047 T/sec= 737.214908 D/loss=19.704277 D/loss_e=2.837782 D/loss_w=8.547969 D/loss_ew=8.318526 D/accuracy=0.101970 D/sec= 123.052523 lr=0.001000
+saving early-stopped model (accuracy) at epoch 26
+2019-08-21 10:13:35,380 - main - INFO - [ 27] T/loss=3.979435 T/loss_e=0.384948 T/loss_w=1.721827 T/loss_ew=1.872660 T/accuracy=0.674973 T/sec= 725.204910 D/loss=19.849418 D/loss_e=2.857088 D/loss_w=8.611479 D/loss_ew=8.380851 D/accuracy=0.101730 D/sec= 122.851260 lr=0.001000
+2019-08-21 10:27:37,108 - main - INFO - [ 28] T/loss=3.830355 T/loss_e=0.384228 T/loss_w=1.649058 T/loss_ew=1.797068 T/accuracy=0.687217 T/sec= 718.600005 D/loss=20.013610 D/loss_e=2.882637 D/loss_w=8.682332 D/loss_ew=8.448641 D/accuracy=0.101675 D/sec= 123.128740 lr=0.001000
+2019-08-21 10:41:45,122 - main - INFO - [ 29] T/loss=3.690065 T/loss_e=0.383642 T/loss_w=1.580702 T/loss_ew=1.725722 T/accuracy=0.698481 T/sec= 725.023912 D/loss=20.164647 D/loss_e=2.902851 D/loss_w=8.749389 D/loss_ew=8.512408 D/accuracy=0.102500 D/sec= 122.990311 lr=0.001000
+saving early-stopped model (accuracy) at epoch 29
+2019-08-21 10:55:53,014 - main - INFO - [ 30] T/loss=3.557799 T/loss_e=0.383283 T/loss_w=1.516305 T/loss_ew=1.658212 T/accuracy=0.709581 T/sec= 725.086906 D/loss=20.336273 D/loss_e=2.926080 D/loss_w=8.825630 D/loss_ew=8.584562 D/accuracy=0.101393 D/sec= 122.804451 lr=0.001000
+2019-08-21 11:09:51,719 - main - INFO - [ 31] T/loss=3.433002 T/loss_e=0.382861 T/loss_w=1.455717 T/loss_ew=1.594425 T/accuracy=0.720015 T/sec= 717.440004 D/loss=20.489136 D/loss_e=2.945836 D/loss_w=8.894457 D/loss_ew=8.648843 D/accuracy=0.102283 D/sec= 121.265493 lr=0.001000
+2019-08-21 11:23:43,676 - main - INFO - [ 32] T/loss=3.315109 T/loss_e=0.382438 T/loss_w=1.398625 T/loss_ew=1.534047 T/accuracy=0.730096 T/sec= 710.753988 D/loss=20.650934 D/loss_e=2.970176 D/loss_w=8.966006 D/loss_ew=8.714752 D/accuracy=0.102431 D/sec= 121.202671 lr=0.001000
+2019-08-21 11:37:39,877 - main - INFO - [ 33] T/loss=3.203651 T/loss_e=0.381989 T/loss_w=1.344761 T/loss_ew=1.476901 T/accuracy=0.739784 T/sec= 714.714526 D/loss=20.821441 D/loss_e=2.987358 D/loss_w=9.045989 D/loss_ew=8.788094 D/accuracy=0.102043 D/sec= 121.486393 lr=0.001000
+2019-08-21 11:51:36,948 - main - INFO - [ 34] T/loss=3.098522 T/loss_e=0.381781 T/loss_w=1.293969 T/loss_ew=1.422773 T/accuracy=0.748773 T/sec= 714.268707 D/loss=20.977673 D/loss_e=3.006785 D/loss_w=9.117882 D/loss_ew=8.853006 D/accuracy=0.102452 D/sec= 122.802411 lr=0.001000
+2019-08-21 12:05:30,758 - main - INFO - [ 35] T/loss=2.999050 T/loss_e=0.381509 T/loss_w=1.246020 T/loss_ew=1.371521 T/accuracy=0.757758 T/sec= 712.380971 D/loss=21.149306 D/loss_e=3.023370 D/loss_w=9.198990 D/loss_ew=8.926946 D/accuracy=0.101802 D/sec= 121.428777 lr=0.001000
+2019-08-21 12:19:32,969 - main - INFO - [ 36] T/loss=2.904630 T/loss_e=0.381173 T/loss_w=1.200627 T/loss_ew=1.322830 T/accuracy=0.765934 T/sec= 720.274349 D/loss=21.318695 D/loss_e=3.041423 D/loss_w=9.278398 D/loss_ew=8.998875 D/accuracy=0.101296 D/sec= 121.936636 lr=0.001000
+2019-08-21 12:33:31,689 - main - INFO - [ 37] T/loss=2.815690 T/loss_e=0.381172 T/loss_w=1.157768 T/loss_ew=1.276751 T/accuracy=0.773815 T/sec= 717.550900 D/loss=21.507504 D/loss_e=3.063817 D/loss_w=9.366437 D/loss_ew=9.077250 D/accuracy=0.101007 D/sec= 121.168841 lr=0.001000
+2019-08-21 12:47:29,927 - main - INFO - [ 38] T/loss=2.731006 T/loss_e=0.380861 T/loss_w=1.117167 T/loss_ew=1.232979 T/accuracy=0.781328 T/sec= 716.626590 D/loss=21.669946 D/loss_e=3.081772 D/loss_w=9.442807 D/loss_ew=9.145367 D/accuracy=0.101375 D/sec= 121.611991 lr=0.001000
+2019-08-21 13:01:32,790 - main - INFO - [ 39] T/loss=2.650729 T/loss_e=0.380506 T/loss_w=1.078767 T/loss_ew=1.191455 T/accuracy=0.788386 T/sec= 721.452461 D/loss=21.854042 D/loss_e=3.098053 D/loss_w=9.531773 D/loss_ew=9.224215 D/accuracy=0.100821 D/sec= 121.410505 lr=0.001000
+2019-08-21 13:15:30,738 - main - INFO - [ 40] T/loss=2.574617 T/loss_e=0.380376 T/loss_w=1.042289 T/loss_ew=1.151952 T/accuracy=0.795219 T/sec= 716.245656 D/loss=22.025511 D/loss_e=3.120536 D/loss_w=9.610585 D/loss_ew=9.294390 D/accuracy=0.101074 D/sec= 121.702504 lr=0.001000
+2019-08-21 13:29:31,754 - main - INFO - [ 41] T/loss=2.502310 T/loss_e=0.380155 T/loss_w=1.007721 T/loss_ew=1.114433 T/accuracy=0.801912 T/sec= 718.199851 D/loss=22.210242 D/loss_e=3.135578 D/loss_w=9.700407 D/loss_ew=9.374258 D/accuracy=0.100264 D/sec= 122.815979 lr=0.001000
+2019-08-21 13:43:34,127 - main - INFO - [ 42] T/loss=2.433849 T/loss_e=0.380178 T/loss_w=0.974909 T/loss_ew=1.078762 T/accuracy=0.808231 T/sec= 720.933956 D/loss=22.376850 D/loss_e=3.149042 D/loss_w=9.781622 D/loss_ew=9.446186 D/accuracy=0.100375 D/sec= 121.438387 lr=0.001000
+2019-08-21 13:57:32,937 - main - INFO - [ 43] T/loss=2.368467 T/loss_e=0.379933 T/loss_w=0.943722 T/loss_ew=1.044812 T/accuracy=0.814240 T/sec= 716.809072 D/loss=22.577465 D/loss_e=3.168654 D/loss_w=9.877221 D/loss_ew=9.531590 D/accuracy=0.099987 D/sec= 122.001898 lr=0.001000
+2019-08-21 14:11:32,645 - main - INFO - [ 44] T/loss=2.306220 T/loss_e=0.379705 T/loss_w=0.914026 T/loss_ew=1.012489 T/accuracy=0.819981 T/sec= 717.940927 D/loss=22.771651 D/loss_e=3.189238 D/loss_w=9.969426 D/loss_ew=9.612987 D/accuracy=0.099481 D/sec= 121.767007 lr=0.001000
+2019-08-21 14:25:29,229 - main - INFO - [ 45] T/loss=2.247125 T/loss_e=0.379610 T/loss_w=0.885816 T/loss_ew=0.981699 T/accuracy=0.825230 T/sec= 715.265996 D/loss=22.939568 D/loss_e=3.198662 D/loss_w=10.053286 D/loss_ew=9.687619 D/accuracy=0.099776 D/sec= 121.317429 lr=0.001000
+2019-08-21 14:39:31,835 - main - INFO - [ 46] T/loss=2.190713 T/loss_e=0.379436 T/loss_w=0.858933 T/loss_ew=0.952344 T/accuracy=0.830553 T/sec= 719.816579 D/loss=23.128194 D/loss_e=3.216232 D/loss_w=10.144720 D/loss_ew=9.767242 D/accuracy=0.099749 D/sec= 122.789568 lr=0.001000
+2019-08-21 14:53:33,632 - main - INFO - [ 47] T/loss=2.137071 T/loss_e=0.379324 T/loss_w=0.833355 T/loss_ew=0.924392 T/accuracy=0.835528 T/sec= 718.740604 D/loss=23.316477 D/loss_e=3.236048 D/loss_w=10.234687 D/loss_ew=9.845742 D/accuracy=0.099746 D/sec= 123.056434 lr=0.001000
+2019-08-21 15:07:35,572 - main - INFO - [ 48] T/loss=2.085747 T/loss_e=0.379237 T/loss_w=0.808881 T/loss_ew=0.897630 T/accuracy=0.840317 T/sec= 718.749058 D/loss=23.511977 D/loss_e=3.247397 D/loss_w=10.332209 D/loss_ew=9.932371 D/accuracy=0.098943 D/sec= 123.190549 lr=0.001000
+2019-08-21 15:21:36,970 - main - INFO - [ 49] T/loss=2.036808 T/loss_e=0.379074 T/loss_w=0.785596 T/loss_ew=0.872138 T/accuracy=0.844762 T/sec= 719.355019 D/loss=23.708622 D/loss_e=3.263200 D/loss_w=10.427984 D/loss_ew=10.017439 D/accuracy=0.099006 D/sec= 122.043589 lr=0.001000
+2019-08-21 15:35:36,647 - main - INFO - [ 50] T/loss=1.989996 T/loss_e=0.378874 T/loss_w=0.763357 T/loss_ew=0.847765 T/accuracy=0.848822 T/sec= 721.131434 D/loss=23.892052 D/loss_e=3.273436 D/loss_w=10.520538 D/loss_ew=10.098078 D/accuracy=0.098536 D/sec= 118.545848 lr=0.001000
