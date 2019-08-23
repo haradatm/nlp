@@ -104,7 +104,7 @@ python test_entity.py \
 --saved_entity     result_entity/entity2id.bin \
 --saved_vocabulary result_entity/mention2id.bin \
 --saved_mid2name   result_entity/mid2name.bin \
---saved_model      result_entity/early_stopped-accuracy.model \
+--saved_model      result_entity/early_stopped-loss.model \
 --N 10 \
 2>&1 | tee test_entity.log
 ```
@@ -113,86 +113,87 @@ python test_entity.py \
 
 - test_entity.log (use **test_entity.py**)
 ```
-2019-08-23 09:46:30,069 - main - INFO - mention: size=197080, dim=100
-2019-08-23 09:46:30,069 - main - INFO - entity : size=37548, dim=100
+2019-08-24 08:55:02,076 - main - INFO - mention: size=197080, dim=100
+2019-08-24 08:55:02,076 - main - INFO - entity : size=37548, dim=100
 
 Enter query (mention) => paris
 #query	#rank	#word	#similarity
 paris	1	paris	1.000000
-paris	2	montmartre	0.399250
-paris	3	marseille	0.394699
-paris	4	henri_loyrette	0.390152
-paris	5	avignon	0.388601
-paris	6	fayetteville	0.379730
-paris	7	jean_cocteau	0.373670
-paris	8	lille	0.360374
-paris	9	giverny	0.351922
-paris	10	strasbourg	0.350592
+paris	2	montmartre	0.569151
+paris	3	marseille	0.551053
+paris	4	nice	0.521514
+paris	5	giverny	0.516080
+paris	6	strasbourg	0.501483
+paris	7	lyon	0.496448
+paris	8	lance_armstrong	0.493596
+paris	9	avignon	0.482324
+paris	10	lille	0.481866
 
 #query	#rank	#entity(mid)	#similarity
-paris	1	paris (m.05qtj)	0.999531
-paris	2	marseille (m.0jdtt)	0.401592
-paris	3	nice (m.0cp6w)	0.399728
-paris	4	fayetteville (m.0yfvf)	0.383538
-paris	5	montmartre (m.0gc7k)	0.371230
-paris	6	hubert_de_givenchy (m.01ylq6)	0.367869
-paris	7	giverny (m.03sd00)	0.359363
-paris	8	henri_loyrette (m.04ldhrl)	0.349045
-paris	9	pierre_cardin (m.024_nk)	0.348978
-paris	10	olivier_theyskens (m.0cvhn_)	0.341324
+paris	1	paris (m.05qtj)	0.993268
+paris	2	nice (m.0cp6w)	0.525008
+paris	3	marseille (m.0jdtt)	0.494638
+paris	4	giverny (m.03sd00)	0.462188
+paris	5	lyon (m.0dprg)	0.447700
+paris	6	lance_armstrong (m.0hfwb)	0.420505
+paris	7	strasbourg (m.09b83)	0.420094
+paris	8	karl_lagerfeld (m.017tl9)	0.410783
+paris	9	montmartre (m.0gc7k)	0.397381
+paris	10	louis_vuitton (m.03h90x)	0.394699
 
 Enter query (mention) => tokyo
 #query	#rank	#word	#similarity
 tokyo	1	tokyo	1.000000
-tokyo	2	shinto	0.537918
-tokyo	3	lazaro_hernandez	0.449616
-tokyo	4	japanese	0.443984
-tokyo	5	sapporo	0.437663
-tokyo	6	albert_brooks	0.423209
-tokyo	7	osaka	0.412872
-tokyo	8	nagasaki	0.384065
-tokyo	9	iwo_jima	0.379351
-tokyo	10	nagoya	0.376804
+tokyo	2	osaka	0.602809
+tokyo	3	shinto	0.587935
+tokyo	4	nagoya	0.568652
+tokyo	5	japanese	0.549583
+tokyo	6	sapporo	0.546861
+tokyo	7	hayao_miyazaki	0.514508
+tokyo	8	nagasaki	0.504201
+tokyo	9	hiroshima	0.503734
+tokyo	10	yasukuni_shrine	0.501678
 
 #query	#rank	#entity(mid)	#similarity
-tokyo	1	tokyo (m.07dfk)	0.999458
-tokyo	2	shinto (m.0703j)	0.574976
-tokyo	3	lazaro_hernandez (m.079ltnj)	0.497542
-tokyo	4	sapporo (m.0gp5l6)	0.476284
-tokyo	5	japanese (m.019kn7)	0.462976
-tokyo	6	iwo_jima (m.017twv)	0.420261
-tokyo	7	proenza_schouler (m.02858gq)	0.416264
-tokyo	8	mitsubishi (m.0czgc)	0.408632
-tokyo	9	osaka (m.0dqyw)	0.408200
-tokyo	10	albert_brooks (m.013cr)	0.406217
+tokyo	1	tokyo (m.07dfk)	0.995812
+tokyo	2	japanese (m.019kn7)	0.614437
+tokyo	3	mitsubishi (m.0czgc)	0.602319
+tokyo	4	shinto (m.0703j)	0.598405
+tokyo	5	sapporo (m.0gp5l6)	0.596504
+tokyo	6	osaka (m.0dqyw)	0.573616
+tokyo	7	lazaro_hernandez (m.079ltnj)	0.530065
+tokyo	8	kobe (m.0g3bc)	0.489285
+tokyo	9	iwo_jima (m.017twv)	0.475887
+tokyo	10	proenza_schouler (m.02858gq)	0.474391
 
 Enter query (mention) => obama
 #query	#rank	#word	#similarity
 obama	1	obama	1.000000
-obama	2	barack_obama	0.655231
-obama	3	christopher_dodd	0.560359
-obama	4	rahm_emanuel	0.533947
-obama	5	joe_biden	0.528333
-obama	6	richard_durbin	0.497254
-obama	7	mark_pryor	0.492401
-obama	8	dodd	0.480643
-obama	9	sonny_bono	0.470944
-obama	10	marty_meehan	0.465825
+obama	2	joe_biden	0.825219
+obama	3	barack_obama	0.792020
+obama	4	gary_hart	0.752701
+obama	5	evan_bayh	0.748587
+obama	6	joseph_mccarthy	0.732018
+obama	7	john_warner	0.726640
+obama	8	christopher_dodd	0.726327
+obama	9	george_mcgovern	0.718638
+obama	10	frank_church	0.718213
 
 #query	#rank	#entity(mid)	#similarity
-obama	1	obama (m.01wjz4)	0.824195
-obama	2	barack_obama (m.02mjmr)	0.610778
-obama	3	christopher_dodd (m.01xcly)	0.585935
-obama	4	rahm_emanuel (m.0256f7)	0.526976
-obama	5	joe_biden (m.012gx2)	0.517448
-obama	6	richard_durbin (m.01xcd1)	0.506131
-obama	7	ken_salazar (m.03mdtj)	0.452544
-obama	8	evan_bayh (m.01rcnr)	0.446977
-obama	9	mark_pryor (m.01gb3p)	0.432480
-obama	10	russ_feingold (m.01nvvl)	0.424668
+obama	1	evan_bayh (m.01rcnr)	0.648688
+obama	2	joe_biden (m.012gx2)	0.630859
+obama	3	obama (m.01wjz4)	0.629316
+obama	4	richard_durbin (m.01xcd1)	0.626451
+obama	5	patrick_leahy (m.0202kf)	0.618988
+obama	6	mccain (m.04b74g5)	0.608375
+obama	7	barack_obama (m.02mjmr)	0.594257
+obama	8	christopher_dodd (m.01xcly)	0.593525
+obama	9	joseph_mccarthy (m.0455m)	0.581539
+obama	10	patty_murray (m.018qx5)	0.580071
 
-Enter query (mention) => Ctrl-D
+Enter query (mention) =>
 ```
+
 |Learning Curve<br>(train_entity.py on Google Colab)|Similarity Search for "paris"<br>(test_entity.py)| 
 |:---:|:---:|
 ![](results/result_entity.png)|![](results/plot_paris.png) (orange: guery,  blue: words,  green: entities)| 
