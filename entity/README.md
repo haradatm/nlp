@@ -196,7 +196,7 @@ Enter query (mention) =>
 
 |Learning Curve<br>(train_entity.py on Google Colab)|Similarity Search for "paris"<br>(test_entity.py)| 
 |:---:|:---:|
-![](results/result_entity.png)|![](results/plot_paris.png) (orange: guery,  blue: words,  green: entities)| 
+![](results/result_entity.png)|![](results/plot_tokyo.png) (orange: guery,  blue: words,  green: entities)| 
 
 ***Appendix***
 
