@@ -102,3 +102,5 @@ python train_bow-bert.py    --train datasets/mlit/04-train.txt --test datasets/m
 ```
 
 <img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
+
+See also [other classification experiments](/bert/classify/README.md)
