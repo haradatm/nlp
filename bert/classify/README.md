@@ -99,9 +99,6 @@ python train_bert.py \
 2>&1 | tee train_bert-mlit.log
 ```
 
-<img src="results/accuracy.png"/> <img src="results/elaps.png"/>
+<img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
 
 See also [other classification experiments](/classify/README.md)
-
-<html src="results/lime_show-rt.html"></html>
-<html src="results/lime_show-mlit.html"></html>
