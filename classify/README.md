@@ -101,4 +101,4 @@ python train_rcnn-bert.py   --train datasets/mlit/04-train.txt --test datasets/m
 python train_bow-bert.py    --train datasets/mlit/04-train.txt --test datasets/mlit/04-test.txt --gpu 0 --epoch 30 --batchsize 50 --out result_bow    2>&1 | tee train_bow-bert.log   
 ```
 
-<img src="results/accuracy.png"/> <img src="results/elaps.png"/>
+<img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
