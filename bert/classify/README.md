@@ -101,4 +101,4 @@ python train_bert.py \
 
 <img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
 
-See also [other classification experiments](/classify/README.md)
+See also: [other classification experiments](/classify/README.md)
