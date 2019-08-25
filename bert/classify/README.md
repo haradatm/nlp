@@ -201,7 +201,7 @@ weighted avg       0.87      0.87      0.87      5197
 
 - Learning Curve (train_bert.py on Google Colaboratory)
 
-|Cross-Entropy Loss|CRF Loss| 
+|rt-polarity|mlit| 
 |---|---|
 ![](results/results_bert-rt.png)|![](results/results_bert-mlit.png)
 
