@@ -150,9 +150,9 @@ class Linear3D(L.Linear):
 
 
 # Network definition
-class BertClassifier(chainer.Chain):
+class BertNER(chainer.Chain):
     def __init__(self, bert, n_label, use_crf=False):
-        super(BertClassifier, self).__init__()
+        super(BertNER, self).__init__()
         with self.init_scope():
             self.bert = bert
             self.output = Linear3D(None, n_label, initialW=chainer.initializers.Normal(0.02))
@@ -277,7 +277,7 @@ def main():
 
     # Setup model
     bert = BertModel(config=bert_config)
-    model = BertClassifier(bert, n_label=n_label, use_crf=args.crf)
+    model = BertNER(bert, n_label=n_label, use_crf=args.crf)
     chainer.serializers.load_npz(init_checkpoint, model, ignore_names=['output/W', 'output/b', 'crf/cost'])
 
     if args.gpu >= 0:

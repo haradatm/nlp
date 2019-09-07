@@ -157,9 +157,9 @@ class Linear3D(L.Linear):
 
 
 # Network definition
-class BertClassifier(chainer.Chain):
+class BertRanking(chainer.Chain):
     def __init__(self, bert):
-        super(BertClassifier, self).__init__()
+        super(BertRanking, self).__init__()
         with self.init_scope():
             self.bert = bert
             self.output = Linear3D(None, 512, initialW=chainer.initializers.Normal(0.02))
@@ -306,7 +306,7 @@ def main():
 
     # Setup model
     bert = BertModel(config=bert_config)
-    model = BertClassifier(bert)
+    model = BertRanking(bert)
     chainer.serializers.load_npz(init_checkpoint, model, ignore_names=['output/W', 'output/b'])
 
     if args.gpu >= 0:
