@@ -26,7 +26,7 @@ In addition, please add the project folder to PYTHONPATH and `conca install` the
 
   - Downlod [CoNLL-2003 Datasets](https://github.com/glample/tagger/tree/master/dataset) and put them in the appropriate place.
 
-  - ~~Convert from BIO to IOBES format~~
+  - ~~Convert from BIO to BIOES format~~
 
 ```
 mkdir -p datasets && cd datasets
