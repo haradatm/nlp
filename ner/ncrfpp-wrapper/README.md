@@ -1,4 +1,4 @@
-# NCRF++ wrapper (Example code verify the performance of NCRF++)
+# Example code to verify the performance of NCRF++
 
 ### Description
 
