@@ -1,0 +1,378 @@
+{
+  "config": "",
+  "gpu": 0,
+  "train": "../datasets/CoNLL-2013/eng.train.bioes",
+  "dev": "../datasets/CoNLL-2013/eng.testb.bioes",
+  "test": "../datasets/CoNLL-2013/eng.testb.bioes",
+  "glove": "../../GloVe/glove.6B.100d.txt",
+  "batchsize": 10,
+  "epoch": 30,
+  "out": "results_ncrfpp-2",
+  "noplot": false
+}
+Save dset directory:  None
+Seed num:  42
+MODEL:  train
+Load pretrained word embedding, norm: False, dir: ../../GloVe/glove.6B.100d.txt
+Embedding:
+     pretrain word:400000, prefect match:10481, case_match:10553, oov:1924, oov%:0.0838015593013633
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+DATA SUMMARY START:
+ I/O:
+     Start   Sequence   Laebling   task...
+     Tag          scheme: BMES
+     Split         token:  ||| 
+     MAX SENTENCE LENGTH: 250
+     MAX   WORD   LENGTH: -1
+     Number   normalized: True
+     Word  alphabet size: 22959
+     Char  alphabet size: 78
+     Label alphabet size: 18
+     Word embedding  dir: ../../GloVe/glove.6B.100d.txt
+     Char embedding  dir: None
+     Word embedding size: 100
+     Char embedding size: 30
+     Norm   word     emb: False
+     Norm   char     emb: False
+     Train  file directory: ../datasets/CoNLL-2013/eng.train.bioes
+     Dev    file directory: ../datasets/CoNLL-2013/eng.testb.bioes
+     Test   file directory: ../datasets/CoNLL-2013/eng.testb.bioes
+     Raw    file directory: None
+     Dset   file directory: None
+     Model  file directory: None
+     Loadmodel   directory: None
+     Decode file directory: None
+     Train instance number: 14986
+     Dev   instance number: 3683
+     Test  instance number: 3683
+     Raw   instance number: 0
+     FEATURE num: 0
+ ++++++++++++++++++++++++++++++++++++++++
+ Model Network:
+     Model        use_crf: True
+     Model word extractor: LSTM
+     Model       use_char: True
+     Model char extractor: CNN
+     Model char_hidden_dim: 50
+ ++++++++++++++++++++++++++++++++++++++++
+ Training:
+     Optimizer: SGD
+     Iteration: 100
+     BatchSize: 10
+     Average  batch   loss: False
+ ++++++++++++++++++++++++++++++++++++++++
+ Hyperparameters:
+     Hyper              lr: 0.015
+     Hyper        lr_decay: 0.05
+     Hyper         HP_clip: None
+     Hyper        momentum: 0
+     Hyper              l2: 1e-08
+     Hyper      hidden_dim: 200
+     Hyper         dropout: 0.5
+     Hyper      lstm_layer: 1
+     Hyper          bilstm: True
+     Hyper             GPU: True
+DATA SUMMARY END.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+build sequence labeling network...
+use_char:  True
+char feature extractor:  CNN
+word feature extractor:  LSTM
+use crf:  True
+build word sequence feature extractor: LSTM...
+build word representation...
+build char sequence feature extractor: CNN ...
+build CRF...
+ Learning rate is set as: 0.014285714285714285
+Shuffle: first input word list:  [1567, 4044, 10146, 237, 2656, 12133, 10]
+2019-09-14 01:16:59,489 - main - INFO - [  1] T/loss=2.611312 T/f1=0.708629 T/acc=0.936211 T/sec= 128.859690 D/loss=1.121117 D/f1=0.834516 D/acc=0.963806 D/sec= 12.209485 lr=0.014286 
+saving early-stopped model (loss) at epoch 1
+saving early-stopped model (f1) at epoch 1
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.84      0.72      0.78      1661
+      PER       0.93      0.92      0.92      1617
+     MISC       0.76      0.77      0.76       702
+      LOC       0.76      0.92      0.83      1668
+
+micro avg       0.83      0.84      0.83      5648
+macro avg       0.83      0.84      0.83      5648
+
+ Learning rate is set as: 0.013636363636363634
+Shuffle: first input word list:  [2193, 14]
+2019-09-14 01:19:23,708 - main - INFO - [  2] T/loss=1.135943 T/f1=0.833251 T/acc=0.965395 T/sec= 131.954199 D/loss=0.848705 D/f1=0.875765 D/acc=0.972228 D/sec= 12.264627 lr=0.013636 
+saving early-stopped model (loss) at epoch 2
+saving early-stopped model (f1) at epoch 2
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.84      0.83      0.84      1661
+      PER       0.93      0.94      0.94      1617
+     MISC       0.80      0.77      0.79       702
+      LOC       0.89      0.90      0.89      1668
+
+micro avg       0.88      0.87      0.88      5648
+macro avg       0.88      0.87      0.88      5648
+
+ Learning rate is set as: 0.013043478260869566
+Shuffle: first input word list:  [271, 8101, 231, 94, 5649, 39, 19851, 15715, 1017, 11922, 230, 12021, 157, 279, 41, 374, 6, 4510, 398, 371, 438, 555, 4512, 5805, 80, 11973, 618, 1536, 4492, 72, 158, 436, 157, 41, 5340, 18, 19, 20, 10]
+2019-09-14 01:21:46,362 - main - INFO - [  3] T/loss=0.922053 T/f1=0.858435 T/acc=0.970327 T/sec= 130.687275 D/loss=0.844057 D/f1=0.880944 D/acc=0.973192 D/sec= 11.967577 lr=0.013043 
+saving early-stopped model (loss) at epoch 3
+saving early-stopped model (f1) at epoch 3
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.87      0.82      0.84      1661
+      PER       0.95      0.94      0.94      1617
+     MISC       0.81      0.77      0.79       702
+      LOC       0.86      0.93      0.89      1668
+
+micro avg       0.88      0.88      0.88      5648
+macro avg       0.88      0.88      0.88      5648
+
+ Learning rate is set as: 0.0125
+Shuffle: first input word list:  [296, 296, 296, 296]
+2019-09-14 01:24:10,632 - main - INFO - [  4] T/loss=0.812650 T/f1=0.874703 T/acc=0.973182 T/sec= 132.115545 D/loss=0.833821 D/f1=0.881323 D/acc=0.973063 D/sec= 12.153646 lr=0.012500 
+saving early-stopped model (loss) at epoch 4
+saving early-stopped model (f1) at epoch 4
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.88      0.80      0.84      1661
+      PER       0.94      0.95      0.94      1617
+     MISC       0.80      0.79      0.79       702
+      LOC       0.86      0.93      0.90      1668
+
+micro avg       0.88      0.88      0.88      5648
+macro avg       0.88      0.88      0.88      5648
+
+ Learning rate is set as: 0.012
+Shuffle: first input word list:  [135, 304, 8435, 710, 237, 5479, 783, 41, 96, 398, 966, 67, 163, 138, 7699, 10]
+2019-09-14 01:26:35,262 - main - INFO - [  5] T/loss=0.731349 T/f1=0.886289 T/acc=0.975719 T/sec= 132.282474 D/loss=0.810644 D/f1=0.888321 D/acc=0.973878 D/sec= 12.347711 lr=0.012000 
+saving early-stopped model (loss) at epoch 5
+saving early-stopped model (f1) at epoch 5
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.86      0.85      0.86      1661
+      PER       0.95      0.94      0.95      1617
+     MISC       0.78      0.78      0.78       702
+      LOC       0.89      0.93      0.91      1668
+
+micro avg       0.88      0.89      0.89      5648
+macro avg       0.88      0.89      0.89      5648
+
+ Learning rate is set as: 0.011538461538461537
+Shuffle: first input word list:  [2568, 39, 6376, 10500, 382]
+2019-09-14 01:28:57,824 - main - INFO - [  6] T/loss=0.653115 T/f1=0.896910 T/acc=0.978080 T/sec= 130.206021 D/loss=0.772630 D/f1=0.899252 D/acc=0.976449 D/sec= 12.355889 lr=0.011538 
+saving early-stopped model (loss) at epoch 6
+saving early-stopped model (f1) at epoch 6
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.88      0.85      0.87      1661
+      PER       0.95      0.95      0.95      1617
+     MISC       0.79      0.79      0.79       702
+      LOC       0.92      0.92      0.92      1668
+
+micro avg       0.90      0.89      0.90      5648
+macro avg       0.90      0.89      0.90      5648
+
+ Learning rate is set as: 0.01111111111111111
+Shuffle: first input word list:  [8771, 317, 8695]
+2019-09-14 01:31:22,605 - main - INFO - [  7] T/loss=0.615394 T/f1=0.903839 T/acc=0.979557 T/sec= 132.031966 D/loss=0.786375 D/f1=0.896227 D/acc=0.976235 D/sec= 12.748901 lr=0.011111 
+ Learning rate is set as: 0.010714285714285714
+Shuffle: first input word list:  [1764, 382, 255]
+2019-09-14 01:33:47,265 - main - INFO - [  8] T/loss=0.572058 T/f1=0.909289 T/acc=0.980608 T/sec= 131.996624 D/loss=0.785555 D/f1=0.897411 D/acc=0.975913 D/sec= 12.663752 lr=0.010714 
+ Learning rate is set as: 0.010344827586206896
+Shuffle: first input word list:  [2086, 2082, 39, 12090, 10214]
+2019-09-14 01:36:13,272 - main - INFO - [  9] T/loss=0.525711 T/f1=0.915170 T/acc=0.981747 T/sec= 133.748626 D/loss=0.785151 D/f1=0.896185 D/acc=0.976321 D/sec= 12.258489 lr=0.010345 
+ Learning rate is set as: 0.01
+Shuffle: first input word list:  [3378, 72, 3379, 10]
+2019-09-14 01:38:35,788 - main - INFO - [ 10] T/loss=0.513578 T/f1=0.917517 T/acc=0.982104 T/sec= 129.906808 D/loss=0.817411 D/f1=0.893606 D/acc=0.974499 D/sec= 12.609027 lr=0.010000 
+ Learning rate is set as: 0.009677419354838708
+Shuffle: first input word list:  [262]
+2019-09-14 01:40:58,707 - main - INFO - [ 11] T/loss=0.482760 T/f1=0.922689 T/acc=0.983321 T/sec= 130.591800 D/loss=0.755424 D/f1=0.902090 D/acc=0.977221 D/sec= 12.327370 lr=0.009677 
+saving early-stopped model (loss) at epoch 11
+saving early-stopped model (f1) at epoch 11
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.89      0.87      0.88      1661
+      PER       0.96      0.95      0.95      1617
+     MISC       0.80      0.79      0.79       702
+      LOC       0.92      0.93      0.92      1668
+
+micro avg       0.91      0.90      0.90      5648
+macro avg       0.91      0.90      0.90      5648
+
+ Learning rate is set as: 0.009375
+Shuffle: first input word list:  [83, 18, 304, 193, 421, 1010, 318, 1577, 433, 237, 41, 4136, 14791, 157, 14787, 87, 318, 751, 6, 35, 237, 795, 116, 10]
+2019-09-14 01:43:23,524 - main - INFO - [ 12] T/loss=0.465710 T/f1=0.925123 T/acc=0.983653 T/sec= 131.883126 D/loss=0.771895 D/f1=0.901600 D/acc=0.977478 D/sec= 12.934223 lr=0.009375 
+ Learning rate is set as: 0.00909090909090909
+Shuffle: first input word list:  [13736, 13736]
+2019-09-14 01:45:48,369 - main - INFO - [ 13] T/loss=0.443010 T/f1=0.927338 T/acc=0.984494 T/sec= 132.353557 D/loss=0.768637 D/f1=0.903957 D/acc=0.977971 D/sec= 12.491504 lr=0.009091 
+saving early-stopped model (f1) at epoch 13
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.88      0.87      0.88      1661
+      PER       0.95      0.95      0.95      1617
+     MISC       0.82      0.80      0.81       702
+      LOC       0.92      0.93      0.93      1668
+
+micro avg       0.90      0.90      0.90      5648
+macro avg       0.90      0.90      0.90      5648
+
+ Learning rate is set as: 0.008823529411764704
+Shuffle: first input word list:  [262]
+2019-09-14 01:48:14,241 - main - INFO - [ 14] T/loss=0.410148 T/f1=0.934756 T/acc=0.985921 T/sec= 133.245471 D/loss=0.776548 D/f1=0.901558 D/acc=0.977349 D/sec= 12.626304 lr=0.008824 
+ Learning rate is set as: 0.008571428571428572
+Shuffle: first input word list:  [262]
+2019-09-14 01:50:38,612 - main - INFO - [ 15] T/loss=0.410737 T/f1=0.933345 T/acc=0.985325 T/sec= 131.982685 D/loss=0.788888 D/f1=0.903009 D/acc=0.977371 D/sec= 12.388172 lr=0.008571 
+ Learning rate is set as: 0.008333333333333333
+Shuffle: first input word list:  [262]
+2019-09-14 01:53:03,525 - main - INFO - [ 16] T/loss=0.398684 T/f1=0.933649 T/acc=0.985946 T/sec= 132.884895 D/loss=0.798081 D/f1=0.899726 D/acc=0.976513 D/sec= 12.028250 lr=0.008333 
+ Learning rate is set as: 0.008108108108108107
+Shuffle: first input word list:  [1871, 9113, 14606, 131, 1720, 133, 14596, 6240]
+2019-09-14 01:55:28,812 - main - INFO - [ 17] T/loss=0.382762 T/f1=0.937473 T/acc=0.986567 T/sec= 132.775394 D/loss=0.791413 D/f1=0.903512 D/acc=0.977649 D/sec= 12.511626 lr=0.008108 
+ Learning rate is set as: 0.007894736842105263
+Shuffle: first input word list:  [3270, 14217, 19, 1123, 10]
+2019-09-14 01:57:52,974 - main - INFO - [ 18] T/loss=0.362836 T/f1=0.941756 T/acc=0.987417 T/sec= 131.685730 D/loss=0.780151 D/f1=0.904488 D/acc=0.977992 D/sec= 12.476122 lr=0.007895 
+saving early-stopped model (f1) at epoch 18
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.90      0.86      0.88      1661
+      PER       0.95      0.95      0.95      1617
+     MISC       0.80      0.82      0.81       702
+      LOC       0.91      0.94      0.92      1668
+
+micro avg       0.90      0.90      0.90      5648
+macro avg       0.90      0.90      0.90      5648
+
+ Learning rate is set as: 0.007692307692307691
+Shuffle: first input word list:  [2537, 39, 2538, 72, 1339, 1647]
+2019-09-14 02:00:18,987 - main - INFO - [ 19] T/loss=0.350446 T/f1=0.943286 T/acc=0.987437 T/sec= 132.871018 D/loss=0.782417 D/f1=0.901930 D/acc=0.977542 D/sec= 13.141411 lr=0.007692 
+ Learning rate is set as: 0.0075
+Shuffle: first input word list:  [12860, 3217, 12859, 72, 158, 2801, 72, 9950, 41, 5161, 4136, 237, 4242, 10]
+2019-09-14 02:02:45,656 - main - INFO - [ 20] T/loss=0.347188 T/f1=0.942541 T/acc=0.987637 T/sec= 133.798849 D/loss=0.778222 D/f1=0.906414 D/acc=0.978549 D/sec= 12.870956 lr=0.007500 
+saving early-stopped model (f1) at epoch 20
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.89      0.87      0.88      1661
+      PER       0.95      0.96      0.95      1617
+     MISC       0.81      0.80      0.81       702
+      LOC       0.92      0.93      0.93      1668
+
+micro avg       0.91      0.90      0.91      5648
+macro avg       0.91      0.90      0.91      5648
+
+ Learning rate is set as: 0.007317073170731708
+Shuffle: first input word list:  [780, 6151, 658, 6152, 658]
+2019-09-14 02:05:11,896 - main - INFO - [ 21] T/loss=0.323383 T/f1=0.947604 T/acc=0.988542 T/sec= 133.598284 D/loss=0.794501 D/f1=0.904678 D/acc=0.978206 D/sec= 12.641577 lr=0.007317 
+ Learning rate is set as: 0.007142857142857143
+Shuffle: first input word list:  [432, 48, 35, 433, 6, 434, 41, 373, 87, 435, 163, 41, 351, 72, 41, 436, 437, 81, 438, 388, 391, 392, 72, 439, 440, 223, 163, 41, 441, 71, 442, 443, 41, 348, 444, 72, 144, 406, 280, 19, 47, 10]
+2019-09-14 02:07:36,955 - main - INFO - [ 22] T/loss=0.324353 T/f1=0.947321 T/acc=0.988732 T/sec= 132.653460 D/loss=0.790821 D/f1=0.908237 D/acc=0.978978 D/sec= 12.405706 lr=0.007143 
+saving early-stopped model (f1) at epoch 22
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.89      0.88      0.88      1661
+      PER       0.96      0.95      0.95      1617
+     MISC       0.81      0.81      0.81       702
+      LOC       0.92      0.94      0.93      1668
+
+micro avg       0.91      0.91      0.91      5648
+macro avg       0.91      0.91      0.91      5648
+
+ Learning rate is set as: 0.00697674418604651
+Shuffle: first input word list:  [4260, 4261, 72, 80, 206, 11300, 436, 72, 18, 382, 59, 60, 811, 6, 7810, 310, 68, 318, 11301, 792, 51, 10]
+2019-09-14 02:10:02,409 - main - INFO - [ 23] T/loss=0.321087 T/f1=0.946146 T/acc=0.988371 T/sec= 132.735790 D/loss=0.788155 D/f1=0.908705 D/acc=0.979214 D/sec= 12.717744 lr=0.006977 
+saving early-stopped model (f1) at epoch 23
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.90      0.87      0.89      1661
+      PER       0.95      0.95      0.95      1617
+     MISC       0.80      0.81      0.81       702
+      LOC       0.92      0.94      0.93      1668
+
+micro avg       0.91      0.91      0.91      5648
+macro avg       0.91      0.91      0.91      5648
+
+ Learning rate is set as: 0.006818181818181817
+Shuffle: first input word list:  [1764, 255, 10]
+2019-09-14 02:12:27,324 - main - INFO - [ 24] T/loss=0.301085 T/f1=0.949310 T/acc=0.989172 T/sec= 132.325491 D/loss=0.811945 D/f1=0.905901 D/acc=0.978571 D/sec= 12.589879 lr=0.006818 
+ Learning rate is set as: 0.006666666666666666
+Shuffle: first input word list:  [1402, 2854, 72, 6426, 6427, 6428, 2190, 6429, 72, 87, 6430, 6431, 3004, 237, 6432, 2031, 23, 41, 2188, 39, 146, 1868, 237, 41, 3725, 2873, 144, 41, 559, 3023, 3024, 6433, 41, 2055, 2986, 1740, 237, 80, 2188, 6434, 6, 1010, 2068, 175, 6, 6081, 10]
+2019-09-14 02:14:53,629 - main - INFO - [ 25] T/loss=0.306751 T/f1=0.949720 T/acc=0.989001 T/sec= 134.105930 D/loss=0.805835 D/f1=0.908043 D/acc=0.978849 D/sec= 12.198989 lr=0.006667 
+ Learning rate is set as: 0.006521739130434783
+Shuffle: first input word list:  [506, 3682, 2199, 2200, 163, 2144, 314, 4403, 308, 41, 503, 1647, 23, 80, 1740, 1740, 131, 1740, 133, 1740, 14318, 783, 2714, 2715, 163, 2716, 10]
+2019-09-14 02:17:18,134 - main - INFO - [ 26] T/loss=0.281719 T/f1=0.952744 T/acc=0.989715 T/sec= 131.513031 D/loss=0.843473 D/f1=0.904834 D/acc=0.977563 D/sec= 12.992271 lr=0.006522 
+ Learning rate is set as: 0.006382978723404255
+Shuffle: first input word list:  [15, 1017, 163, 1540, 155, 879, 41, 1534, 989, 1535, 157, 470, 1536, 1537, 23, 1543, 1556, 157, 448, 1536, 87, 252, 157, 448, 1536, 10]
+2019-09-14 02:19:42,447 - main - INFO - [ 27] T/loss=0.282160 T/f1=0.952357 T/acc=0.989915 T/sec= 131.412129 D/loss=0.807256 D/f1=0.909720 D/acc=0.979385 D/sec= 12.900240 lr=0.006383 
+saving early-stopped model (f1) at epoch 27
+
+==== Classification report (early-stopped model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.90      0.88      0.89      1661
+      PER       0.96      0.95      0.96      1617
+     MISC       0.80      0.81      0.81       702
+      LOC       0.92      0.94      0.93      1668
+
+micro avg       0.91      0.91      0.91      5648
+macro avg       0.91      0.91      0.91      5648
+
+ Learning rate is set as: 0.006249999999999999
+Shuffle: first input word list:  [1339, 1966, 120, 47, 39, 1998, 382]
+2019-09-14 02:22:07,388 - main - INFO - [ 28] T/loss=0.285877 T/f1=0.950797 T/acc=0.989319 T/sec= 132.650917 D/loss=0.813278 D/f1=0.907817 D/acc=0.978892 D/sec= 12.290469 lr=0.006250 
+ Learning rate is set as: 0.006122448979591836
+Shuffle: first input word list:  [1090, 14]
+2019-09-14 02:24:32,460 - main - INFO - [ 29] T/loss=0.273522 T/f1=0.954356 T/acc=0.990135 T/sec= 132.419468 D/loss=0.798472 D/f1=0.908785 D/acc=0.978828 D/sec= 12.652373 lr=0.006122 
+ Learning rate is set as: 0.006
+Shuffle: first input word list:  [59, 1974, 68, 9032, 364, 68, 6967, 35, 3686, 6, 4510, 259, 553, 256, 163, 11791, 94, 41, 248, 296, 72, 59, 11877, 18, 10]
+2019-09-14 02:26:56,205 - main - INFO - [ 30] T/loss=0.265906 T/f1=0.954988 T/acc=0.990228 T/sec= 130.642800 D/loss=0.818018 D/f1=0.908447 D/acc=0.978956 D/sec= 13.102102 lr=0.006000 
+
+==== Classification report (final model) ====
+
+           precision    recall  f1-score   support
+
+      ORG       0.90      0.87      0.88      1661
+      PER       0.96      0.95      0.96      1617
+     MISC       0.80      0.81      0.81       702
+      LOC       0.92      0.94      0.93      1668
+
+micro avg       0.91      0.91      0.91      5648
+macro avg       0.91      0.91      0.91      5648
+
+2019-09-14 02:26:57,921 - <module> - INFO - time spent: 4390.690090 sec
