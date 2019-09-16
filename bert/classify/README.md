@@ -231,8 +231,6 @@ python lime_bert.py \
 --out "results_lime-bert-rt"
 ```
 
-<img src="results/accuracy-rt.png"/> <img src="results/exp_show-rt_0.png"/>
-
 - for mlit datasets (for Japanese)
 
 ```
@@ -249,4 +247,7 @@ python lime_bert.py \
 --out "results_lime-bert-mlit"
 ```
 
-<img src="results/accuracy-rt.png"/> <img src="results/exp_show-mlit_0.png"/>
+|LIME output|
+|---|
+|![](results/exp_show-rt_0.png)|
+|![](results/exp_show-mlit_0.png)|
