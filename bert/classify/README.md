@@ -377,10 +377,10 @@ Explanation of document id 0 for class その他
 2019-09-16 23:16:08,178 - <module> - INFO - time spent: 82.584274 sec
 ```
 
-|LIME output (rt-polarity)|
+|LIME output (rt-polarity, docid=0)|
 |---|
 |![](results/exp_show-rt_0.png)|
 
-|LIME output (mlit)|
+|LIME output (mlit, docid=0)|
 |---|
 |![](results/exp_show-mlit_0.png)|
