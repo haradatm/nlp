@@ -227,7 +227,7 @@ python lime_bert.py \
 --init_checkpoint  "BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz" \
 --bert_config_file "BERT/uncased_L-12_H-768_A-12/bert_config.json" \
 --vocab_file       "BERT/uncased_L-12_H-768_A-12/vocab.txt" \
---topN 1 \
+--topN 2 \
 --out "results_lime-bert-rt"
 ```
 
@@ -243,7 +243,7 @@ python lime_bert.py \
 --init_checkpoint  "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz" \
 --bert_config_file "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json" \
 --vocab_file       "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt" \
---topN 1 \
+--topN 2 \
 --out "results_lime-bert-mlit"
 ```
 
