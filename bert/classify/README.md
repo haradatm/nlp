@@ -248,7 +248,9 @@ python lime_bert.py \
 ```
 
 |LIME output (rt-polarity)|
+|---|
 |![](results/exp_show-rt_0.png)|
 
 |LIME output (mlit)|
+|---|
 |![](results/exp_show-mlit_0.png)|
