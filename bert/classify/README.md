@@ -208,3 +208,45 @@ weighted avg       0.87      0.87      0.87      5197
 <img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
 
 See also: [other classification experiments](/classify/README.md)
+
+###Explaining text classifiers using LIME
+
+```
+pip install lime
+```
+
+- for rt-polarity datasets
+
+```
+python lime_bert.py \
+--gpu -1 \
+--batchsize 16 \
+--test  "datasets/rt-polarity/04-test.txt" \
+--model "models/rt-polarity/early_stopped-uar.model" \
+--label "models/rt-polarity/labels.bin" \
+--init_checkpoint  "BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz" \
+--bert_config_file "BERT/uncased_L-12_H-768_A-12/bert_config.json" \
+--vocab_file       "BERT/uncased_L-12_H-768_A-12/vocab.txt" \
+--topN 1 \
+--out "results_lime-bert-rt"
+```
+
+<img src="results/accuracy-rt.png"/> <img src="results/exp_show-rt_0.png"/>
+
+- for mlit datasets (for Japanese)
+
+```
+python lime_bert.py \
+--gpu -1 \
+--batchsize 16 \
+--test  "datasets/mlit/04-test.txt" \
+--model "models/mlit/early_stopped-uar.model" \
+--label "models/mlit/labels.bin" \
+--init_checkpoint  "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz" \
+--bert_config_file "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json" \
+--vocab_file       "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt" \
+--topN 1 \
+--out "results_lime-bert-mlit"
+```
+
+<img src="results/accuracy-rt.png"/> <img src="results/exp_show-mlit_0.png"/>
