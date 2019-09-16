@@ -229,6 +229,71 @@ python lime_bert.py \
 --vocab_file       "BERT/uncased_L-12_H-768_A-12/vocab.txt" \
 --topN 2 \
 --out "results_lime-bert-rt"
+
+{
+  "gpu": 0,
+  "batchsize": 16,
+  "label": "models/rt-polarity/labels.bin",
+  "model": "models/rt-polarity/early_stopped-uar.model",
+  "test": "../datasets/rt-polarity/04-test.txt",
+  "init_checkpoint": "../../BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz",
+  "bert_config_file": "../../BERT/uncased_L-12_H-768_A-12/bert_config.json",
+  "vocab_file": "../../BERT/uncased_L-12_H-768_A-12/vocab.txt",
+  "topN": 2,
+  "out": "results_lime-bert-rt"
+}
+# class: 2, labels: {'0': 0, '1': 1}
+# vocab: 30522
+2019-09-16 23:14:13,264 - load_data - INFO - Loading dataset ... done.
+2019-09-16 23:14:13,265 - main - DEBUG - ['a visually flashy but narratively opaque and emotionally vapid exercise in style and mystification .', 'while the performances are often engaging , this loose collection of largely improvised numbers would probably have worked better as a one-hour tv documentary .', 'on a cutting room floor somewhere lies … footage that might have made no such thing a trenchant , ironic cultural satire instead of a frustrating misfire .']
+2019-09-16 23:14:13,266 - main - DEBUG - [0, 0, 0]
+# test  X: 1066, y: 1066, class: 2
+
+              precision    recall  f1-score   support
+
+           0       0.91      0.85      0.88       533
+           1       0.86      0.91      0.89       533
+
+    accuracy                           0.88      1066
+   macro avg       0.89      0.88      0.88      1066
+weighted avg       0.89      0.88      0.88      1066
+
+Document id: 0
+True class: 0
+Probability (0) = 0.999998
+Probability (1) = 0.000002
+
+Explanation of document id 0 for class 0
+('vapid', 0.360763114102945)
+('opaque', 0.22844503518837653)
+('in', -0.07696716407480382)
+('narratively', 0.06425044075931513)
+('style', -0.05311661294339693)
+('and', -0.05304870486619178)
+('emotionally', -0.031448450542955655)
+('mystification', 0.0296556840317201)
+('flashy', 0.024770602317760536)
+('visually', 0.01978863691312936)
+('exercise', 0.017527165846244357)
+('a', -0.016606058821193887)
+('but', 0.014600564716525601)
+
+Explanation of document id 0 for class 1
+('vapid', -0.3607631084278289)
+('opaque', -0.22844503040146186)
+('in', 0.07696716531547741)
+('narratively', -0.06425044630120391)
+('style', 0.053116610312821014)
+('and', 0.05304870142536288)
+('emotionally', 0.03144844697067075)
+('mystification', -0.029655687597839465)
+('flashy', -0.024770600891716968)
+('visually', -0.019788635357220162)
+('exercise', -0.017527159832594678)
+('a', 0.016606060628259704)
+('but', -0.014600571351507151)
+
+2019-09-16 23:14:44,318 - <module> - INFO - time spent: 72.315442 sec
 ```
 
 - for mlit datasets (for Japanese)
@@ -245,6 +310,71 @@ python lime_bert.py \
 --vocab_file       "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt" \
 --topN 2 \
 --out "results_lime-bert-mlit"
+
+{
+  "gpu": 0,
+  "batchsize": 16,
+  "label": "models/mlit/labels.bin",
+  "model": "models/mlit/early_stopped-uar.model",
+  "test": "../datasets/mlit/04-test.txt",
+  "init_checkpoint": "../../BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz",
+  "bert_config_file": "../../BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json",
+  "vocab_file": "../../BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt",
+  "topN": 2,
+  "out": "results_lime-bert-mlit"
+}
+# class: 16, labels: {'エンジン': 0, '制動装置': 1, '動力伝達': 2, '排ｶﾞｽ･騒音': 3, '乗車装置': 4, '保安灯火': 5, '車枠・車体': 6, 'かじ取り': 7, '電気装置': 8, '燃料装置': 9, 'その他': 10, '電動機(モーター)': 11, '緩衝装置': 12, '走行装置': 13, '装置その他': 14, '非装置': 15}
+# vocab: 32005
+2019-09-16 23:15:25,200 - load_data - INFO - Loading dataset ... done.
+2019-09-16 23:15:25,204 - main - DEBUG - ['ダッシュボード が 溶けて ベトベト して いる 。', 'ＮＯＸ センサー の 不良に より 、 エンジン 警告 灯 が 点き っぱなし に なった 。', '電動 オープン の ルーフ を 閉じる とき に 、 エラー メッセージ が 出て 幌 が 閉まら なく なった 。']
+2019-09-16 23:15:25,205 - main - DEBUG - [6, 3, 6]
+# test  X: 5197, y: 5197, class: 16
+
+              precision    recall  f1-score   support
+
+           0       0.88      0.90      0.89      1494
+           1       0.94      0.93      0.94       477
+           2       0.91      0.89      0.90       814
+           3       0.80      0.93      0.86       122
+           4       0.88      0.95      0.92       290
+           5       0.89      0.94      0.92       363
+           6       0.73      0.68      0.70       323
+           7       0.88      0.87      0.88       299
+           8       0.72      0.73      0.72       177
+           9       0.85      0.87      0.86       232
+          10       0.86      0.68      0.76       300
+          11       0.47      0.79      0.59        34
+          12       0.88      0.83      0.86       129
+          13       0.91      0.77      0.83       127
+          14       0.57      0.67      0.62        12
+          15       0.00      0.00      0.00         4
+
+    accuracy                           0.87      5197
+   macro avg       0.76      0.78      0.76      5197
+weighted avg       0.87      0.87      0.87      5197
+
+Document id: 0
+True class: 車枠・車体
+Probability (車枠・車体) = 0.659600
+Probability (その他) = 0.241822
+
+Explanation of document id 0 for class 車枠・車体
+('ダッシュボード', 0.37043405327632434)
+('ベトベト', 0.10216756911562998)
+('溶けて', 0.07280594590941204)
+('いる', 0.018603405431985097)
+('して', 0.016482958139057653)
+('が', -0.0006149940751746371)
+
+Explanation of document id 0 for class その他
+('ベトベト', -0.1755441493813892)
+('ダッシュボード', 0.15094098408142184)
+('溶けて', -0.040062909195906486)
+('して', -0.014175160097248795)
+('が', -0.004496250039435309)
+('いる', -0.0037597061900793757)
+
+2019-09-16 23:16:08,178 - <module> - INFO - time spent: 82.584274 sec
 ```
 
 |LIME output (rt-polarity)|
