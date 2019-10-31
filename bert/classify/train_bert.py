@@ -272,7 +272,7 @@ def main():
         K = 0
 
         for x1, x2, x3, t in train_iter:
-            if K > 1: break
+            # if K > 1: break
             N = len(t)
             x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
             x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
@@ -317,7 +317,7 @@ def main():
             y_pred = []
 
             for x1, x2, x3, t in test_iter:
-                if K > 1: break
+                # if K > 1: break
                 N = len(t)
                 x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
                 x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
