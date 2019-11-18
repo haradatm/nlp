@@ -75,16 +75,16 @@ python clustering_bert.py \
 --batchsize 64 \
 --K 10 \
 --out results_bert-rt-all \
-2>&1 | tee train_bert-rt-all.log
+2>&1 | tee results_bert-rt-all.log
 
 {
   "gpu": 0,
   "batchsize": 64,
   "model": "models",
-  "input": "../datasets/rt-polarity/04-test.txt",
-  "init_checkpoint": "../../BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz",
-  "bert_config_file": "../../BERT/uncased_L-12_H-768_A-12/bert_config.json",
-  "vocab_file": "../../BERT/uncased_L-12_H-768_A-12/vocab.txt",
+  "input": "datasets/rt-polarity/04-test.txt",
+  "init_checkpoint": "BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz",
+  "bert_config_file": "BERT/uncased_L-12_H-768_A-12/bert_config.json",
+  "vocab_file": "BERT/uncased_L-12_H-768_A-12/vocab.txt",
   "K": 10,
   "max_length": null,
   "out": "results_bert-rt-all",
@@ -120,7 +120,7 @@ python clustering_bert.py \
 --K 10 \
 --max_length 300 \
 --out results_bert-mlit-300 \
-2>&1 | tee train_bert-mlit-300.log
+2>&1 | tee results_bert-mlit-300.log
 
 {
   "gpu": 0,
