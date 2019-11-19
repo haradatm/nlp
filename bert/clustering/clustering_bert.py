@@ -130,7 +130,7 @@ def to_device(device, x):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description='Chainer example: Clustering w/BERT')
-    parser.add_argument('--gpu', '-g', default=-1, type=int, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--gpu', '-g', default=0, type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--model', default='models', type=str, help='model directory')
     # parser.add_argument('--input', default='datasets/rt-polarity/04-train.txt', type=str, help='training file (.txt)')
@@ -143,7 +143,8 @@ def main():
     parser.add_argument('--vocab_file', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt', type=str, help='vocabulary file that the BERT model was trained on (.txt)')
     parser.add_argument('--K', '-K', default=None, type=int, help='number of cluster')
     parser.add_argument('--max_length', default=None, type=int, help='maximum length of source data')
-    parser.add_argument('--out', '-o', default='results_bert-2', type=str, help='output prefix')
+    # parser.add_argument('--out', '-o', default='results_bert-rt-all', type=str, help='output prefix')
+    parser.add_argument('--out', '-o', default='results_bert-mlit-all', type=str, help='output prefix')
     parser.add_argument('--noplot', action='store_true', help='disable PlotReport extension')
     # parser.set_defaults(test=True)
     args = parser.parse_args()
