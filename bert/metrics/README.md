@@ -165,7 +165,33 @@ saving final model at epoch 100
 
 - Comparison 
 
-`BERT embeddings`
+- Extract BERT embed features (fine-tuned model for DML)
+
+```
+python extruct_bert_metrics.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--model models/metrics/rt-polarity/final.model \
+--label models/metrics/rt-polarity/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-dml-04-test.txt
+
+python extruct_bert_metrics.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--model models/metrics/mlit/final.model \
+--label models/metrics/mlit/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-dml-04-test.txt
+```
+
+- Extract BERT embed features [(pre-trained model)](/bert/clustering/README.md)
 
 ```
 python extruct_bert_embed.py \
@@ -176,8 +202,7 @@ python extruct_bert_embed.py \
 --gpu -1 \
 --batchsize 64 \
 > features/rt-embed-04-test.txt
-```
-```
+
 python extruct_bert_embed.py \
 --input datasets/mlit/04-test.txt \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
@@ -188,7 +213,7 @@ python extruct_bert_embed.py \
 > features/mlit-embed-04-test.txt
 ```
 
-- BERT classification
+- Extract BERT embed features [(fine-tuned model for classification)](/bert/classify/README.md)
 
 ```
 python extruct_bert_classified.py \
@@ -212,31 +237,4 @@ python extruct_bert_classified.py \
 --gpu -1 \
 --batchsize 64 \
 > features/mlit-clsed-04-test.txt
-```
-
-- BERT DML
-
-```
-python extruct_bert_metrics.py \
---input  datasets/rt-polarity/04-test.txt \
---vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
---bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
---init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
---model models/metrics/rt-polarity/final.model \
---label models/metrics/rt-polarity/labels.bin \
---gpu -1 \
---batchsize 64 \
-> features/rt-dml-04-test.txt
-```
-```
-python extruct_bert_metrics.py \
---input datasets/mlit/04-test.txt \
---vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
---bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
---init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
---model models/metrics/mlit/final.model \
---label models/metrics/mlit/labels.bin \
---gpu -1 \
---batchsize 64 \
-> features/mlit-dml-04-test.txt
 ```
