@@ -1,0 +1,227 @@
+The default version of TensorFlow in Colab will soon switch to TensorFlow 2.x.
+We recommend you upgrade now or ensure your notebook will continue to use TensorFlow 1.x via the %tensorflow_version 1.x magic: more info.
+
+{
+  "gpu": 0,
+  "batchsize": 16,
+  "learnrate": 5e-05,
+  "weightdecay": 0.01,
+  "epoch": 100,
+  "train": "../datasets/rt-polarity/04-train.txt",
+  "eval": "../datasets/rt-polarity/04-test.txt",
+  "init_checkpoint": "../../BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz",
+  "bert_config_file": "../../BERT/uncased_L-12_H-768_A-12/bert_config.json",
+  "vocab_file": "../../BERT/uncased_L-12_H-768_A-12/vocab.txt",
+  "out": "results_dml-2-rt",
+  "resume": "",
+  "start_epoch": 1,
+  "noplot": false
+}
+WARNING:tensorflow:From /content/drive/My Drive/Colab Notebooks/kenkyu/200224_dml/bertlib/tokenization.py:74: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
+
+2020-02-24 05:12:13,673 - load_data - INFO - Loading dataset ... done.
+2020-02-24 05:12:14,168 - load_data - INFO - Loading dataset ... done.
+# train: 9596, eval: 1066,
+# class: 2, labels: {'0': 0, '1': 1}
+# vocab: 30522
+2020-02-24 05:14:01,554 - main - INFO - [  1] T/loss=1.290314 T/acc1=0.000000 T/acc2=0.000000 T/sec= 82.316538 D/loss=0.336179 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.554560 lr=0.247480 eta=0.000050
+saving final model at epoch 1
+2020-02-24 05:16:20,575 - main - INFO - [  2] T/loss=0.583780 T/acc1=0.000000 T/acc2=0.000000 T/sec= 129.990178 D/loss=0.198501 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.031214 lr=0.344153 eta=0.000050
+saving final model at epoch 2
+2020-02-24 05:18:38,781 - main - INFO - [  3] T/loss=0.293210 T/acc1=0.000000 T/acc2=0.000000 T/sec= 129.198442 D/loss=0.198923 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.007172 lr=0.415080 eta=0.000049
+saving final model at epoch 3
+2020-02-24 05:20:57,534 - main - INFO - [  4] T/loss=0.244417 T/acc1=0.000000 T/acc2=0.000000 T/sec= 129.572176 D/loss=0.199718 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.180782 lr=0.472073 eta=0.000049
+saving final model at epoch 4
+2020-02-24 05:23:19,802 - main - INFO - [  5] T/loss=0.235692 T/acc1=0.000000 T/acc2=0.000000 T/sec= 133.202394 D/loss=0.199218 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.065436 lr=0.519929 eta=0.000048
+saving final model at epoch 5
+2020-02-24 05:25:41,069 - main - INFO - [  6] T/loss=0.219218 T/acc1=0.000000 T/acc2=0.000000 T/sec= 131.965544 D/loss=0.199129 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.301775 lr=0.561159 eta=0.000048
+saving final model at epoch 6
+2020-02-24 05:27:59,746 - main - INFO - [  7] T/loss=0.217400 T/acc1=0.000000 T/acc2=0.000000 T/sec= 129.475651 D/loss=0.198601 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.201588 lr=0.597285 eta=0.000047
+saving final model at epoch 7
+2020-02-24 05:30:28,312 - main - INFO - [  8] T/loss=0.221712 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.291585 D/loss=0.194031 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.274394 lr=0.629319 eta=0.000047
+saving final model at epoch 8
+2020-02-24 05:32:52,719 - main - INFO - [  9] T/loss=0.211472 T/acc1=0.000000 T/acc2=0.000000 T/sec= 134.848683 D/loss=0.189904 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.558368 lr=0.657979 eta=0.000046
+saving final model at epoch 9
+2020-02-24 05:35:18,295 - main - INFO - [ 10] T/loss=0.208742 T/acc1=0.000000 T/acc2=0.000000 T/sec= 136.112283 D/loss=0.178817 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.463571 lr=0.683795 eta=0.000046
+saving final model at epoch 10
+2020-02-24 05:37:44,769 - main - INFO - [ 11] T/loss=0.201221 T/acc1=0.000000 T/acc2=0.000000 T/sec= 136.961491 D/loss=0.156470 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.511927 lr=0.707177 eta=0.000045
+saving final model at epoch 11
+2020-02-24 05:40:11,576 - main - INFO - [ 12] T/loss=0.170606 T/acc1=0.000000 T/acc2=0.000000 T/sec= 137.055532 D/loss=0.164458 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.751458 lr=0.728448 eta=0.000045
+saving final model at epoch 12
+2020-02-24 05:42:39,899 - main - INFO - [ 13] T/loss=0.147653 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.907326 D/loss=0.143695 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.415623 lr=0.747869 eta=0.000044
+saving final model at epoch 13
+2020-02-24 05:45:06,807 - main - INFO - [ 14] T/loss=0.155460 T/acc1=0.000000 T/acc2=0.000000 T/sec= 137.398558 D/loss=0.170502 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.509697 lr=0.765656 eta=0.000044
+saving final model at epoch 14
+2020-02-24 05:47:34,962 - main - INFO - [ 15] T/loss=0.135103 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.513675 D/loss=0.143613 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.641042 lr=0.781987 eta=0.000043
+saving final model at epoch 15
+2020-02-24 05:50:03,457 - main - INFO - [ 16] T/loss=0.127669 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.752921 D/loss=0.144391 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.742467 lr=0.797017 eta=0.000043
+saving final model at epoch 16
+2020-02-24 05:52:33,614 - main - INFO - [ 17] T/loss=0.111047 T/acc1=0.000000 T/acc2=0.000000 T/sec= 140.384511 D/loss=0.132018 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.772851 lr=0.810875 eta=0.000042
+saving final model at epoch 17
+2020-02-24 05:55:03,144 - main - INFO - [ 18] T/loss=0.100570 T/acc1=0.000000 T/acc2=0.000000 T/sec= 139.813239 D/loss=0.130250 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.716537 lr=0.823674 eta=0.000042
+saving final model at epoch 18
+2020-02-24 05:57:41,882 - main - INFO - [ 19] T/loss=0.109261 T/acc1=0.000000 T/acc2=0.000000 T/sec= 147.970052 D/loss=0.136591 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.767610 lr=0.835513 eta=0.000041
+saving final model at epoch 19
+2020-02-24 06:00:10,172 - main - INFO - [ 20] T/loss=0.086082 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.446670 D/loss=0.150175 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.844043 lr=0.846478 eta=0.000041
+saving final model at epoch 20
+2020-02-24 06:02:40,298 - main - INFO - [ 21] T/loss=0.088828 T/acc1=0.000000 T/acc2=0.000000 T/sec= 140.305999 D/loss=0.129516 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.819813 lr=0.856645 eta=0.000040
+saving final model at epoch 21
+2020-02-24 06:05:09,168 - main - INFO - [ 22] T/loss=0.083365 T/acc1=0.000000 T/acc2=0.000000 T/sec= 139.057233 D/loss=0.118621 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.812170 lr=0.866083 eta=0.000040
+saving final model at epoch 22
+2020-02-24 06:07:38,699 - main - INFO - [ 23] T/loss=0.077481 T/acc1=0.000000 T/acc2=0.000000 T/sec= 139.836430 D/loss=0.125770 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.695320 lr=0.874852 eta=0.000039
+saving final model at epoch 23
+2020-02-24 06:10:09,149 - main - INFO - [ 24] T/loss=0.056064 T/acc1=0.000000 T/acc2=0.000000 T/sec= 140.328894 D/loss=0.129714 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.121112 lr=0.883005 eta=0.000039
+saving final model at epoch 24
+2020-02-24 06:12:40,388 - main - INFO - [ 25] T/loss=0.060004 T/acc1=0.000000 T/acc2=0.000000 T/sec= 141.636074 D/loss=0.132477 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.602057 lr=0.890593 eta=0.000038
+saving final model at epoch 25
+2020-02-24 06:15:09,309 - main - INFO - [ 26] T/loss=0.057886 T/acc1=0.000000 T/acc2=0.000000 T/sec= 139.193473 D/loss=0.137255 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.727898 lr=0.897659 eta=0.000038
+saving final model at epoch 26
+2020-02-24 06:17:42,489 - main - INFO - [ 27] T/loss=0.054325 T/acc1=0.000000 T/acc2=0.000000 T/sec= 143.014485 D/loss=0.115609 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.165791 lr=0.904242 eta=0.000037
+saving final model at epoch 27
+2020-02-24 06:20:10,695 - main - INFO - [ 28] T/loss=0.040836 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.380234 D/loss=0.126780 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.825180 lr=0.910381 eta=0.000037
+saving final model at epoch 28
+2020-02-24 06:22:39,590 - main - INFO - [ 29] T/loss=0.053632 T/acc1=0.000000 T/acc2=0.000000 T/sec= 139.264902 D/loss=0.134237 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.630912 lr=0.916107 eta=0.000036
+saving final model at epoch 29
+2020-02-24 06:25:06,701 - main - INFO - [ 30] T/loss=0.041454 T/acc1=0.000000 T/acc2=0.000000 T/sec= 137.627200 D/loss=0.125420 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.483292 lr=0.921450 eta=0.000036
+saving final model at epoch 30
+2020-02-24 06:27:39,505 - main - INFO - [ 31] T/loss=0.040026 T/acc1=0.000000 T/acc2=0.000000 T/sec= 142.767859 D/loss=0.139571 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.035902 lr=0.926440 eta=0.000035
+saving final model at epoch 31
+2020-02-24 06:30:05,804 - main - INFO - [ 32] T/loss=0.040562 T/acc1=0.000000 T/acc2=0.000000 T/sec= 136.784996 D/loss=0.138447 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.514089 lr=0.931100 eta=0.000035
+saving final model at epoch 32
+2020-02-24 06:32:33,880 - main - INFO - [ 33] T/loss=0.031090 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.511150 D/loss=0.133164 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.564909 lr=0.935454 eta=0.000034
+saving final model at epoch 33
+2020-02-24 06:35:00,533 - main - INFO - [ 34] T/loss=0.027305 T/acc1=0.000000 T/acc2=0.000000 T/sec= 137.401813 D/loss=0.120702 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.251490 lr=0.939524 eta=0.000034
+saving final model at epoch 34
+2020-02-24 06:37:32,782 - main - INFO - [ 35] T/loss=0.025422 T/acc1=0.000000 T/acc2=0.000000 T/sec= 142.205966 D/loss=0.116165 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.042956 lr=0.943330 eta=0.000033
+saving final model at epoch 35
+2020-02-24 06:40:06,899 - main - INFO - [ 36] T/loss=0.025226 T/acc1=0.000000 T/acc2=0.000000 T/sec= 143.851818 D/loss=0.118359 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.265260 lr=0.946889 eta=0.000033
+saving final model at epoch 36
+2020-02-24 06:42:34,656 - main - INFO - [ 37] T/loss=0.029363 T/acc1=0.000000 T/acc2=0.000000 T/sec= 138.526333 D/loss=0.154729 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.230152 lr=0.950218 eta=0.000032
+saving final model at epoch 37
+2020-02-24 06:45:07,608 - main - INFO - [ 38] T/loss=0.025682 T/acc1=0.000000 T/acc2=0.000000 T/sec= 142.635932 D/loss=0.170091 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.316134 lr=0.953334 eta=0.000032
+saving final model at epoch 38
+2020-02-24 06:47:44,231 - main - INFO - [ 39] T/loss=0.020342 T/acc1=0.000000 T/acc2=0.000000 T/sec= 146.063520 D/loss=0.157145 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.559615 lr=0.956250 eta=0.000031
+saving final model at epoch 39
+2020-02-24 06:50:17,244 - main - INFO - [ 40] T/loss=0.019288 T/acc1=0.000000 T/acc2=0.000000 T/sec= 142.627061 D/loss=0.148818 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.385868 lr=0.958980 eta=0.000031
+saving final model at epoch 40
+2020-02-24 06:53:03,459 - main - INFO - [ 41] T/loss=0.021412 T/acc1=0.000000 T/acc2=0.000000 T/sec= 154.452699 D/loss=0.132941 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.763063 lr=0.961536 eta=0.000030
+saving final model at epoch 41
+2020-02-24 06:55:34,730 - main - INFO - [ 42] T/loss=0.018657 T/acc1=0.000000 T/acc2=0.000000 T/sec= 140.884803 D/loss=0.124952 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.385715 lr=0.963929 eta=0.000030
+saving final model at epoch 42
+2020-02-24 06:58:03,847 - main - INFO - [ 43] T/loss=0.015550 T/acc1=0.000000 T/acc2=0.000000 T/sec= 139.577062 D/loss=0.119313 D/acc1=0.000000 D/acc2=0.000000 D/sec= 9.540416 lr=0.966171 eta=0.000029
+saving final model at epoch 43
+2020-02-24 07:00:43,079 - main - INFO - [ 44] T/loss=0.013054 T/acc1=0.000000 T/acc2=0.000000 T/sec= 148.201709 D/loss=0.158944 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.029785 lr=0.968272 eta=0.000029
+saving final model at epoch 44
+2020-02-24 07:03:17,520 - main - INFO - [ 45] T/loss=0.011210 T/acc1=0.000000 T/acc2=0.000000 T/sec= 144.209348 D/loss=0.142129 D/acc1=0.000000 D/acc2=0.000000 D/sec= 10.231412 lr=0.970240 eta=0.000028
+saving final model at epoch 45
+2020-02-24 07:06:01,446 - main - INFO - [ 46] T/loss=0.012417 T/acc1=0.000000 T/acc2=0.000000 T/sec= 152.585497 D/loss=0.156460 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.340965 lr=0.972084 eta=0.000028
+saving final model at epoch 46
+2020-02-24 07:08:38,570 - main - INFO - [ 47] T/loss=0.017770 T/acc1=0.000000 T/acc2=0.000000 T/sec= 146.114960 D/loss=0.121275 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.009209 lr=0.973812 eta=0.000027
+saving final model at epoch 47
+2020-02-24 07:11:23,546 - main - INFO - [ 48] T/loss=0.013962 T/acc1=0.000000 T/acc2=0.000000 T/sec= 153.387749 D/loss=0.144413 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.588186 lr=0.975432 eta=0.000027
+saving final model at epoch 48
+2020-02-24 07:14:12,102 - main - INFO - [ 49] T/loss=0.009884 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.315637 D/loss=0.162270 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.240213 lr=0.976950 eta=0.000026
+saving final model at epoch 49
+2020-02-24 07:17:08,106 - main - INFO - [ 50] T/loss=0.003954 T/acc1=0.000000 T/acc2=0.000000 T/sec= 162.587997 D/loss=0.161589 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.415579 lr=0.978374 eta=0.000026
+saving final model at epoch 50
+2020-02-24 07:19:56,889 - main - INFO - [ 51] T/loss=0.007178 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.405863 D/loss=0.167230 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.377899 lr=0.979709 eta=0.000025
+saving final model at epoch 51
+2020-02-24 07:22:40,461 - main - INFO - [ 52] T/loss=0.014497 T/acc1=0.000000 T/acc2=0.000000 T/sec= 151.727073 D/loss=0.146860 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.843963 lr=0.980960 eta=0.000025
+saving final model at epoch 52
+2020-02-24 07:25:29,552 - main - INFO - [ 53] T/loss=0.007768 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.475996 D/loss=0.136773 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.615231 lr=0.982134 eta=0.000024
+saving final model at epoch 53
+2020-02-24 07:28:26,475 - main - INFO - [ 54] T/loss=0.005496 T/acc1=0.000000 T/acc2=0.000000 T/sec= 163.302120 D/loss=0.171173 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.620872 lr=0.983234 eta=0.000024
+saving final model at epoch 54
+2020-02-24 07:31:15,811 - main - INFO - [ 55] T/loss=0.005817 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.434823 D/loss=0.138891 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.901093 lr=0.984267 eta=0.000023
+saving final model at epoch 55
+2020-02-24 07:34:00,210 - main - INFO - [ 56] T/loss=0.004342 T/acc1=0.000000 T/acc2=0.000000 T/sec= 152.622602 D/loss=0.173369 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.776443 lr=0.985235 eta=0.000023
+saving final model at epoch 56
+2020-02-24 07:36:51,908 - main - INFO - [ 57] T/loss=0.004332 T/acc1=0.000000 T/acc2=0.000000 T/sec= 158.795213 D/loss=0.155046 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.902956 lr=0.986143 eta=0.000022
+saving final model at epoch 57
+2020-02-24 07:40:29,573 - main - INFO - [ 58] T/loss=0.003753 T/acc1=0.000000 T/acc2=0.000000 T/sec= 198.838499 D/loss=0.168928 D/acc1=0.000000 D/acc2=0.000000 D/sec= 18.826994 lr=0.986995 eta=0.000022
+saving final model at epoch 58
+2020-02-24 07:43:24,674 - main - INFO - [ 59] T/loss=0.006539 T/acc1=0.000000 T/acc2=0.000000 T/sec= 161.961427 D/loss=0.176444 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.139699 lr=0.987795 eta=0.000021
+saving final model at epoch 59
+2020-02-24 07:46:22,157 - main - INFO - [ 60] T/loss=0.004039 T/acc1=0.000000 T/acc2=0.000000 T/sec= 163.876225 D/loss=0.183596 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.606463 lr=0.988545 eta=0.000021
+saving final model at epoch 60
+2020-02-24 07:49:40,690 - main - INFO - [ 61] T/loss=0.006132 T/acc1=0.000000 T/acc2=0.000000 T/sec= 181.273653 D/loss=0.144928 D/acc1=0.000000 D/acc2=0.000000 D/sec= 17.259639 lr=0.989248 eta=0.000020
+saving final model at epoch 61
+2020-02-24 07:52:34,945 - main - INFO - [ 62] T/loss=0.001019 T/acc1=0.000000 T/acc2=0.000000 T/sec= 161.169080 D/loss=0.157066 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.085316 lr=0.989908 eta=0.000020
+saving final model at epoch 62
+2020-02-24 07:55:30,318 - main - INFO - [ 63] T/loss=0.005597 T/acc1=0.000000 T/acc2=0.000000 T/sec= 162.134432 D/loss=0.160512 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.239151 lr=0.990528 eta=0.000019
+saving final model at epoch 63
+2020-02-24 07:59:32,177 - main - INFO - [ 64] T/loss=0.002742 T/acc1=0.000000 T/acc2=0.000000 T/sec= 218.744947 D/loss=0.197036 D/acc1=0.000000 D/acc2=0.000000 D/sec= 23.114063 lr=0.991109 eta=0.000019
+saving final model at epoch 64
+2020-02-24 08:02:23,446 - main - INFO - [ 65] T/loss=0.003622 T/acc1=0.000000 T/acc2=0.000000 T/sec= 158.563560 D/loss=0.167502 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.705332 lr=0.991654 eta=0.000018
+saving final model at epoch 65
+2020-02-24 08:05:17,467 - main - INFO - [ 66] T/loss=0.006558 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.421193 D/loss=0.145797 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.599006 lr=0.992166 eta=0.000018
+saving final model at epoch 66
+2020-02-24 08:08:06,514 - main - INFO - [ 67] T/loss=0.002234 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.265617 D/loss=0.143202 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.781977 lr=0.992646 eta=0.000017
+saving final model at epoch 67
+2020-02-24 08:11:00,932 - main - INFO - [ 68] T/loss=0.003169 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.562750 D/loss=0.177217 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.855439 lr=0.993097 eta=0.000017
+saving final model at epoch 68
+2020-02-24 08:14:28,545 - main - INFO - [ 69] T/loss=0.002565 T/acc1=0.000000 T/acc2=0.000000 T/sec= 189.946579 D/loss=0.174638 D/acc1=0.000000 D/acc2=0.000000 D/sec= 17.665800 lr=0.993520 eta=0.000016
+saving final model at epoch 69
+2020-02-24 08:17:21,954 - main - INFO - [ 70] T/loss=0.001345 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.419045 D/loss=0.167613 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.990582 lr=0.993917 eta=0.000016
+saving final model at epoch 70
+2020-02-24 08:20:23,669 - main - INFO - [ 71] T/loss=0.001223 T/acc1=0.000000 T/acc2=0.000000 T/sec= 167.487397 D/loss=0.172490 D/acc1=0.000000 D/acc2=0.000000 D/sec= 14.227508 lr=0.994290 eta=0.000015
+saving final model at epoch 71
+2020-02-24 08:23:17,166 - main - INFO - [ 72] T/loss=0.004579 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.176863 D/loss=0.174829 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.320219 lr=0.994640 eta=0.000015
+saving final model at epoch 72
+2020-02-24 08:26:15,030 - main - INFO - [ 73] T/loss=0.001377 T/acc1=0.000000 T/acc2=0.000000 T/sec= 163.895136 D/loss=0.200430 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.968748 lr=0.994968 eta=0.000014
+saving final model at epoch 73
+2020-02-24 08:29:08,551 - main - INFO - [ 74] T/loss=0.001614 T/acc1=0.000000 T/acc2=0.000000 T/sec= 159.983732 D/loss=0.175182 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.537332 lr=0.995276 eta=0.000014
+saving final model at epoch 74
+2020-02-24 08:31:56,414 - main - INFO - [ 75] T/loss=0.002476 T/acc1=0.000000 T/acc2=0.000000 T/sec= 155.526257 D/loss=0.176201 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.336068 lr=0.995565 eta=0.000013
+saving final model at epoch 75
+2020-02-24 08:35:09,463 - main - INFO - [ 76] T/loss=0.001826 T/acc1=0.000000 T/acc2=0.000000 T/sec= 177.339849 D/loss=0.156593 D/acc1=0.000000 D/acc2=0.000000 D/sec= 15.709989 lr=0.995837 eta=0.000013
+saving final model at epoch 76
+2020-02-24 08:37:57,861 - main - INFO - [ 77] T/loss=0.000481 T/acc1=0.000000 T/acc2=0.000000 T/sec= 155.939193 D/loss=0.186089 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.458354 lr=0.996092 eta=0.000012
+saving final model at epoch 77
+2020-02-24 08:40:54,370 - main - INFO - [ 78] T/loss=0.002675 T/acc1=0.000000 T/acc2=0.000000 T/sec= 162.717556 D/loss=0.198415 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.791695 lr=0.996331 eta=0.000012
+saving final model at epoch 78
+2020-02-24 08:43:36,569 - main - INFO - [ 79] T/loss=0.001927 T/acc1=0.000000 T/acc2=0.000000 T/sec= 150.799182 D/loss=0.175711 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.399138 lr=0.996555 eta=0.000011
+saving final model at epoch 79
+2020-02-24 08:46:22,897 - main - INFO - [ 80] T/loss=0.002868 T/acc1=0.000000 T/acc2=0.000000 T/sec= 154.107576 D/loss=0.190697 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.220849 lr=0.996766 eta=0.000011
+saving final model at epoch 80
+2020-02-24 08:49:14,206 - main - INFO - [ 81] T/loss=0.002438 T/acc1=0.000000 T/acc2=0.000000 T/sec= 158.292659 D/loss=0.162434 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.016623 lr=0.996964 eta=0.000010
+saving final model at epoch 81
+2020-02-24 08:52:04,552 - main - INFO - [ 82] T/loss=0.001874 T/acc1=0.000000 T/acc2=0.000000 T/sec= 157.627900 D/loss=0.180118 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.718112 lr=0.997150 eta=0.000010
+saving final model at epoch 82
+2020-02-24 08:54:52,692 - main - INFO - [ 83] T/loss=0.001600 T/acc1=0.000000 T/acc2=0.000000 T/sec= 155.773147 D/loss=0.170120 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.366126 lr=0.997324 eta=0.000009
+saving final model at epoch 83
+2020-02-24 08:57:41,254 - main - INFO - [ 84] T/loss=0.000765 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.044631 D/loss=0.168921 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.517722 lr=0.997488 eta=0.000009
+saving final model at epoch 84
+2020-02-24 09:00:35,483 - main - INFO - [ 85] T/loss=0.001896 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.851584 D/loss=0.143934 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.377926 lr=0.997641 eta=0.000008
+saving final model at epoch 85
+2020-02-24 09:03:32,678 - main - INFO - [ 86] T/loss=0.003466 T/acc1=0.000000 T/acc2=0.000000 T/sec= 162.972620 D/loss=0.155965 D/acc1=0.000000 D/acc2=0.000000 D/sec= 14.221601 lr=0.997786 eta=0.000008
+saving final model at epoch 86
+2020-02-24 09:06:22,456 - main - INFO - [ 87] T/loss=0.001400 T/acc1=0.000000 T/acc2=0.000000 T/sec= 157.199634 D/loss=0.170513 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.578381 lr=0.997921 eta=0.000007
+saving final model at epoch 87
+2020-02-24 09:09:13,368 - main - INFO - [ 88] T/loss=0.000411 T/acc1=0.000000 T/acc2=0.000000 T/sec= 158.071479 D/loss=0.148516 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.840854 lr=0.998048 eta=0.000007
+saving final model at epoch 88
+2020-02-24 09:12:02,553 - main - INFO - [ 89] T/loss=0.001063 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.432549 D/loss=0.142181 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.752174 lr=0.998167 eta=0.000006
+saving final model at epoch 89
+2020-02-24 09:14:55,551 - main - INFO - [ 90] T/loss=0.001824 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.482916 D/loss=0.181971 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.515543 lr=0.998279 eta=0.000006
+saving final model at epoch 90
+2020-02-24 09:17:39,618 - main - INFO - [ 91] T/loss=0.001030 T/acc1=0.000000 T/acc2=0.000000 T/sec= 152.227484 D/loss=0.156376 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.838883 lr=0.998385 eta=0.000005
+saving final model at epoch 91
+2020-02-24 09:20:29,259 - main - INFO - [ 92] T/loss=0.000542 T/acc1=0.000000 T/acc2=0.000000 T/sec= 156.988673 D/loss=0.140735 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.652380 lr=0.998483 eta=0.000005
+saving final model at epoch 92
+2020-02-24 09:23:20,138 - main - INFO - [ 93] T/loss=0.000382 T/acc1=0.000000 T/acc2=0.000000 T/sec= 158.227447 D/loss=0.154531 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.652046 lr=0.998576 eta=0.000004
+saving final model at epoch 93
+2020-02-24 09:26:06,118 - main - INFO - [ 94] T/loss=0.000758 T/acc1=0.000000 T/acc2=0.000000 T/sec= 153.820656 D/loss=0.148451 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.159738 lr=0.998663 eta=0.000004
+saving final model at epoch 94
+2020-02-24 09:28:55,699 - main - INFO - [ 95] T/loss=0.001785 T/acc1=0.000000 T/acc2=0.000000 T/sec= 157.132915 D/loss=0.186291 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.447775 lr=0.998745 eta=0.000003
+saving final model at epoch 95
+2020-02-24 09:31:40,733 - main - INFO - [ 96] T/loss=0.000000 T/acc1=0.000000 T/acc2=0.000000 T/sec= 153.114944 D/loss=0.159281 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.919210 lr=0.998822 eta=0.000003
+saving final model at epoch 96
+2020-02-24 09:34:33,482 - main - INFO - [ 97] T/loss=0.000117 T/acc1=0.000000 T/acc2=0.000000 T/sec= 159.970929 D/loss=0.182717 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.777552 lr=0.998894 eta=0.000002
+saving final model at epoch 97
+2020-02-24 09:37:27,021 - main - INFO - [ 98] T/loss=0.001689 T/acc1=0.000000 T/acc2=0.000000 T/sec= 160.601635 D/loss=0.158778 D/acc1=0.000000 D/acc2=0.000000 D/sec= 12.937491 lr=0.998961 eta=0.000002
+saving final model at epoch 98
+2020-02-24 09:40:20,174 - main - INFO - [ 99] T/loss=0.000894 T/acc1=0.000000 T/acc2=0.000000 T/sec= 159.776162 D/loss=0.168833 D/acc1=0.000000 D/acc2=0.000000 D/sec= 13.377381 lr=0.999025 eta=0.000001
+saving final model at epoch 99
+2020-02-24 09:43:05,951 - main - INFO - [100] T/loss=0.001288 T/acc1=0.000000 T/acc2=0.000000 T/sec= 154.077329 D/loss=0.158275 D/acc1=0.000000 D/acc2=0.000000 D/sec= 11.699124 lr=0.999084 eta=0.000001
+saving final model at epoch 100
+2020-02-24 09:44:13,550 - <module> - INFO - time spent: 16332.387188 sec

@@ -1,0 +1,1 @@
+/Data/haradatm/github/nlp/bert/classify/datasets/rt-polarity/04-test.txt
