@@ -1,4 +1,4 @@
-# Deep Metrics Learning (DML) using BERT (Chainer example code for BERT-DML)
+# Deep Metrics Learning (DML) using BERT
 
 ### Description
 
@@ -162,3 +162,81 @@ saving final model at epoch 100
 |rt-polarity|mlit| 
 |---|---|
 ![](results/results_dml-rt.png)|![](results/results_dml-mlit.png)
+
+- Comparison 
+
+`BERT embeddings`
+
+```
+python extruct_bert_embed.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-embed-04-test.txt
+```
+```
+python extruct_bert_embed.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-embed-04-test.txt
+```
+
+- BERT classification
+
+```
+python extruct_bert_classified.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--model models/classified/rt-polarity/early_stopped-uar.model \
+--label models/classified/rt-polarity/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-clsed-04-test.txt
+
+python extruct_bert_classified.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--model models/classified/mlit/early_stopped-uar.model \
+--label models/classified/mlit/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-clsed-04-test.txt
+```
+
+- BERT DML
+
+```
+python extruct_bert_metrics.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--model models/metrics/rt-polarity/final.model \
+--label models/metrics/rt-polarity/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-dml-04-test.txt
+```
+```
+python extruct_bert_metrics.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--model models/metrics/mlit/final.model \
+--label models/metrics/mlit/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-dml-04-test.txt
+```
