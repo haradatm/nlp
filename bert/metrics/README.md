@@ -163,9 +163,9 @@ saving final model at epoch 100
 |---|---|
 ![](results/results_dml-rt.png)|![](results/results_dml-mlit.png)
 
-- Comparison 
+*** Comparison 
 
-- Extract BERT embed features (fine-tuned model for DML)
+- Extract DML features (fine-tuning)
 
 ```
 python extruct_bert_metrics.py \
@@ -191,29 +191,7 @@ python extruct_bert_metrics.py \
 > features/mlit-dml-04-test.txt
 ```
 
-- Extract BERT embed features [(pre-trained model)](/bert/clustering/README.md)
-
-```
-python extruct_bert_embed.py \
---input  datasets/rt-polarity/04-test.txt \
---vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
---bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
---init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
---gpu -1 \
---batchsize 64 \
-> features/rt-embed-04-test.txt
-
-python extruct_bert_embed.py \
---input datasets/mlit/04-test.txt \
---vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
---bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
---init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
---gpu -1 \
---batchsize 64 \
-> features/mlit-embed-04-test.txt
-```
-
-- Extract BERT embed features [(fine-tuned model for classification)](/bert/classify/README.md)
+- Extract BERT Classified features [(fine-tuning)](/bert/classify/README.md)
 
 ```
 python extruct_bert_classified.py \
@@ -239,14 +217,36 @@ python extruct_bert_classified.py \
 > features/mlit-clsed-04-test.txt
 ```
 
+- Extract Pre-trained features [(no fine-tuning)](/bert/clustering/README.md)
+
+```
+python extruct_bert_embed.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-embed-04-test.txt
+
+python extruct_bert_embed.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-embed-04-test.txt
+```
+
 - Plot rt-polarity datasets (for English)
 
-|DML (fine-tuning)|Classify (fine-tuning)|Pre-train (no fine-tuning)| 
+|DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/plot_rt-dml-04-test.png)|![](results/plot_rt-clsed-04-test.png)|![](results/plot_rt-embed-04-test.png)
 
 - Plot mlit datasets (for Japanese)
 
-|DML (fine-tuning)|Classify (fine-tuning)|Pre-train (no fine-tuning)| 
+|DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/plot_mlit-dml-04-test.png)|![](results/plot_mlit-clsed-04-test.png)|![](results/plot_mlit-embed-04-test.png)
