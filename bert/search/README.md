@@ -1,4 +1,4 @@
-# BERT-Ranking (Chainer example code for Neural Ranking for Ad-Hoc Text Retrieval using BERT fine-tuning)
+# BERT-Search (Chainer example code for Neural Ranking for Ad-Hoc Text Retrieval using BERT fine-tuning)
 
 ### Description
 
