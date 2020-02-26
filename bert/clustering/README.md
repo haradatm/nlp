@@ -141,11 +141,23 @@ python extruct_bert_metrics.py \
 
 - Clustering for t-polarity datasets (for English) using sicikit-clustering
 
+```
+python scikit-clustering.py --input features/rt-embed-04-test.txt --samples 3000 --plots 300 --output results/plot_rt-embed-04-test.png
+python scikit-clustering.py --input features/rt-clsed-04-test.txt --samples 3000 --plots 300 --output results/plot_rt-clsed-04-test.png
+python scikit-clustering.py --input features/rt-dml-04-test.txt   --samples 3000 --plots 300 --output results/plot_rt-dml-04-test.png
+```
+
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/plot_rt-dml-04-test.png)|![](results/plot_rt-clsed-04-test.png)|![](results/plot_rt-embed-04-test.png)
 
 - Clustering for mlit datasets (for Japanese)
+
+```
+python scikit-clustering.py --input features/mlit-embed-04-test.txt --samples 3000 --plots 300 --output results/plot_mlit-embed-04-test.png
+python scikit-clustering.py --input features/mlit-clsed-04-test.txt --samples 3000 --plots 300 --output results/plot_mlit-clsed-04-test.png
+python scikit-clustering.py --input features/mlit-dml-04-test.txt   --samples 3000 --plots 300 --output results/plot_mlit-dml-04-test.png
+```
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
