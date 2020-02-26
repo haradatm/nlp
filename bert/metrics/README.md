@@ -250,3 +250,17 @@ python extruct_bert_embed.py \
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/plot_mlit-dml-04-test.png)|![](results/plot_mlit-clsed-04-test.png)|![](results/plot_mlit-embed-04-test.png)
+
+- Clustering rt-polarity datasets (for English)
+
+|DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
+|---|---|---|
+![](results/clustering/plot_rt-dml-04-test.png)|![](results/clustering/plot_rt-clsed-04-test.png)|![](results/clustering/plot_rt-embed-04-test.png)
+
+- Clustering mlit datasets (for Japanese)
+
+|DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
+|---|---|---|
+![](results/clustering/plot_mlit-dml-04-test.png)|![](results/clustering/plot_mlit-clsed-04-test.png)|![](results/clustering/plot_mlit-embed-04-test.png)
+
+rt-clsed-full.png
