@@ -163,7 +163,7 @@ saving final model at epoch 100
 |---|---|
 ![](results/results_dml-rt.png)|![](results/results_dml-mlit.png)
 
-***Comparison 
+***Comparison***
 
 - Extract BERT DML features (fine-tuning)
 
