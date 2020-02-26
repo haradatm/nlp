@@ -163,7 +163,7 @@ saving final model at epoch 100
 |---|---|
 ![](results/results_dml-rt.png)|![](results/results_dml-mlit.png)
 
-***Comparison***
+***Comparison of various other functions***
 
 - Extract BERT DML features (fine-tuning)
 
@@ -239,28 +239,28 @@ python extruct_bert_embed.py \
 > features/mlit-embed-04-test.txt
 ```
 
-- Plot rt-polarity datasets (for English)
+- t-SNE plot for rt-polarity datasets (for English)
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/plot_rt-dml-04-test.png)|![](results/plot_rt-clsed-04-test.png)|![](results/plot_rt-embed-04-test.png)
 
-- Plot mlit datasets (for Japanese)
+- t-SNE plot for mlit datasets (for Japanese)
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/plot_mlit-dml-04-test.png)|![](results/plot_mlit-clsed-04-test.png)|![](results/plot_mlit-embed-04-test.png)
 
-- Clustering rt-polarity datasets (for English)
+***Clustering results*** using [scikit-learn demo](https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html) .
+
+- Clustering rfor t-polarity datasets (for English) using sicikit-clustering
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/clustering/plot_rt-dml-04-test.png)|![](results/clustering/plot_rt-clsed-04-test.png)|![](results/clustering/plot_rt-embed-04-test.png)
 
-- Clustering mlit datasets (for Japanese)
+- Clustering for mlit datasets (for Japanese)
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
 ![](results/clustering/plot_mlit-dml-04-test.png)|![](results/clustering/plot_mlit-clsed-04-test.png)|![](results/clustering/plot_mlit-embed-04-test.png)
-
-rt-clsed-full.png
