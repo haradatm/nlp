@@ -1,4 +1,4 @@
-# Deep Metrics Learning (DML) using BERT
+# BERT-DML (Deep Metrics Learning using BERT)
 
 ### Description
 
@@ -163,9 +163,9 @@ saving final model at epoch 100
 |---|---|
 ![](results/results_dml-rt.png)|![](results/results_dml-mlit.png)
 
-*** Comparison 
+***Comparison 
 
-- Extract DML features (fine-tuning)
+- Extract BERT DML features (fine-tuning)
 
 ```
 python extruct_bert_metrics.py \
@@ -217,7 +217,7 @@ python extruct_bert_classified.py \
 > features/mlit-clsed-04-test.txt
 ```
 
-- Extract Pre-trained features [(no fine-tuning)](/bert/clustering/README.md)
+- Extract BERT Pre-trained features [(no fine-tuning)](/bert/clustering/README.md)
 
 ```
 python extruct_bert_embed.py \
