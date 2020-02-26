@@ -63,94 +63,90 @@ head -n 3 datasets/mlit/04-test.txt
 
 ***Run and Evaluate***
 
-- for rt-polarity datasets (for English)
+- Extract BERT Pre-trained feature (no fine-tuning)
 
 ```
-python clustering_bert.py \
---input  datasets/rt-polarity/04-train.txt \
+python extruct_bert_embed.py \
+--input  datasets/rt-polarity/04-test.txt \
 --vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
 --bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
 --init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
---gpu 0 \
+--gpu -1 \
 --batchsize 64 \
---K 10 \
---out results_bert-rt-all \
-2>&1 | tee results_bert-rt-all.log
+> features/rt-embed-04-test.txt
 
-{
-  "gpu": 0,
-  "batchsize": 64,
-  "model": "models",
-  "input": "datasets/rt-polarity/04-test.txt",
-  "init_checkpoint": "BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz",
-  "bert_config_file": "BERT/uncased_L-12_H-768_A-12/bert_config.json",
-  "vocab_file": "BERT/uncased_L-12_H-768_A-12/vocab.txt",
-  "K": 10,
-  "max_length": null,
-  "out": "results_bert-rt-all",
-  "noplot": false
-}
-WARNING:tensorflow:From /content/drive/My Drive/Colab Notebooks/kenkyu/191118_clustering/bertlib/tokenization.py:74: The name tf.gfile.GFile is deprecated. Please use tf.io.gfile.GFile instead.
-
-2019-11-18 23:45:51,002 - load_data - INFO - Loading dataset ... done.
-# source: 1066, id: 2, {'0': 0, '1': 1}
-# vocab: 30522
-# K: 10
-# K: 10
-
-cluster_id	source_id
-0	0
-2	0
-2	0
-0	0
-6	0
-:
-```
-
-- for mlit datasets (for Japanese)
-
-```
-python clustering_bert.py \
---input datasets/mlit/04-train.txt \
+python extruct_bert_embed.py \
+--input datasets/mlit/04-test.txt \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
 --bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
 --init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
---gpu 0 \
+--gpu -1 \
 --batchsize 64 \
---K 10 \
---max_length 300 \
---out results_bert-mlit-300 \
-2>&1 | tee results_bert-mlit-300.log
-
-{
-  "gpu": 0,
-  "batchsize": 64,
-  "model": "models",
-  "input": "datasets/mlit/04-train.txt",
-  "init_checkpoint": "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz",
-  "bert_config_file": "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json",
-  "vocab_file": "BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt",
-  "K": 10,
-  "max_length": 300,
-  "out": "results_bert-mlit-300",
-  "noplot": false
-}
-
-2019-11-18 23:42:03,405 - load_data - INFO - Loading dataset ... done.
-# source: 300, id: 15, {'車枠・車体': 0, '排ｶﾞｽ･騒音': 1, '制動装置': 2, 'エンジン': 3, '走行装置': 4, '乗車装置': 5, '燃料装置': 6, 'その他': 7, 'かじ取り': 8, '動力伝達': 9, '緩衝装置': 10, '保安灯火': 11, '電気装置': 12, '装置その他': 13, '電動機(モーター)': 14}
-# vocab: 32005
-# K: 10
-cluster_id	source_id
-3	0
-4	1
-6	0
-4	2
-2	3
-:
+> features/mlit-embed-04-test.txt
 ```
 
-- Results (Scatter plot)
+- Extract [BERT Classified](../classify/README.md) features (fine-tuning)
 
-|rt-polarity|mlit| 
-|---|---|
-![](results/results_bert-rt-all.png)|![](results/results_bert-mlit-300.png)
+```
+python extruct_bert_classified.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--model models/classified/rt-polarity/early_stopped-uar.model \
+--label models/classified/rt-polarity/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-clsed-04-test.txt
+
+python extruct_bert_classified.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--model models/classified/mlit/early_stopped-uar.model \
+--label models/classified/mlit/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-clsed-04-test.txt
+```
+
+- Extract [BERT Deep Metrics Learning](../metrics/README.md) features (fine-tuning)
+
+```
+python extruct_bert_metrics.py \
+--input  datasets/rt-polarity/04-test.txt \
+--vocab_file       BERT/uncased_L-12_H-768_A-12/vocab.txt \
+--bert_config_file BERT/uncased_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint  BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz \
+--model models/metrics/rt-polarity/final.model \
+--label models/metrics/rt-polarity/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/rt-dml-04-test.txt
+
+python extruct_bert_metrics.py \
+--input datasets/mlit/04-test.txt \
+--vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
+--bert_config_file BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json \
+--init_checkpoint  BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz \
+--model models/metrics/mlit/final.model \
+--label models/metrics/mlit/labels.bin \
+--gpu -1 \
+--batchsize 64 \
+> features/mlit-dml-04-test.txt
+```
+
+***Results*** (using [scikit-learn demo](https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html))
+
+- Clustering for t-polarity datasets (for English) using sicikit-clustering
+
+|DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
+|---|---|---|
+![](results/plot_rt-dml-04-test.png)|![](results/plot_rt-clsed-04-test.png)|![](results/plot_rt-embed-04-test.png)
+
+- Clustering for mlit datasets (for Japanese)
+
+|DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
+|---|---|---|
+![](results/plot_mlit-dml-04-test.png)|![](results/plot_mlit-clsed-04-test.png)|![](results/plot_mlit-embed-04-test.png)

@@ -179,6 +179,9 @@ python extruct_bert_metrics.py \
 --batchsize 64 \
 > features/rt-dml-04-test.txt
 
+python plot_features.py --input features/rt-dml-04-test.txt --output plot_rt-dml-04-test.png | tee plot_rt-dml-04-test.log
+```
+```
 python extruct_bert_metrics.py \
 --input datasets/mlit/04-test.txt \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
@@ -189,9 +192,11 @@ python extruct_bert_metrics.py \
 --gpu -1 \
 --batchsize 64 \
 > features/mlit-dml-04-test.txt
+
+python plot_features.py --input features/mlit-dml-04-test.txt --output plot_mlit-dml-04-test.png | tee plot_mlit-dml-04-test.log
 ```
 
-- Extract BERT Classified features [(fine-tuning)](/bert/classify/README.md)
+- Extract [BERT-Classification](../classify/README.md) features (fine-tuning)
 
 ```
 python extruct_bert_classified.py \
@@ -205,6 +210,9 @@ python extruct_bert_classified.py \
 --batchsize 64 \
 > features/rt-clsed-04-test.txt
 
+python plot_features.py --input features/rt-clsed-04-test.txt --output plot_rt-clsed-04-test.png | tee plot_rt-clsed-04-test.log
+```
+```
 python extruct_bert_classified.py \
 --input datasets/mlit/04-test.txt \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
@@ -215,9 +223,11 @@ python extruct_bert_classified.py \
 --gpu -1 \
 --batchsize 64 \
 > features/mlit-clsed-04-test.txt
+
+python plot_features.py --input features/mlit-clsed-04-test.txt --output plot_mlit-clsed-04-test.png | tee plot_clsed-dml-04-test.log
 ```
 
-- Extract BERT Pre-trained features [(no fine-tuning)](/bert/clustering/README.md)
+- Extract [BERT Pre-trained](../clustering/README.md) features (no fine-tuning)
 
 ```
 python extruct_bert_embed.py \
@@ -229,6 +239,9 @@ python extruct_bert_embed.py \
 --batchsize 64 \
 > features/rt-embed-04-test.txt
 
+python plot_features.py --input features/rt-embed-04-test.txt --output plot_rt-embed-04-test.png | tee plot_rt-embed-04-test.log
+```
+```
 python extruct_bert_embed.py \
 --input datasets/mlit/04-test.txt \
 --vocab_file       BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt \
@@ -237,6 +250,8 @@ python extruct_bert_embed.py \
 --gpu -1 \
 --batchsize 64 \
 > features/mlit-embed-04-test.txt
+
+python plot_features.py --input features/mlit-embed-04-test.txt --output plot_mlit-embed-04-test.png | tee plot_mlit-embed-04-test.log
 ```
 
 - t-SNE plot for rt-polarity datasets (for English)
@@ -251,16 +266,16 @@ python extruct_bert_embed.py \
 |---|---|---|
 ![](results/plot_mlit-dml-04-test.png)|![](results/plot_mlit-clsed-04-test.png)|![](results/plot_mlit-embed-04-test.png)
 
-***Clustering results*** using [scikit-learn demo](https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html) .
+***Clustering results*** (See [BERT-Clustering](../clustering/README.md))
 
-- Clustering rfor t-polarity datasets (for English) using sicikit-clustering
+- Clustering for t-polarity datasets (for English) using sicikit-clustering
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
-![](results/clustering/plot_rt-dml-04-test.png)|![](results/clustering/plot_rt-clsed-04-test.png)|![](results/clustering/plot_rt-embed-04-test.png)
+![](../clustering/results//plot_rt-dml-04-test.png)|![](../clustering/results//plot_rt-clsed-04-test.png)|![](../clustering/results//plot_rt-embed-04-test.png)
 
 - Clustering for mlit datasets (for Japanese)
 
 |DML (fine-tuning)|Classified (fine-tuning)|Pre-train (no fine-tuning)| 
 |---|---|---|
-![](results/clustering/plot_mlit-dml-04-test.png)|![](results/clustering/plot_mlit-clsed-04-test.png)|![](results/clustering/plot_mlit-embed-04-test.png)
+![](../clustering/results//plot_mlit-dml-04-test.png)|![](../clustering/results//plot_mlit-clsed-04-test.png)|![](../clustering/results//plot_mlit-embed-04-test.png)

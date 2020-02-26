@@ -55,6 +55,73 @@ class BertEmbedding(chainer.Chain):
         return output_layer
 
 
+class Linear3D(L.Linear):
+    def __init__(self, *args, **kwargs):
+        super(Linear3D, self).__init__(*args, **kwargs)
+
+    def call(self, x):
+        return super(Linear3D, self).__call__(x)
+
+    def __call__(self, x):
+        if x.ndim == 2:
+            return self.call(x)
+        assert x.ndim == 3
+
+        x_2d = x.reshape((-1, x.shape[-1]))
+        out_2d = self.call(x_2d)
+        out_3d = out_2d.reshape(x.shape[:-1] + (out_2d.shape[-1],))
+        # (B, S, W)
+        return out_3d
+
+
+class BertClassifier(chainer.Chain):
+    def __init__(self, bert, num_labels):
+        super(BertClassifier, self).__init__()
+        with self.init_scope():
+            self.bert = bert
+            self.output = Linear3D(None, num_labels, initialW=chainer.initializers.Normal(0.02))
+
+    # def forward(self, input_ids, input_mask, token_type_ids):
+    #     output_layer = self.bert.get_pooled_output(input_ids, input_mask, token_type_ids)
+    #     output_layer = F.dropout(output_layer, 0.1)
+    #     logits = self.output(output_layer)
+    #     return logits
+    #
+    # def __call__(self, input_ids, input_mask, token_type_ids, labels):
+    #     logits = self.forward(input_ids, input_mask, token_type_ids)
+    #     return F.softmax_cross_entropy(logits, labels), F.accuracy(logits, labels)
+    #
+    # def predict(self, input_ids, input_mask, token_type_ids):
+    #     logits = self.forward(input_ids, input_mask, token_type_ids)
+    #     return F.softmax(logits)
+
+    def get_embeddings(self, x1, x2, x3):
+        output_layer = self.bert.get_pooled_output(x1, x2, x3)
+        return output_layer
+
+
+# Network definition
+class BertDML(chainer.Chain):
+    def __init__(self, bert):
+        super(BertDML, self).__init__()
+        with self.init_scope():
+            self.bert = bert
+            self.output = Linear3D(None, 512, initialW=chainer.initializers.Normal(0.02))
+
+    def forward(self, input_ids, input_mask, token_type_ids):
+        output_layer = self.bert.get_pooled_output(input_ids, input_mask, token_type_ids)
+        output_layer = F.dropout(output_layer, 0.1)
+        output_layer = self.output(output_layer)
+        return output_layer
+
+    def __call__(self, q_x1, q_x2, q_x3, d_x1, d_x2, d_x3, n_x1, n_x2, n_x3):
+        y_0 = self.forward(q_x1, q_x2, q_x3)
+        y_1 = self.forward(d_x1, d_x2, d_x3)
+        y_2 = self.forward(n_x1, n_x2, n_x3)
+        loss = F.triplet(y_0, y_1, y_2)
+        return loss
+
+
 def load_data(path, tokenizer, bert_config, labels={}, max_length=None):
     X, Y = [], []
 
@@ -130,26 +197,23 @@ def to_device(device, x):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description='Chainer example: Clustering w/BERT')
-    parser.add_argument('--gpu', '-g', default=0, type=int, help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--gpu', '-g', default=-1, type=int, help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
-    parser.add_argument('--model', default='models', type=str, help='model directory')
-    # parser.add_argument('--input', default='datasets/rt-polarity/04-train.txt', type=str, help='training file (.txt)')
-    # parser.add_argument('--init_checkpoint', default='BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz', type=str, help='initial checkpoint (usually from a pre-trained BERT model (.npz)')
-    # parser.add_argument('--bert_config_file', default='BERT/uncased_L-12_H-768_A-12/bert_config.json', type=str, help='json file corresponding to the pre-trained BERT model (.json)')
-    # parser.add_argument('--vocab_file', default='BERT/uncased_L-12_H-768_A-12/vocab.txt', type=str, help='vocabulary file that the BERT model was trained on (.txt)')
-    parser.add_argument('--input', default='datasets/mlit/04-test.txt', type=str, help='training file (.txt)')
-    parser.add_argument('--init_checkpoint', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz', type=str, help='initial checkpoint (usually from a pre-trained BERT model (.npz)')
-    parser.add_argument('--bert_config_file', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json', type=str, help='json file corresponding to the pre-trained BERT model (.json)')
-    parser.add_argument('--vocab_file', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt', type=str, help='vocabulary file that the BERT model was trained on (.txt)')
-    parser.add_argument('--K', '-K', default=None, type=int, help='number of cluster')
+    parser.add_argument('--label', default='models/classified/rt-polarity/labels.bin', type=str, help='model directory')
+    parser.add_argument('--model', default='models/classified/rt-polarity/early_stopped-uar.model', type=str, help='model directory')
+    parser.add_argument('--input', default='datasets/rt-polarity/04-train.txt', type=str, help='training file (.txt)')
+    parser.add_argument('--init_checkpoint', default='BERT/uncased_L-12_H-768_A-12/arrays_bert_model.ckpt.npz', type=str, help='initial checkpoint (usually from a pre-trained BERT model (.npz)')
+    parser.add_argument('--bert_config_file', default='BERT/uncased_L-12_H-768_A-12/bert_config.json', type=str, help='json file corresponding to the pre-trained BERT model (.json)')
+    parser.add_argument('--vocab_file', default='BERT/uncased_L-12_H-768_A-12/vocab.txt', type=str, help='vocabulary file that the BERT model was trained on (.txt)')
+    # parser.add_argument('--input', default='datasets/mlit/04-test.txt', type=str, help='training file (.txt)')
+    # parser.add_argument('--init_checkpoint', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/arrays_bert_model.ckpt.npz', type=str, help='initial checkpoint (usually from a pre-trained BERT model (.npz)')
+    # parser.add_argument('--bert_config_file', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/bert_config.json', type=str, help='json file corresponding to the pre-trained BERT model (.json)')
+    # parser.add_argument('--vocab_file', default='BERT/Japanese_L-12_H-768_A-12_E-30_BPE/vocab.txt', type=str, help='vocabulary file that the BERT model was trained on (.txt)')
     parser.add_argument('--max_length', default=None, type=int, help='maximum length of source data')
-    # parser.add_argument('--out', '-o', default='results_bert-rt-all', type=str, help='output prefix')
-    parser.add_argument('--out', '-o', default='results_bert-mlit-all', type=str, help='output prefix')
-    parser.add_argument('--noplot', action='store_true', help='disable PlotReport extension')
     # parser.set_defaults(test=True)
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
-    print(json.dumps(args.__dict__, indent=2))
+    logger.info(json.dumps(args.__dict__, indent=2))
     sys.stdout.flush()
 
     seed = 43
@@ -163,93 +227,50 @@ def main():
         cuda.cupy.random.seed(seed)
         chainer.config.use_cudnn = 'never'
 
-    # model_dir = args.model
-    # if not os.path.exists(model_dir):
-    #     os.mkdir(model_dir)
-
+    # 学習済みモデルの読み込み
     vocab_file = args.vocab_file
     bert_config_file = args.bert_config_file
     init_checkpoint = args.init_checkpoint
 
     bert_config = BertConfig.from_json_file(bert_config_file)
     tokenizer = FullTokenizer(vocab_file=vocab_file, do_lower_case=True)
-    label2id = {}
+
+    with open(args.label, 'rb') as f:
+        label2id = pickle.load(f)
 
     source_data, source_ids, label2id = load_data(args.input, tokenizer, bert_config, label2id, max_length=args.max_length)
     id2label = {v: k for k, v in label2id.items()}
 
-    K = args.K if args.K is not None else len(label2id)
-    sys.stdout.flush()
-
-    print('# source: {}, id: {}, {}'.format(len(source_data), len(label2id), label2id))
-    print('# vocab: {}'.format(len(tokenizer.vocab)))
-    print('# K: {}'.format(K))
+    logger.info('# source: {}, class: {}, {}'.format(len(source_data), len(label2id), label2id))
+    logger.info('# vocab: {}'.format(len(tokenizer.vocab)))
     sys.stdout.flush()
 
     # Setup model
     bert = BertModel(config=bert_config)
-    model = BertEmbedding(bert)
+    model = BertDML(bert)
     chainer.serializers.load_npz(init_checkpoint, model, ignore_names=['output/W', 'output/b'])
 
+    # Loading early_stopped model by uar
+    chainer.serializers.load_npz(args.model, model)
     if args.gpu >= 0:
-        model.to_gpu()
+        model.to_gpu(args.gpu)
 
     input_iter = batch_iter(source_data, args.batchsize)
 
+    count = 0
     with chainer.no_backprop_mode(), chainer.using_config('train', False):
-        outputs = []
         for x1, x2, x3 in input_iter:
             x1 = to_device(args.gpu, F.pad_sequence(x1, length=None, padding=0).array).astype('i')
             x2 = to_device(args.gpu, F.pad_sequence(x2, length=None, padding=0).array).astype('f')
             x3 = to_device(args.gpu, F.pad_sequence(x3, length=None, padding=0).array).astype('i')
-            y = model(x1, x2, x3)
-            outputs.append(cuda.to_cpu(y.data))
+            y = model.forward(x1, x2, x3)
+            features = cuda.to_cpu(y.data)
 
-    features = np.concatenate(outputs, axis=0)
+            for i in range(features.shape[0]):
+                print("%s\t" % id2label[source_ids[count + i]] + '\t'.join("%.6f" % x for x in features[i].tolist()))
+            sys.stdout.flush()
 
-    from sklearn.cluster import KMeans
-    kmeans_model = KMeans(n_clusters=K, random_state=seed).fit(features)
-
-    if len(source_ids) > 0:
-        print("cluster_id\tsource_id")
-        for cluster_id, source_id in zip(kmeans_model.labels_, source_ids):
-            print("{}\t{}".format(cluster_id, source_id))
-    else:
-        print("cluster_id")
-        for cluster_id in kmeans_model.labels_:
-            print("{}".format(cluster_id))
-
-    if not args.noplot:
-        from sklearn.manifold import TSNE
-        tsne_model = TSNE(n_components=2, random_state=0).fit_transform(features)
-
-        if len(source_ids) > 0:
-            plt.figure(figsize=(20, 10))
-            plt.subplot(1, 2, 1)
-            plt.title("Input class")
-            for x, y, name in zip(tsne_model[:, 0], tsne_model[:, 1], [id2label[x] for x in source_ids]):
-            # for x, y, name in zip(tsne_model[:, 0], tsne_model[:, 1], source_ids):
-                plt.text(x, y, name, alpha=0.8, size=10)
-            plt.scatter(tsne_model[:, 0], tsne_model[:, 1], c=source_ids)
-            # plt.colorbar()
-
-            plt.subplot(1, 2, 2)
-            plt.title("K-means cluster")
-            for x, y, name in zip(tsne_model[:, 0], tsne_model[:, 1], [id2label[x] for x in source_ids]):
-            # for x, y, name in zip(tsne_model[:, 0], tsne_model[:, 1], source_ids):
-                plt.text(x, y, name, alpha=0.8, size=10)
-            plt.scatter(tsne_model[:, 0], tsne_model[:, 1], c=kmeans_model.labels_)
-            # plt.colorbar()
-
-        else:
-            plt.figure(figsize=(10, 10))
-            plt.title("K-means cluster")
-            plt.scatter(tsne_model[:, 0], tsne_model[:, 1], c=kmeans_model.labels_)
-            # plt.colorbar()
-
-        plt.savefig('{}.png'.format(args.out))
-        # plt.show()
-        plt.close()
+            count += features.shape[0]
 
 
 if __name__ == '__main__':
