@@ -238,3 +238,14 @@ python extruct_bert_classified.py \
 --batchsize 64 \
 > features/mlit-clsed-04-test.txt
 ```
+
+- Plot rt-polarity datasets (for English)
+|DML|Classify (fine-tuning)|Pre-train (no fine-tuning)| 
+|---|---|---|
+![](results/plot_rt-dml-04-test.png)|![](results/plot_rt-clsed-04-test.png)|![](results/plot_rt-embed-04-test.png)
+
+- Plot mlit datasets (for Japanese)
+
+|DML|Classify (fine-tuning)|Pre-train (no fine-tuning)| 
+|---|---|---|
+![](results/plot_mlit-dml-04-test.png)|![](results/plot_mlit-clsed-04-test.png)|![](results/plot_mlit-embed-04-test.png)
