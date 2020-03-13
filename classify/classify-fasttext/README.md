@@ -1,8 +1,8 @@
-# fastText-Classification (Sample code for Text Classification using fastTest classification)
+# fastText-Classification (Sample code for Text Classification using fastText)
 
 ### Description
 
-This example code is a text entclassification using fastText.
+This example code is a text classification using fastText.
 
 ### Dependencies
 - python 3.7
