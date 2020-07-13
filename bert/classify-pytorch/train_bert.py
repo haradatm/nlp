@@ -90,8 +90,8 @@ class MyDatasaet(Dataset):
 def main():
     from argparse import ArgumentParser
     parser = ArgumentParser(description='')
-    parser.add_argument('--train', default='datasets/tsukurepo/04-train.txt', type=str, help='training file (.txt)')
-    parser.add_argument('--valid', default='datasets/tsukurepo/04-test.txt', type=str, help='evaluating file (.txt)')
+    parser.add_argument('--train', default='datasets/rt-polarity/04-train.txt', type=str, help='training file (.txt)')
+    parser.add_argument('--valid', default='datasets/rt-polarity/04-test.txt', type=str, help='evaluating file (.txt)')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--learnrate', '-l', type=float, default=2e-5, help='value of learning rate')
     parser.add_argument('--epoch', '-e', default=4, type=int, help='number of epochs to learn')

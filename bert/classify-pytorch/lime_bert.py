@@ -153,11 +153,11 @@ class ClassifierWrapper(BaseEstimator, ClassifierMixin):
 def main():
     from argparse import ArgumentParser
     parser = ArgumentParser(description='')
-    parser.add_argument('--test', default='datasets/tsukurepo/04-test.txt', type=str, help='evaluating file (.txt)')
+    parser.add_argument('--test', default='datasets/rt-polarity/04-test.txt', type=str, help='evaluating file (.txt)')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--model', default='models/rt/early_stopped-uar.model', type=str, help='model directory')
     parser.add_argument('--topN', '-N', default=1, type=int, help='number of top labels')
-    parser.add_argument('--out', '-o', default='results_lime-bert-2', type=str, help='output file name')
+    parser.add_argument('--out', '-o', default='results_lime-bert-rt', type=str, help='output file name')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     logger.info(json.dumps(args.__dict__, indent=2))
