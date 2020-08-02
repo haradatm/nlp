@@ -173,7 +173,7 @@ saving early-stopped model (uar) at epoch 2
 weighted avg       0.87      0.87      0.87      5197
 ```
 
-- Learning Curve (train_bert.py on [Google Colaboratory](train_bert.ipynb))
+- Learning Curve (train_bert.py on Google Colaboratory ([code](train_bert.ipynb)))
 
 |rt-polarity|mlit| 
 |---|---|
@@ -181,5 +181,5 @@ weighted avg       0.87      0.87      0.87      5197
 
 <img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
 
-See also: [Chainer classification experiments](/bert/classify/README.md) <br>
+See also: [Chainer classification experiments](/bert/classify) <br>
 See also: [other classification experiments](/classify)
