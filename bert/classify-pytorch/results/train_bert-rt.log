@@ -1,0 +1,112 @@
+2020-08-01 04:53:19,574 - main - INFO - {
+  "train": "datasets/rt-polarity/04-train.txt",
+  "valid": "datasets/rt-polarity/04-test.txt",
+  "pretrained": "bert-base-uncased",
+  "batchsize": 64,
+  "learnrate": 2e-05,
+  "epoch": 10,
+  "out": "results_bert-3-rt",
+  "noplot": false
+}
+# train: 9596, valid: 1066
+# class: 2, labels: {'0': 0, '1': 1}
+# vocab: 30522
+Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertForSequenceClassification: ['cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight', 'cls.seq_relationship.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.LayerNorm.bias']
+- This IS expected if you are initializing BertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPretraining model).
+- This IS NOT expected if you are initializing BertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: ['classifier.weight', 'classifier.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Linear(in_features=768, out_features=2, bias=True)
+2020-08-01 04:54:37,776 - main - INFO - [  1] T/loss=0.433948 T/acc1=0.798875 T/acc2=0.000000 T/sec= 55.176695 D/loss=0.324746 D/acc1=0.869606 D/acc2=0.869606 D/sec= 2.214305 
+saving early-stopped model (loss) at epoch 1
+saving early-stopped model (uar) at epoch 1
+2020-08-01 04:56:49,630 - main - INFO - [  2] T/loss=0.255309 T/acc1=0.902876 T/acc2=0.000000 T/sec= 129.655606 D/loss=0.300297 D/acc1=0.894934 D/acc2=0.894934 D/sec= 2.198617 
+saving early-stopped model (loss) at epoch 2
+saving early-stopped model (uar) at epoch 2
+2020-08-01 04:59:01,653 - main - INFO - [  3] T/loss=0.150620 T/acc1=0.947582 T/acc2=0.000000 T/sec= 129.806652 D/loss=0.397301 D/acc1=0.873358 D/acc2=0.873358 D/sec= 2.216371 
+2020-08-01 05:00:06,524 - main - INFO - [  4] T/loss=0.086604 T/acc1=0.972072 T/acc2=0.000000 T/sec= 62.646059 D/loss=0.464844 D/acc1=0.881801 D/acc2=0.881801 D/sec= 2.225516 
+2020-08-01 05:01:11,467 - main - INFO - [  5] T/loss=0.054305 T/acc1=0.983639 T/acc2=0.000000 T/sec= 62.761014 D/loss=0.513408 D/acc1=0.883677 D/acc2=0.883677 D/sec= 2.181543 
+2020-08-01 05:02:16,808 - main - INFO - [  6] T/loss=0.037843 T/acc1=0.990725 T/acc2=0.000000 T/sec= 63.138440 D/loss=0.662130 D/acc1=0.874296 D/acc2=0.874296 D/sec= 2.202398 
+2020-08-01 05:03:21,205 - main - INFO - [  7] T/loss=0.025479 T/acc1=0.992393 T/acc2=0.000000 T/sec= 62.165895 D/loss=0.613166 D/acc1=0.876173 D/acc2=0.876173 D/sec= 2.231451 
+2020-08-01 05:04:25,198 - main - INFO - [  8] T/loss=0.016355 T/acc1=0.994998 T/acc2=0.000000 T/sec= 61.798492 D/loss=0.812367 D/acc1=0.873358 D/acc2=0.873358 D/sec= 2.194424 
+2020-08-01 05:05:29,717 - main - INFO - [  9] T/loss=0.014804 T/acc1=0.996769 T/acc2=0.000000 T/sec= 62.334392 D/loss=0.885181 D/acc1=0.868668 D/acc2=0.868668 D/sec= 2.184372 
+2020-08-01 05:06:33,524 - main - INFO - [ 10] T/loss=0.022666 T/acc1=0.994268 T/acc2=0.000000 T/sec= 61.612779 D/loss=0.806572 D/acc1=0.876173 D/acc2=0.876173 D/sec= 2.194018 
+
+==== Confusion matrix 1 (early_stopped-loss) ====
+
+	0	1
+0	475	58
+1	54	479
+
+==== Confusion matrix 2 (early_stopped-loss) ====
+
+	0	1
+0	0.89	0.11
+1	0.10	0.90
+
+UAR = 0.894934
+
+==== Classification report (early_stopped-loss) ====
+
+              precision    recall  f1-score   support
+
+           0       0.90      0.89      0.89       533
+           1       0.89      0.90      0.90       533
+
+    accuracy                           0.89      1066
+   macro avg       0.89      0.89      0.89      1066
+weighted avg       0.89      0.89      0.89      1066
+
+
+==== Confusion matrix 1 (early_stopped-uar) ====
+
+	0	1
+0	475	58
+1	54	479
+
+==== Confusion matrix 2 (early_stopped-uar) ====
+
+	0	1
+0	0.89	0.11
+1	0.10	0.90
+
+UAR = 0.894934
+
+==== Classification report (early_stopped-uar) ====
+
+              precision    recall  f1-score   support
+
+           0       0.90      0.89      0.89       533
+           1       0.89      0.90      0.90       533
+
+    accuracy                           0.89      1066
+   macro avg       0.89      0.89      0.89      1066
+weighted avg       0.89      0.89      0.89      1066
+
+
+==== Confusion matrix 1 (final model) ====
+
+	0	1
+0	478	55
+1	77	456
+
+==== Confusion matrix 2 (final model) ====
+
+	0	1
+0	0.90	0.10
+1	0.14	0.86
+
+UAR = 0.876173
+
+==== Classification report (final model) ====
+
+              precision    recall  f1-score   support
+
+           0       0.86      0.90      0.88       533
+           1       0.89      0.86      0.87       533
+
+    accuracy                           0.88      1066
+   macro avg       0.88      0.88      0.88      1066
+weighted avg       0.88      0.88      0.88      1066
+
+2020-08-01 05:07:06,656 - <module> - INFO - time spent: 831.278343
