@@ -49,8 +49,8 @@ from torch.utils.data import TensorDataset
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 
-from transformers import AutoTokenizer, AutoModelWithLMHead
-from transformers import BertJapaneseTokenizer, BertForSequenceClassification, AdamW
+# from transformers import AutoTokenizer, AutoModelWithLMHead
+from transformers import AutoTokenizer, BertForSequenceClassification, AdamW
 from sklearn.metrics import confusion_matrix, classification_report
 
 
@@ -62,8 +62,8 @@ class MyDatasaet(Dataset):
         self.labels = labels
 
         for i, line in enumerate(open(path)):
-            if i > 100:
-                break
+            # if i > 100:
+            #     break
 
             line = line.strip()
             line = line.replace(u'. . .', u'…')
@@ -90,12 +90,13 @@ class MyDatasaet(Dataset):
 def main():
     from argparse import ArgumentParser
     parser = ArgumentParser(description='')
-    parser.add_argument('--train', default='datasets/rt-polarity/04-train.txt', type=str, help='training file (.txt)')
-    parser.add_argument('--valid', default='datasets/rt-polarity/04-test.txt', type=str, help='evaluating file (.txt)')
+    parser.add_argument('--train', default='datasets/mlit/04-train.txt', type=str, help='training file (.txt)')
+    parser.add_argument('--valid', default='datasets/mlit/04-test.txt', type=str, help='evaluating file (.txt)')
+    parser.add_argument('--pretrained', default='cl-tohoku/bert-base-japanese-whole-word-masking', type=str, help='pretrained model name or path')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--learnrate', '-l', type=float, default=2e-5, help='value of learning rate')
     parser.add_argument('--epoch', '-e', default=4, type=int, help='number of epochs to learn')
-    parser.add_argument('--out', '-o', default='results_bert-2', type=str, help='output directory')
+    parser.add_argument('--out', '-o', default='results_bert-mlit', type=str, help='output directory')
     parser.add_argument('--noplot', action='store_true', help='disable PlotReport extension')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
@@ -114,18 +115,7 @@ def main():
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
 
-    # Setup model
-    tokenizer = BertJapaneseTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
-    net = BertForSequenceClassification.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking", num_labels=2, output_attentions=False, output_hidden_states=False)
-    print(net.classifier)
-    # tokenizer.save_pretrained('./models')
-    # net.save_pretrained('./models')
-    # tokenizer = BertJapaneseTokenizer.from_pretrained('./models')    # re-load
-    # net = BertForSequenceClassification.from_pretrained('./models')  # re-load
-
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    if torch.cuda.is_available():
-        net.to(device)
+    tokenizer = AutoTokenizer.from_pretrained(args.pretrained)
 
     def generate_batch(batch):
         x_batch, y_batch = [x for x, _ in batch], [y for _, y in batch]
@@ -142,6 +132,18 @@ def main():
     print('# class: {}, labels: {}'.format(len(labels), labels))
     print('# vocab: {}'.format(len(tokenizer.vocab)))
     sys.stdout.flush()
+
+    # Setup model
+    net = BertForSequenceClassification.from_pretrained(args.pretrained, num_labels=len(labels), output_attentions=False, output_hidden_states=False)
+    print(net.classifier)
+    # tokenizer.save_pretrained('./models')
+    # net.save_pretrained('./models')
+    # tokenizer = BertJapaneseTokenizer.from_pretrained('./models')    # re-load
+    # net = BertForSequenceClassification.from_pretrained('./models')  # re-load
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        net.to(device)
 
     # Setup optimizer
     optimizer = AdamW(net.parameters(), lr=args.learnrate)

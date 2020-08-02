@@ -50,7 +50,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 
 from transformers import AutoTokenizer, AutoModelWithLMHead
-from transformers import BertJapaneseTokenizer, BertForSequenceClassification, AdamW
+from transformers import AutoTokenizer, BertForSequenceClassification, AdamW
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.feature_extraction.text import VectorizerMixin
@@ -62,8 +62,8 @@ def load_data(filename, labels):
     X, y = [], []
 
     for i, line in enumerate(open(filename, 'r')):
-        if i >= 100:
-            continue
+        # if i >= 100:
+        #     continue
 
         line = line.strip()
         if line == u'':
@@ -153,11 +153,12 @@ class ClassifierWrapper(BaseEstimator, ClassifierMixin):
 def main():
     from argparse import ArgumentParser
     parser = ArgumentParser(description='')
-    parser.add_argument('--test', default='datasets/rt-polarity/04-test.txt', type=str, help='evaluating file (.txt)')
+    parser.add_argument('--test', default='datasets/mlit/04-test.txt', type=str, help='evaluating file (.txt)')
+    parser.add_argument('--pretrained', default='cl-tohoku/bert-base-japanese-whole-word-masking', type=str, help='pretrained model name or path')
+    parser.add_argument('--model', default='models/mlit/early_stopped-uar.pth.tar', type=str, help='model directory')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
-    parser.add_argument('--model', default='models/rt/early_stopped-uar.model', type=str, help='model directory')
-    parser.add_argument('--topN', '-N', default=1, type=int, help='number of top labels')
-    parser.add_argument('--out', '-o', default='results_lime-bert-rt', type=str, help='output file name')
+    parser.add_argument('--topN', '-N', default=2, type=int, help='number of top labels')
+    parser.add_argument('--out', '-o', default='results_lime-bert-mlit', type=str, help='output file name')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     logger.info(json.dumps(args.__dict__, indent=2))
@@ -175,15 +176,10 @@ def main():
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    # with open(args.label, 'rb') as f:
-    #     labels = pickle.load(f)
-
-    labels = {'コク': 0, 'さっぱり': 1}
-
     # Setup model
-    tokenizer = BertJapaneseTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
-    net = BertForSequenceClassification.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking", num_labels=2, output_attentions=False, output_hidden_states=False)
-    state = torch.load(args.model)
+    state = torch.load(args.model, map_location=torch.device('cpu'))
+    labels = state['labels']
+    net = BertForSequenceClassification.from_pretrained(args.pretrained, num_labels=len(labels), output_attentions=False, output_hidden_states=False)
     net.load_state_dict(state['state_dict'])
     print(net.classifier)
 
@@ -191,6 +187,7 @@ def main():
     if torch.cuda.is_available():
         net.to(device)
 
+    tokenizer = AutoTokenizer.from_pretrained(args.pretrained)
     vectorizer = VectorizerWrapper(tokenizer, labels)
     classifier = ClassifierWrapper(net, args.batchsize, device)
 
