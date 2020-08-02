@@ -182,4 +182,5 @@ weighted avg       0.87      0.87      0.87      5197
 <img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
 
 See also: [Chainer classification experiments](/bert/classify/README.md)
-See also: [other classification experiments](/classify/README.md)
+
+See also: [other classification experiments](/classify)
