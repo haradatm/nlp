@@ -49,8 +49,7 @@ from torch.utils.data import TensorDataset
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 
-# from transformers import AutoTokenizer, AutoModelWithLMHead
-from transformers import AutoTokenizer, BertForSequenceClassification, AdamW
+from transformers import AutoConfig, AutoTokenizer, AutoModelForSequenceClassification, AdamW
 from sklearn.metrics import confusion_matrix, classification_report
 
 
@@ -96,7 +95,7 @@ def main():
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--learnrate', '-l', type=float, default=2e-5, help='value of learning rate')
     parser.add_argument('--epoch', '-e', default=4, type=int, help='number of epochs to learn')
-    parser.add_argument('--out', '-o', default='results_bert-mlit', type=str, help='output directory')
+    parser.add_argument('--out', '-o', default='results_bert-3', type=str, help='output directory')
     parser.add_argument('--noplot', action='store_true', help='disable PlotReport extension')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
@@ -134,8 +133,9 @@ def main():
     sys.stdout.flush()
 
     # Setup model
-    net = BertForSequenceClassification.from_pretrained(args.pretrained, num_labels=len(labels), output_attentions=False, output_hidden_states=False)
-    print(net.classifier)
+    config = AutoConfig.from_pretrained(args.pretrained, num_labels=len(labels), output_attentions=False, output_hidden_states=False)
+    model = AutoModelForSequenceClassification.from_pretrained(args.pretrained, config=config)
+    print(model)
     # tokenizer.save_pretrained('./models')
     # net.save_pretrained('./models')
     # tokenizer = BertJapaneseTokenizer.from_pretrained('./models')    # re-load
@@ -143,10 +143,10 @@ def main():
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if torch.cuda.is_available():
-        net.to(device)
+        model.to(device)
 
     # Setup optimizer
-    optimizer = AdamW(net.parameters(), lr=args.learnrate)
+    optimizer = AdamW(model.parameters(), lr=args.learnrate)
 
     # プロット用に実行結果を保存する
     train_loss = []
@@ -174,7 +174,7 @@ def main():
         K = 0
 
         # 訓練モード ON
-        net.train()
+        model.train()
         for input_ids, token_type_ids, attention_mask, ts in train_dl:
             N = len(ts)
             input_ids = input_ids.to(device)
@@ -186,7 +186,7 @@ def main():
             optimizer.zero_grad()
 
             # 順伝播させて誤差と精度を算出
-            loss, logits = net(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
+            loss, logits = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
             _, preds = torch.max(logits, 1)
             accuracy = (torch.sum(preds == ts)).double() / N
             sum_train_loss += float(loss.item()) * N
@@ -196,7 +196,7 @@ def main():
 
             # 誤差逆伝播で勾配を計算
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(net.parameters(), 1.0)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
 
         # 訓練データの誤差と,正解精度を表示
@@ -217,7 +217,7 @@ def main():
         K = 0
 
         # 訓練モード OFF
-        net.eval()
+        model.eval()
         y_true = []
         y_pred = []
         with torch.no_grad():   # 勾配を計算しない
@@ -228,7 +228,7 @@ def main():
                 attention_mask = attention_mask.to(device)
                 ts = ts.to(device)
 
-                loss, logits = net(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
+                loss, logits = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
                 _, preds = torch.max(logits, 1)
                 accuracy = (torch.sum(preds == ts)).double() / N
                 sum_test_loss += float(loss.item()) * N
@@ -284,8 +284,8 @@ def main():
         sys.stdout.flush()
 
         # model と optimizer を保存する
-        if torch.cuda.is_available(): net.to('cpu')
-        state = {'epoch': epoch + 1, 'state_dict': net.state_dict(), 'optimizer': optimizer.state_dict(), 'labels': labels}
+        if torch.cuda.is_available(): model.to('cpu')
+        state = {'epoch': epoch + 1, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'labels': labels}
         if mean_test_loss < min_loss:
             min_loss = mean_test_loss
             print('saving early-stopped model (loss) at epoch {}'.format(epoch))
@@ -296,7 +296,7 @@ def main():
             torch.save(state, os.path.join(model_dir, 'early_stopped-uar.pth.tar'))
         # print('saving final model at epoch {}'.format(epoch))
         torch.save(state, os.path.join(model_dir, 'final.pth.tar'))
-        if torch.cuda.is_available(): net.to(device)
+        if torch.cuda.is_available(): model.to(device)
         sys.stdout.flush()
 
         # 精度と誤差をグラフ描画
@@ -353,9 +353,9 @@ def main():
 
     # test (early_stopped model by loss)
     state = torch.load(os.path.join(model_dir, 'early_stopped-loss.pth.tar'))
-    net.load_state_dict(state['state_dict'])
+    model.load_state_dict(state['state_dict'])
     if torch.cuda.is_available():
-        net.to(device)
+        model.to(device)
 
     y_true = []
     y_pred = []
@@ -367,7 +367,7 @@ def main():
             attention_mask = attention_mask.to(device)
             ts = ts.to(device)
 
-            loss, logits = net(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
+            loss, logits = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
             _, preds = torch.max(logits, 1)
             y_pred += preds.cpu().numpy().tolist()
             y_true += ts.cpu().numpy().tolist()
@@ -420,9 +420,9 @@ def main():
 
     # test (early_stopped model by uar)
     state = torch.load(os.path.join(model_dir, 'early_stopped-uar.pth.tar'))
-    net.load_state_dict(state['state_dict'])
+    model.load_state_dict(state['state_dict'])
     if torch.cuda.is_available():
-        net.to(device)
+        model.to(device)
 
     y_true = []
     y_pred = []
@@ -434,7 +434,7 @@ def main():
             attention_mask = attention_mask.to(device)
             ts = ts.to(device)
 
-            loss, logits = net(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
+            loss, logits = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
             _, preds = torch.max(logits, 1)
             y_pred += preds.cpu().numpy().tolist()
             y_true += ts.cpu().numpy().tolist()
@@ -487,9 +487,9 @@ def main():
 
     # test (final model)
     state = torch.load(os.path.join(model_dir, 'final.pth.tar'))
-    net.load_state_dict(state['state_dict'])
+    model.load_state_dict(state['state_dict'])
     if torch.cuda.is_available():
-        net.to(device)
+        model.to(device)
 
     y_true = []
     y_pred = []
@@ -501,7 +501,7 @@ def main():
             attention_mask = attention_mask.to(device)
             ts = ts.to(device)
 
-            loss, logits = net(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
+            loss, logits = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=ts)
             _, preds = torch.max(logits, 1)
             y_pred += preds.cpu().numpy().tolist()
             y_true += ts.cpu().numpy().tolist()

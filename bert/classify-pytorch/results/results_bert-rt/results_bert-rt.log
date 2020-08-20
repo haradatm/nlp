@@ -1,0 +1,107 @@
+2020-08-20 04:38:18,019 - main - INFO - {
+  "train": "../datasets/rt-polarity/04-train.txt",
+  "valid": "../datasets/rt-polarity/04-test.txt",
+  "pretrained": "bert-base-uncased",
+  "batchsize": 64,
+  "learnrate": 2e-05,
+  "epoch": 10,
+  "out": "results_bert-4-rt",
+  "noplot": false
+}
+# train: 9596, valid: 1066
+# class: 2, labels: {'0': 0, '1': 1}
+# vocab: 30522
+Linear(in_features=768, out_features=2, bias=True)
+2020-08-20 04:39:42,234 - main - INFO - [  1] T/loss=0.433948 T/acc1=0.798875 T/acc2=0.000000 T/sec= 54.470282 D/loss=0.324746 D/acc1=0.869606 D/acc2=0.869606 D/sec= 2.155193 
+saving early-stopped model (loss) at epoch 1
+saving early-stopped model (uar) at epoch 1
+2020-08-20 04:41:45,919 - main - INFO - [  2] T/loss=0.255309 T/acc1=0.902876 T/acc2=0.000000 T/sec= 121.530358 D/loss=0.300297 D/acc1=0.894934 D/acc2=0.894934 D/sec= 2.154646 
+saving early-stopped model (loss) at epoch 2
+saving early-stopped model (uar) at epoch 2
+2020-08-20 04:43:49,857 - main - INFO - [  3] T/loss=0.150620 T/acc1=0.947582 T/acc2=0.000000 T/sec= 121.789301 D/loss=0.397301 D/acc1=0.873358 D/acc2=0.873358 D/sec= 2.148116 
+2020-08-20 04:44:54,141 - main - INFO - [  4] T/loss=0.086604 T/acc1=0.972072 T/acc2=0.000000 T/sec= 62.131293 D/loss=0.464844 D/acc1=0.881801 D/acc2=0.881801 D/sec= 2.152615 
+2020-08-20 04:45:57,903 - main - INFO - [  5] T/loss=0.054305 T/acc1=0.983639 T/acc2=0.000000 T/sec= 61.528430 D/loss=0.513408 D/acc1=0.883677 D/acc2=0.883677 D/sec= 2.233468 
+2020-08-20 04:47:00,923 - main - INFO - [  6] T/loss=0.037843 T/acc1=0.990725 T/acc2=0.000000 T/sec= 60.862138 D/loss=0.662130 D/acc1=0.874296 D/acc2=0.874296 D/sec= 2.157901 
+2020-08-20 04:48:08,049 - main - INFO - [  7] T/loss=0.025479 T/acc1=0.992393 T/acc2=0.000000 T/sec= 64.904455 D/loss=0.613166 D/acc1=0.876173 D/acc2=0.876173 D/sec= 2.221883 
+2020-08-20 04:49:11,344 - main - INFO - [  8] T/loss=0.016355 T/acc1=0.994998 T/acc2=0.000000 T/sec= 61.115457 D/loss=0.812367 D/acc1=0.873358 D/acc2=0.873358 D/sec= 2.179095 
+2020-08-20 04:50:14,024 - main - INFO - [  9] T/loss=0.014804 T/acc1=0.996769 T/acc2=0.000000 T/sec= 60.503887 D/loss=0.885181 D/acc1=0.868668 D/acc2=0.868668 D/sec= 2.176518 
+2020-08-20 04:51:16,605 - main - INFO - [ 10] T/loss=0.022666 T/acc1=0.994268 T/acc2=0.000000 T/sec= 60.405383 D/loss=0.806572 D/acc1=0.876173 D/acc2=0.876173 D/sec= 2.175515 
+
+==== Confusion matrix 1 (early_stopped-loss) ====
+
+	0	1
+0	475	58
+1	54	479
+
+==== Confusion matrix 2 (early_stopped-loss) ====
+
+	0	1
+0	0.89	0.11
+1	0.10	0.90
+
+UAR = 0.894934
+
+==== Classification report (early_stopped-loss) ====
+
+              precision    recall  f1-score   support
+
+           0       0.90      0.89      0.89       533
+           1       0.89      0.90      0.90       533
+
+    accuracy                           0.89      1066
+   macro avg       0.89      0.89      0.89      1066
+weighted avg       0.89      0.89      0.89      1066
+
+
+==== Confusion matrix 1 (early_stopped-uar) ====
+
+	0	1
+0	475	58
+1	54	479
+
+==== Confusion matrix 2 (early_stopped-uar) ====
+
+	0	1
+0	0.89	0.11
+1	0.10	0.90
+
+UAR = 0.894934
+
+==== Classification report (early_stopped-uar) ====
+
+              precision    recall  f1-score   support
+
+           0       0.90      0.89      0.89       533
+           1       0.89      0.90      0.90       533
+
+    accuracy                           0.89      1066
+   macro avg       0.89      0.89      0.89      1066
+weighted avg       0.89      0.89      0.89      1066
+
+
+==== Confusion matrix 1 (final model) ====
+
+	0	1
+0	478	55
+1	77	456
+
+==== Confusion matrix 2 (final model) ====
+
+	0	1
+0	0.90	0.10
+1	0.14	0.86
+
+UAR = 0.876173
+
+==== Classification report (final model) ====
+
+              precision    recall  f1-score   support
+
+           0       0.86      0.90      0.88       533
+           1       0.89      0.86      0.87       533
+
+    accuracy                           0.88      1066
+   macro avg       0.88      0.88      0.88      1066
+weighted avg       0.88      0.88      0.88      1066
+
+2020-08-20 04:51:36,075 - <module> - INFO - time spent: 799.874816

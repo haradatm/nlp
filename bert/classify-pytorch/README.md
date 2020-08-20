@@ -73,8 +73,8 @@ python train_bert.py \
 --batchsize 64 \
 --learnrate 2e-05 \
 --epoch 10 \
---out results_bertrt \
-2>&1 | tee train_bert-rt.log
+--out results_bert-rt \
+2>&1 | tee results/results_bert-rt.log
 
 2020-08-01 04:53:19,574 - main - INFO - {
   "train": "datasets/rt-polarity/04-train.txt",
@@ -89,15 +89,17 @@ python train_bert.py \
 # train: 9596, valid: 1066
 # class: 2, labels: {'0': 0, '1': 1}
 # vocab: 30522
+Linear(in_features=768, out_features=2, bias=True)
+2020-08-20 04:39:42,234 - main - INFO - [  1] T/loss=0.433948 T/acc1=0.798875 T/acc2=0.000000 T/sec= 54.470282 D/loss=0.324746 D/acc1=0.869606 D/acc2=0.869606 D/sec= 2.155193 
 saving early-stopped model (loss) at epoch 1
 saving early-stopped model (uar) at epoch 1
-2020-08-01 04:56:49,630 - main - INFO - [  2] T/loss=0.255309 T/acc1=0.902876 T/acc2=0.000000 T/sec= 129.655606 D/loss=0.300297 D/acc1=0.894934 D/acc2=0.894934 D/sec= 2.198617 
+2020-08-20 04:41:45,919 - main - INFO - [  2] T/loss=0.255309 T/acc1=0.902876 T/acc2=0.000000 T/sec= 121.530358 D/loss=0.300297 D/acc1=0.894934 D/acc2=0.894934 D/sec= 2.154646 
 saving early-stopped model (loss) at epoch 2
 saving early-stopped model (uar) at epoch 2
-2020-08-01 04:59:01,653 - main - INFO - [  3] T/loss=0.150620 T/acc1=0.947582 T/acc2=0.000000 T/sec= 129.806652 D/loss=0.397301 D/acc1=0.873358 D/acc2=0.873358 D/sec= 2.216371 
-2020-08-01 05:00:06,524 - main - INFO - [  4] T/loss=0.086604 T/acc1=0.972072 T/acc2=0.000000 T/sec= 62.646059 D/loss=0.464844 D/acc1=0.881801 D/acc2=0.881801 D/sec= 2.225516 
+2020-08-20 04:43:49,857 - main - INFO - [  3] T/loss=0.150620 T/acc1=0.947582 T/acc2=0.000000 T/sec= 121.789301 D/loss=0.397301 D/acc1=0.873358 D/acc2=0.873358 D/sec= 2.148116 
+2020-08-20 04:44:54,141 - main - INFO - [  4] T/loss=0.086604 T/acc1=0.972072 T/acc2=0.000000 T/sec= 62.131293 D/loss=0.464844 D/acc1=0.881801 D/acc2=0.881801 D/sec= 2.152615 
  :
-2020-08-01 05:06:33,524 - main - INFO - [ 10] T/loss=0.022666 T/acc1=0.994268 T/acc2=0.000000 T/sec= 61.612779 D/loss=0.806572 D/acc1=0.876173 D/acc2=0.876173 D/sec= 2.194018 
+2020-08-20 04:51:16,605 - main - INFO - [ 10] T/loss=0.022666 T/acc1=0.994268 T/acc2=0.000000 T/sec= 60.405383 D/loss=0.806572 D/acc1=0.876173 D/acc2=0.876173 D/sec= 2.175515 
 
 ==== Classification report (early_stopped-uar) ====
 
@@ -122,30 +124,33 @@ python train_bert.py \
 --learnrate 2e-05 \
 --epoch 10 \
 --out results_bert-mlit \
-2>&1 | tee train_bert-mlit.log
+2>&1 | tee results/results_bert-mlit.log
 
-2020-08-01 01:30:16,191 - main - INFO - {
+2020-08-20 02:01:11,039 - main - INFO - {
   "train": "datasets/mlit/04-train.txt",
   "valid": "datasets/mlit/04-test.txt",
+  "pretrained": "cl-tohoku/bert-base-japanese-whole-word-masking",
   "batchsize": 64,
   "learnrate": 2e-05,
   "epoch": 10,
-  "out": "results_bert-mlit",
+  "out": "results_bert-mlt",
   "noplot": false
 }
-# train: 46742, valid: 5197
+# train: 46742, eval: 5197,
 # class: 16, labels: {'エンジン': 0, '制動装置': 1, '動力伝達': 2, '排ｶﾞｽ･騒音': 3, '乗車装置': 4, '保安灯火': 5, '車枠・車体': 6, 'かじ取り': 7, '電気装置': 8, '燃料装置': 9, 'その他': 10, '電動機(モーター)': 11, '緩衝装置': 12, '走行装置': 13, '装置その他': 14, '非装置': 15}
-# vocab: 32000
+# vocab: 32005
 Linear(in_features=768, out_features=16, bias=True)
-2020-08-01 01:36:39,128 - main - INFO - [  1] T/loss=0.772249 T/acc1=0.785247 T/acc2=0.000000 T/sec= 360.953966 D/loss=0.481126 D/acc1=0.862998 D/acc2=0.715137 D/sec= 12.367324 
+2020-08-20 02:08:08,041 - main - INFO - [  1] T/loss=0.772249 T/acc1=0.785247 T/acc2=0.000000 T/sec= 360.639226 D/loss=0.481126 D/acc1=0.862998 D/acc2=0.715137 D/sec= 12.366193 
 saving early-stopped model (loss) at epoch 1
 saving early-stopped model (uar) at epoch 1
-2020-08-01 01:44:03,182 - main - INFO - [  2] T/loss=0.428546 T/acc1=0.876214 T/acc2=0.000000 T/sec= 431.688994 D/loss=0.448293 D/acc1=0.874735 D/acc2=0.727704 D/sec= 12.364935 
+2020-08-20 02:16:52,732 - main - INFO - [  2] T/loss=0.428546 T/acc1=0.876214 T/acc2=0.000000 T/sec= 512.311893 D/loss=0.448293 D/acc1=0.874735 D/acc2=0.727704 D/sec= 12.378893 
 saving early-stopped model (loss) at epoch 2
 saving early-stopped model (uar) at epoch 2
-2020-08-01 01:51:30,491 - main - INFO - [  3] T/loss=0.341935 T/acc1=0.899726 T/acc2=0.000000 T/sec= 434.855184 D/loss=0.458531 D/acc1=0.877044 D/acc2=0.723688 D/sec= 12.453704 
+2020-08-20 02:24:11,761 - main - INFO - [  3] T/loss=0.341935 T/acc1=0.899726 T/acc2=0.000000 T/sec= 426.646790 D/loss=0.458531 D/acc1=0.877044 D/acc2=0.723688 D/sec= 12.383017 
+2020-08-20 02:30:32,634 - main - INFO - [  4] T/loss=0.273988 T/acc1=0.920671 T/acc2=0.000000 T/sec= 368.496383 D/loss=0.465648 D/acc1=0.873196 D/acc2=0.731104 D/sec= 12.375902 
+saving early-stopped model (uar) at epoch 4
  :
-2020-08-01 02:38:35,008 - main - INFO - [ 10] T/loss=0.073781 T/acc1=0.978863 T/acc2=0.000000 T/sec= 403.277593 D/loss=0.747309 D/acc1=0.868193 D/acc2=0.740413 D/sec= 12.434072 
+2020-08-20 03:10:54,654 - main - INFO - [ 10] T/loss=0.073781 T/acc1=0.978863 T/acc2=0.000000 T/sec= 394.504868 D/loss=0.747309 D/acc1=0.868193 D/acc2=0.740413 D/sec= 12.368943 
 
 ==== Classification report (early_stopped-uar) ====
 
@@ -177,9 +182,142 @@ weighted avg       0.87      0.87      0.87      5197
 
 |rt-polarity|mlit| 
 |---|---|
-![](results/results_bert-rt.png)|![](results/results_bert-mlit.png)
+![](results/results_bert-rt/results_bert-rt.png)|![](results/results_bert-mlit/results_bert-mlit.png)
 
 <img src="results/accuracy-rt.png"/> <img src="results/accuracy-mlit.png"/>
 
 See also: [Chainer classification examples](/bert/classify) <br>
 See also: [other classification experiments](/classify)
+
+### Explaining text classifiers using LIME
+
+```
+pip install lime
+```
+
+- for rt-polarity datasets
+
+```
+python lime_bert-word.py \
+--test datasets/rt-polarity/04-test.txt \
+--pretrained "bert-base-uncased" \
+--model "results_bert-4-rt/early_stopped-uar.pth.tar" \
+--batchsize 64 \
+--topN 2 \
+--epoch 10 \
+--out results_lime-bert-word-rt \
+2>&1 | tee results/results_lime-bert-word-rt.log
+
+2020-08-20 04:52:33,165 - main - INFO - {
+  "test": "datasets/rt-polarity/04-test.txt",
+  "pretrained": "bert-base-uncased",
+  "model": "results_bert-rt/early_stopped-uar.pth.tar",
+  "batchsize": 64,
+  "topN": 2,
+  "out": "results_lime-bert-word-rt"
+}
+Linear(in_features=768, out_features=2, bias=True)
+2020-08-20 23:35:44,728 - load_data - INFO - Loading dataset ... done.
+2020-08-20 23:35:44,729 - main - DEBUG - ['a visually flashy but narratively opaque and emotionally vapid exercise in style and mystification .', 'while the performances are often engaging , this loose collection of largely improvised numbers would probably have worked better as a one-hour tv documentary .', 'on a cutting room floor somewhere lies … footage that might have made no such thing a trenchant , ironic cultural satire instead of a frustrating misfire .']
+2020-08-20 23:35:44,730 - main - DEBUG - [0, 0, 0]
+# test  X: 1066, y: 1066, class: 2
+
+Enter document ID [0..1066]=> 0
+Document id: 0
+True class: 0
+Probability (0) = 0.988464
+Probability (1) = 0.011536
+
+Explanation of document id 0 for class 0
+('vapid', 0.46518849978191323)
+('opaque', 0.12733099672951603)
+('but', -0.09200529605150436)
+('and', -0.08672848652423029)
+('a', -0.05784081703979195)
+('in', -0.04808162436542701)
+('emotionally', -0.0378265070070972)
+('mystification', -0.022240540125408555)
+('style', -0.020163725401766794)
+('narratively', -0.013351168644917269)
+('exercise', 0.01012951382868599)
+('visually', -0.007953168914141733)
+('flashy', 0.001322723187597232)
+
+Explanation of document id 0 for class 1
+('vapid', -0.4651884985572376)
+('opaque', -0.12733099599497824)
+('but', 0.09200529330199993)
+('and', 0.08672848534497804)
+('a', 0.05784081362391625)
+('in', 0.04808162965169284)
+('emotionally', 0.037826511182361806)
+('mystification', 0.022240543049856277)
+('style', 0.020163723382124098)
+('narratively', 0.013351166942152949)
+('exercise', -0.010129513850034378)
+('visually', 0.007953165758780485)
+('flashy', -0.0013227238000519308)
+
+Enter document ID [0..1066]=> 
+```
+
+- for mlit datasets (for Japanese)
+
+```
+python lime_bert-word.py \
+--test datasets/mlit/04-test.txt \
+--pretrained "cl-tohoku/bert-base-japanese-whole-word-masking" \
+--model "results_bert-4-mlt/early_stopped-uar.pth.tar" \
+--batchsize 64 \
+--topN 2 \
+--out results_lime-bert-word-mlit \
+2>&1 | tee results/results_lime-bert-word-mlit.log
+
+2020-08-20 04:04:30,989 - main - INFO - {
+  "test": "datasets/mlit/04-test.txt",
+  "pretrained": "cl-tohoku/bert-base-japanese-whole-word-masking",
+  "model": "results_bert-mlt/early_stopped-uar.pth.tar",
+  "batchsize": 64,
+  "topN": 2,
+  "out": "results_lime-bert-word-mlit"
+}
+Linear(in_features=768, out_features=16, bias=True)
+2020-08-20 04:04:41,343 - load_data - INFO - Loading dataset ... done.
+2020-08-20 04:04:41,345 - main - DEBUG - ['ダッシュボード が 溶け て ベトベト し て いる 。', 'ＮＯ Ｘ センサー の 不良 により 、 エンジン 警告 灯 が 点き っぱなし に なっ た 。', '電動 オープン の ルーフ を 閉じる とき に 、 エラーメッセージ が 出 て 幌 が 閉まら なく なっ た 。']
+2020-08-20 04:04:41,346 - main - DEBUG - [6, 3, 6]
+# test  X: 5197, y: 5197, class: 16
+
+Enter document ID [0..5197]=> 0
+Document id: 0
+True class: 車枠・車体
+Probability (車枠・車体) = 0.871476
+Probability (乗車装置) = 0.092782
+
+Explanation of document id 0 for class 車枠・車体
+('ダッシュボード', 0.47517304130341503)
+('いる', 0.20711680367757068)
+('て', 0.2039136100643194)
+('ベトベト', 0.045422222680755575)
+('溶け', 0.04019130026466325)
+('し', -0.03657148397356947)
+('が', 0.004224280842913079)
+
+Explanation of document id 0 for class 乗車装置
+('溶け', 0.023207162919567825)
+('ダッシュボード', 0.022304686324583035)
+('ベトベト', -0.01962039614972773)
+('し', 0.014460980225919596)
+('いる', -0.011011642279823207)
+('て', 0.0012605664979242369)
+('が', -2.5085145319950024e-05)
+
+Enter document ID [0..5197]=> 
+```
+
+|LIME output (rt-polarity, docid=0)|
+|---|
+|![](results/results_lime-bert-word-rt/exp_show-docid_0.png)|
+
+|LIME output (mlit, docid=0)|
+|---|
+|![](results/results_lime-bert-word-mlt/exp_show-docid_0.png)|

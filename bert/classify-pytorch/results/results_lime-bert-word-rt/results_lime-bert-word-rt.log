@@ -1,0 +1,262 @@
+2020-08-20 23:34:57,246 - main - INFO - {
+  "test": "../datasets/rt-polarity/04-test.txt",
+  "pretrained": "bert-base-uncased",
+  "model": "results_bert-4-rt/early_stopped-uar.pth.tar",
+  "batchsize": 64,
+  "topN": 2,
+  "out": "results_bert-4-rt"
+}
+
+Linear(in_features=768, out_features=2, bias=True)
+2020-08-20 23:35:44,728 - load_data - INFO - Loading dataset ... done.
+2020-08-20 23:35:44,729 - main - DEBUG - ['a visually flashy but narratively opaque and emotionally vapid exercise in style and mystification .', 'while the performances are often engaging , this loose collection of largely improvised numbers would probably have worked better as a one-hour tv documentary .', 'on a cutting room floor somewhere lies … footage that might have made no such thing a trenchant , ironic cultural satire instead of a frustrating misfire .']
+2020-08-20 23:35:44,730 - main - DEBUG - [0, 0, 0]
+# test  X: 1066, y: 1066, class: 2
+
+Enter document ID [0..1066]=> 0
+/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
+  self.as_list = [s for s in splitter.split(self.raw) if s]
+Document id: 0
+True class: 0
+Probability (0) = 0.988464
+Probability (1) = 0.011536
+
+Explanation of document id 0 for class 0
+('vapid', 0.46518849978191323)
+('opaque', 0.12733099672951603)
+('but', -0.09200529605150436)
+('and', -0.08672848652423029)
+('a', -0.05784081703979195)
+('in', -0.04808162436542701)
+('emotionally', -0.0378265070070972)
+('mystification', -0.022240540125408555)
+('style', -0.020163725401766794)
+('narratively', -0.013351168644917269)
+('exercise', 0.01012951382868599)
+('visually', -0.007953168914141733)
+('flashy', 0.001322723187597232)
+
+Explanation of document id 0 for class 1
+('vapid', -0.4651884985572376)
+('opaque', -0.12733099599497824)
+('but', 0.09200529330199993)
+('and', 0.08672848534497804)
+('a', 0.05784081362391625)
+('in', 0.04808162965169284)
+('emotionally', 0.037826511182361806)
+('mystification', 0.022240543049856277)
+('style', 0.020163723382124098)
+('narratively', 0.013351166942152949)
+('exercise', -0.010129513850034378)
+('visually', 0.007953165758780485)
+('flashy', -0.0013227238000519308)
+
+Enter document ID [0..1066]=> 1
+/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
+  self.as_list = [s for s in splitter.split(self.raw) if s]
+Document id: 1
+True class: 0
+Probability (0) = 0.938722
+Probability (1) = 0.061278
+
+Explanation of document id 1 for class 0
+('while', 0.24839884772368914)
+('engaging', -0.14944508776440904)
+('improvised', 0.04188079306942415)
+('better', 0.04098912323762501)
+('largely', 0.03937974942202648)
+('tv', 0.037467132424145455)
+('one', 0.03724715358155597)
+('collection', -0.025327501565180932)
+('as', 0.02450838822149756)
+('are', -0.023310548081976284)
+('of', -0.021839668810246796)
+('would', -0.020442822896152287)
+('the', -0.018144689562426767)
+('probably', 0.01734555108406451)
+('this', -0.011749849664930832)
+('a', 0.011500685584673724)
+('often', 0.010746247222446036)
+('documentary', 0.01049298212339049)
+('worked', 0.007002256165709646)
+('hour', -0.00690230776715923)
+
+Explanation of document id 1 for class 1
+('while', -0.24839884873488893)
+('engaging', 0.14944508927892075)
+('improvised', -0.0418807909100504)
+('better', -0.04098912457528846)
+('largely', -0.039379748632863365)
+('tv', -0.037467130607958296)
+('one', -0.03724715260114732)
+('collection', 0.025327500067093108)
+('as', -0.024508389783302127)
+('are', 0.02331055044557201)
+('of', 0.02183967087724933)
+('would', 0.020442820912792054)
+('the', 0.018144689484446672)
+('probably', -0.01734555167244946)
+('this', 0.011749849866202238)
+('a', -0.01150068601564362)
+('often', -0.010746243541308027)
+('documentary', -0.010492979699440205)
+('worked', -0.007002257720948845)
+('hour', 0.006902307647050257)
+
+Enter document ID [0..1066]=> 2
+/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
+  self.as_list = [s for s in splitter.split(self.raw) if s]
+Document id: 2
+True class: 0
+Probability (0) = 0.984567
+Probability (1) = 0.015433
+
+Explanation of document id 2 for class 0
+('no', 0.12317306669020323)
+('of', -0.09214848314790693)
+('might', 0.043471221159264065)
+('instead', 0.04250525734324685)
+('ironic', -0.03617629778091463)
+('floor', 0.03448687967536687)
+('satire', -0.02838315766000934)
+('somewhere', 0.02807006768914524)
+('trenchant', -0.026494863685749447)
+('made', 0.022646754787061952)
+('have', 0.020544961259487435)
+('footage', 0.01899372990319863)
+('on', -0.017275893247744527)
+('frustrating', 0.015528521275027473)
+('misfire', 0.0150864327852955)
+('room', 0.012505596322084261)
+('lies', 0.012461396357260169)
+('that', 0.009061692269224549)
+('thing', -0.007060920704237708)
+('a', 0.00524039990394067)
+
+Explanation of document id 2 for class 1
+('no', -0.12317306595097044)
+('of', 0.09214848261220801)
+('might', -0.04347122095469733)
+('instead', -0.04250525916019614)
+('ironic', 0.036176299351070286)
+('floor', -0.034486880619518795)
+('satire', 0.02838315662634771)
+('somewhere', -0.028070067321216162)
+('trenchant', 0.026494863548091444)
+('made', -0.0226467576559266)
+('have', -0.020544960948604925)
+('footage', -0.018993730288026214)
+('on', 0.01727589102104007)
+('frustrating', -0.015528519135579344)
+('misfire', -0.015086429634176703)
+('room', -0.0125055949295901)
+('lies', -0.012461395668225683)
+('that', -0.009061689014627654)
+('thing', 0.007060919786473167)
+('a', -0.005240398276993983)
+
+Enter document ID [0..1066]=> 3
+/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
+  self.as_list = [s for s in splitter.split(self.raw) if s]
+Document id: 3
+True class: 0
+Probability (0) = 0.821797
+Probability (1) = 0.178203
+
+Explanation of document id 3 for class 0
+('courage', -0.18700615105898433)
+('between', 0.11198427034948878)
+('and', 0.10102523416965994)
+('movies', 0.07513854306852787)
+('stupid', 0.06464463039165286)
+('to', -0.05486114172840911)
+('a', -0.04726568427794983)
+('with', -0.04531073262086816)
+('about', 0.041697181734865606)
+('top', -0.04080010665450342)
+('difference', 0.03754882618005643)
+('over', 0.032793039651303896)
+('that', 0.025881858481467707)
+('go', 0.02407212302413202)
+('care', 0.016822643419444172)
+('don', -0.014407410324497553)
+('there', -0.014328531371134883)
+('being', -0.012702764759985998)
+('t', 0.008742177579517374)
+('is', -0.006606548112601762)
+
+Explanation of document id 3 for class 1
+('courage', 0.18700614894318615)
+('between', -0.11198427021504322)
+('and', -0.10102523219957342)
+('movies', -0.07513854474622862)
+('stupid', -0.06464462845620707)
+('to', 0.05486114000808017)
+('a', 0.04726568634300015)
+('with', 0.045310734420217165)
+('about', -0.04169718141152215)
+('top', 0.040800104921610916)
+('difference', -0.037548828776692716)
+('over', -0.0327930415213865)
+('that', -0.025881858665659525)
+('go', -0.024072122950425004)
+('care', -0.016822643472985132)
+('don', 0.014407410678698041)
+('there', 0.014328529171063106)
+('being', 0.012702763824491752)
+('t', -0.008742179000724586)
+('is', 0.006606546810565983)
+
+Enter document ID [0..1066]=> 4
+/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
+  self.as_list = [s for s in splitter.split(self.raw) if s]
+Document id: 4
+True class: 0
+Probability (0) = 0.982935
+Probability (1) = 0.017065
+
+Explanation of document id 4 for class 0
+('but', 0.09977372964070999)
+('as', 0.0660646292168301)
+('about', 0.06432606187607409)
+('result', 0.05428444838755854)
+('iran', -0.051436018359151105)
+('issues', -0.04956669433614369)
+('tries', 0.043376995781850766)
+('broadcast', 0.03770701637307405)
+('subtle', 0.03358617116835774)
+('that', 0.021005972527888075)
+('party', 0.018630692932907304)
+('some', 0.01824251266432117)
+('the', 0.01540430186841816)
+('process', -0.015369475418459812)
+('a', 0.01216354630098533)
+('film', -0.011443696588850817)
+('raise', 0.011291521500728855)
+('is', -0.011288960203214503)
+('electoral', 0.005890915356083988)
+('s', -0.0035731545408778107)
+
+Explanation of document id 4 for class 1
+('but', -0.09977373131411124)
+('as', -0.06606462843545524)
+('about', -0.06432606043134773)
+('result', -0.054284448949443384)
+('iran', 0.05143601849309755)
+('issues', 0.049566693182710043)
+('tries', -0.043376996911067764)
+('broadcast', -0.03770701665831028)
+('subtle', -0.03358617021532106)
+('that', -0.021005974126770827)
+('party', -0.018630690324309074)
+('some', -0.018242510045744394)
+('the', -0.015404302810815012)
+('process', 0.015369474983105369)
+('a', -0.012163547912238518)
+('film', 0.011443696786892435)
+('raise', -0.011291522056991743)
+('is', 0.011288959694126906)
+('electoral', -0.0058909146472771)
+('s', 0.0035731530046408883)
+
+Enter document ID [0..1066]=>
