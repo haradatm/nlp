@@ -57,6 +57,8 @@ from sklearn.pipeline import make_pipeline
 from marcotcr.lime.lime_text import LimeTextExplainer
 
 
+### for Japanese
+
 import MeCab
 m = MeCab.Tagger("-Owakati")
 
@@ -107,6 +109,51 @@ class VectorizerWrapper(BaseEstimator, VectorizerMixin):
         x2 = torch.tensor(encoded_data["token_type_ids"])
         x3 = torch.tensor(encoded_data["attention_mask"])
         return x1, x2, x3
+
+### for English
+
+# def load_data(filename, labels):
+#     X, y = [], []
+#
+#     for i, line in enumerate(open(filename, 'r')):
+#         # if i >= 100:
+#         #     continue
+#
+#         line = line.strip()
+#         if line == u'':
+#             continue
+#
+#         line = line.replace(u'. . .', u'…')
+#
+#         row = line.split(u'\t')
+#         if len(row) < 2:
+#             sys.stderr.write('invalid record: {}\n'.format(line))
+#             continue
+#
+#         X.append(row[1])            # Text
+#         y.append(labels[row[0]])    # Class
+#
+#     logger.info('Loading dataset ... done.')
+#     sys.stdout.flush()
+#
+#     return X, y
+#
+#
+# class VectorizerWrapper(BaseEstimator, VectorizerMixin):
+#     def __init__(self, tokenizer, labels):
+#         super(VectorizerWrapper, self).__init__()
+#         self.tokenizer = tokenizer
+#         self.labels = labels
+#
+#     def fit(self, raw_documents):
+#         return self
+#
+#     def transform(self, raw_documents):
+#         encoded_data = self.tokenizer.batch_encode_plus(raw_documents, pad_to_max_length=True, add_special_tokens=True)
+#         x1 = torch.tensor(encoded_data["input_ids"])
+#         x2 = torch.tensor(encoded_data["token_type_ids"])
+#         x3 = torch.tensor(encoded_data["attention_mask"])
+#         return x1, x2, x3
 
 
 def batch_iter(data, batch_size):
