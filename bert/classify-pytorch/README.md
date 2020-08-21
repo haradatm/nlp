@@ -272,6 +272,10 @@ Explanation of document id 0 for class 1
 Enter document ID [0..1066]=> 
 ```
 
+|LIME output (rt-polarity, docid=0)|
+|---|
+|![](results/results_lime-bert-subword-rt/exp_show-docid_0.png)|
+
 - for mlit datasets (for Japanese, subword)
 
 ```
@@ -331,10 +335,6 @@ Explanation of document id 0 for class 乗車装置
 
 Enter document ID [0..5197]=> 
 ```
-
-|LIME output (rt-polarity, docid=0)|
-|---|
-|![](results/results_lime-bert-subword-rt/exp_show-docid_0.png)|
 
 |LIME output (mlit, docid=0)|
 |---|
@@ -407,6 +407,10 @@ Explanation of document id 0 for class 1
 Enter document ID [0..1066]=> 
 ```
 
+|LIME output (rt-polarity, docid=0)|
+|---|
+|![](results/results_lime-bert-word-rt/exp_show-docid_0.png)|
+
 - for mlit datasets (for Japanese, subword)
 
 ```
@@ -459,10 +463,6 @@ Explanation of document id 0 for class 乗車装置
 
 Enter document ID [0..5197]=> 
 ```
-
-|LIME output (rt-polarity, docid=0)|
-|---|
-|![](results/results_lime-bert-word-rt/exp_show-docid_0.png)|
 
 |LIME output (mlit, docid=0)|
 |---|
