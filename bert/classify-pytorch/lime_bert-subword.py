@@ -57,13 +57,7 @@ from sklearn.pipeline import make_pipeline
 from lime.lime_text import LimeTextExplainer
 
 
-### for Japanese
-
-import MeCab
-m = MeCab.Tagger("-Owakati")
-
-
-def load_data(filename, labels):
+def load_data(filename, labels, tokenizer):
     X, y = [], []
 
     for i, line in enumerate(open(filename, 'r')):
@@ -82,10 +76,12 @@ def load_data(filename, labels):
             continue
 
         text = row[1]
-        text_segmented = m.parse(text).strip()
+        encoded_data = tokenizer.batch_encode_plus([text], pad_to_max_length=False, add_special_tokens=False)
+        input_ids = torch.tensor(encoded_data["input_ids"])
+        # print(tokenizer.convert_ids_to_tokens(input_ids[0].tolist()))
 
-        X.append(text_segmented)  # Text
-        y.append(labels[row[0]])  # Class
+        X.append(" ".join(tokenizer.convert_ids_to_tokens(input_ids[0].tolist())))  # Text
+        y.append(labels[row[0]])                                                    # Class
 
     logger.info('Loading dataset ... done.')
     sys.stdout.flush()
@@ -102,58 +98,16 @@ class VectorizerWrapper(BaseEstimator, VectorizerMixin):
     def fit(self, raw_documents):
         return self
 
-    def transform(self, raw_documents_segmented):
-        raw_documents = [s.replace(' ', '') for s in raw_documents_segmented]
-        encoded_data = self.tokenizer.batch_encode_plus(raw_documents, pad_to_max_length=True, add_special_tokens=True)
+    def transform(self, raw_documents):
+        new_documents = [tokens.replace(" ##", "").strip() for tokens in raw_documents]
+        encoded_data = self.tokenizer.batch_encode_plus(new_documents, pad_to_max_length=True, add_special_tokens=True, is_pretokenized=True)
+        # input_ids = torch.tensor(encoded_data["input_ids"])
+        # print(self.tokenizer.convert_ids_to_tokens(input_ids[0].tolist()))
+
         x1 = torch.tensor(encoded_data["input_ids"])
         x2 = torch.tensor(encoded_data["token_type_ids"])
         x3 = torch.tensor(encoded_data["attention_mask"])
         return x1, x2, x3
-
-### for English
-
-# def load_data(filename, labels):
-#     X, y = [], []
-#
-#     for i, line in enumerate(open(filename, 'r')):
-#         # if i >= 100:
-#         #     continue
-#
-#         line = line.strip()
-#         if line == u'':
-#             continue
-#
-#         line = line.replace(u'. . .', u'…')
-#
-#         row = line.split(u'\t')
-#         if len(row) < 2:
-#             sys.stderr.write('invalid record: {}\n'.format(line))
-#             continue
-#
-#         X.append(row[1])            # Text
-#         y.append(labels[row[0]])    # Class
-#
-#     logger.info('Loading dataset ... done.')
-#     sys.stdout.flush()
-#
-#     return X, y
-#
-#
-# class VectorizerWrapper(BaseEstimator, VectorizerMixin):
-#     def __init__(self, tokenizer, labels):
-#         super(VectorizerWrapper, self).__init__()
-#         self.tokenizer = tokenizer
-#         self.labels = labels
-#
-#     def fit(self, raw_documents):
-#         return self
-#
-#     def transform(self, raw_documents):
-#         encoded_data = self.tokenizer.batch_encode_plus(raw_documents, pad_to_max_length=True, add_special_tokens=True)
-#         x1 = torch.tensor(encoded_data["input_ids"])
-#         x2 = torch.tensor(encoded_data["token_type_ids"])
-#         x3 = torch.tensor(encoded_data["attention_mask"])
-#         return x1, x2, x3
 
 
 def batch_iter(data, batch_size):
@@ -215,7 +169,7 @@ def main():
     parser.add_argument('--model', default='models/mlit/early_stopped-uar.loss.tar', type=str, help='model path')
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--topN', '-N', default=2, type=int, help='number of top labels')
-    parser.add_argument('--out', '-o', default='results_lime-bert-word-mlit', type=str, help='output file name')
+    parser.add_argument('--out', '-o', default='results_lime-bert-subword-mlit', type=str, help='output file name')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
     logger.info(json.dumps(args.__dict__, indent=2))
@@ -250,7 +204,7 @@ def main():
     classifier = ClassifierWrapper(model, args.batchsize, device)
 
     # テストデータの読み込み
-    X_test, y_test = load_data(args.test, labels)
+    X_test, y_test = load_data(args.test, labels, tokenizer)
     logger.debug(X_test[0:3])
     logger.debug(y_test[0:3])
     print('# test  X: {}, y: {}, class: {}'.format(len(X_test), len(y_test), len(labels)))

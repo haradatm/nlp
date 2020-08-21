@@ -4,7 +4,7 @@
   "model": "results_bert-4-mlt/early_stopped-uar.pth.tar",
   "batchsize": 64,
   "topN": 2,
-  "out": "results_bert-4-mlt"
+  "out": "results_lime-bert-word-mlt"
 }
 Linear(in_features=768, out_features=16, bias=True)
 2020-08-20 04:04:41,343 - load_data - INFO - Loading dataset ... done.
@@ -13,8 +13,6 @@ Linear(in_features=768, out_features=16, bias=True)
 # test  X: 5197, y: 5197, class: 16
 
 Enter document ID [0..5197]=> 0
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 0
 True class: 車枠・車体
 Probability (車枠・車体) = 0.871476
@@ -39,8 +37,6 @@ Explanation of document id 0 for class 乗車装置
 ('が', -2.5085145319950024e-05)
 
 Enter document ID [0..5197]=> 1
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 1
 True class: 排ｶﾞｽ･騒音
 Probability (排ｶﾞｽ･騒音) = 0.998319
@@ -81,8 +77,6 @@ Explanation of document id 1 for class エンジン
 ('に', -0.006040669926341103)
 
 Enter document ID [0..5197]=> 2
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 2
 True class: 車枠・車体
 Probability (車枠・車体) = 0.985893
@@ -127,8 +121,6 @@ Explanation of document id 2 for class 乗車装置
 ('なっ', -0.0027079236753550606)
 
 Enter document ID [0..5197]=> 3
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 3
 True class: 制動装置
 Probability (制動装置) = 0.999582
@@ -179,8 +171,6 @@ Explanation of document id 3 for class エンジン
 ('し', 0.003368170403468583)
 
 Enter document ID [0..5197]=> 4
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 4
 True class: エンジン
 Probability (エンジン) = 0.998995
@@ -221,8 +211,6 @@ Explanation of document id 4 for class 燃料装置
 ('し', -7.725327085111139e-06)
 
 Enter document ID [0..5197]=> 5
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 5
 True class: 走行装置
 Probability (車枠・車体) = 0.518614

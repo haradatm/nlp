@@ -4,7 +4,7 @@
   "model": "results_bert-4-rt/early_stopped-uar.pth.tar",
   "batchsize": 64,
   "topN": 2,
-  "out": "results_bert-4-rt"
+  "out": "results_lime-bert-word-rt"
 }
 
 Linear(in_features=768, out_features=2, bias=True)
@@ -14,8 +14,6 @@ Linear(in_features=768, out_features=2, bias=True)
 # test  X: 1066, y: 1066, class: 2
 
 Enter document ID [0..1066]=> 0
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 0
 True class: 0
 Probability (0) = 0.988464
@@ -52,8 +50,6 @@ Explanation of document id 0 for class 1
 ('flashy', -0.0013227238000519308)
 
 Enter document ID [0..1066]=> 1
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 1
 True class: 0
 Probability (0) = 0.938722
@@ -104,8 +100,6 @@ Explanation of document id 1 for class 1
 ('hour', 0.006902307647050257)
 
 Enter document ID [0..1066]=> 2
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 2
 True class: 0
 Probability (0) = 0.984567
@@ -156,8 +150,6 @@ Explanation of document id 2 for class 1
 ('a', -0.005240398276993983)
 
 Enter document ID [0..1066]=> 3
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 3
 True class: 0
 Probability (0) = 0.821797
@@ -208,8 +200,6 @@ Explanation of document id 3 for class 1
 ('is', 0.006606546810565983)
 
 Enter document ID [0..1066]=> 4
-/usr/local/lib/python3.6/dist-packages/lime/lime_text.py:114: FutureWarning: split() requires a non-empty pattern match.
-  self.as_list = [s for s in splitter.split(self.raw) if s]
 Document id: 4
 True class: 0
 Probability (0) = 0.982935

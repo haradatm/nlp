@@ -195,7 +195,153 @@ See also: [other classification experiments](/classify)
 pip install lime
 ```
 
-- for rt-polarity datasets
+- for rt-polarity datasets (subword, en)
+
+```
+python lime_bert-subword.py \
+--test datasets/rt-polarity/04-test.txt \
+--pretrained "bert-base-uncased" \
+--model "results_bert-4-rt/early_stopped-uar.pth.tar" \
+--batchsize 64 \
+--topN 2 \
+--epoch 10 \
+--out results_lime-bert-subword-rt \
+2>&1 | tee results/results_lime-bert-subword-rt.log
+
+2020-08-21 07:49:27,136 - main - INFO - {
+  "test": "datasets/rt-polarity/04-test.txt",
+  "pretrained": "bert-base-uncased",
+  "model": "results_bert-4-rt/early_stopped-uar.pth.tar",
+  "batchsize": 64,
+  "topN": 2,
+  "out": "results_lime-bert-subword-rt"
+}
+
+Linear(in_features=768, out_features=2, bias=True)
+2020-08-21 07:49:38,163 - load_data - INFO - Loading dataset ... done.
+2020-08-21 07:49:38,164 - main - DEBUG - ['a visually flash ##y but narrative ##ly opaque and emotionally va ##pid exercise in style and my ##sti ##fication .', 'while the performances are often engaging , this loose collection of largely improvised numbers would probably have worked better as a one - hour tv documentary .', 'on a cutting room floor somewhere lies … footage that might have made no such thing a trench ##ant , ironic cultural satire instead of a frustrating mis ##fire .']
+2020-08-21 07:49:38,164 - main - DEBUG - [0, 0, 0]
+# test  X: 1066, y: 1066, class: 2
+
+Enter document ID [0..1066]=> 0
+Document id: 0
+True class: 0
+Probability (0) = 0.988464
+Probability (1) = 0.011536
+
+Explanation of document id 0 for class 0
+('pid', 0.2638781076812105)
+('opaque', 0.19493093394162633)
+('va', 0.14111772448297713)
+('and', -0.07000921762623179)
+('emotionally', -0.05775203060488132)
+('in', -0.05058837417097684)
+('but', -0.041236925791098965)
+('a', -0.04027007239259117)
+('my', -0.0382126038056275)
+('narrative', -0.03251564607900992)
+('style', -0.029193711154148292)
+('fication', 0.022344754395777006)
+('y', -0.01620165847804197)
+('exercise', 0.00865502179491645)
+('ly', -0.008565875780031547)
+('sti', 0.0059054230905909635)
+('flash', 0.00462206699393289)
+('visually', 0.0020202570469299666)
+
+Explanation of document id 0 for class 1
+('pid', -0.26387810905681125)
+('opaque', -0.19493093216008053)
+('va', -0.14111772756665797)
+('and', 0.07000921555062066)
+('emotionally', 0.05775203402314305)
+('in', 0.05058837948515464)
+('but', 0.04123692663095498)
+('a', 0.04027007116764118)
+('my', 0.03821260301878023)
+('narrative', 0.03251564294832647)
+('style', 0.029193713060257784)
+('fication', -0.022344755084083213)
+('y', 0.016201661409198386)
+('exercise', -0.008655024132245425)
+('ly', 0.008565875890614204)
+('sti', -0.005905422756075881)
+('flash', -0.004622067486400607)
+('visually', -0.0020202582566745224)
+
+Enter document ID [0..1066]=> 
+```
+
+- for mlit datasets (subword, ja)
+
+```
+python lime_bert-subword.py \
+--test datasets/mlit/04-test.txt \
+--pretrained "cl-tohoku/bert-base-japanese-whole-word-masking" \
+--model "results_bert-4-mlt/early_stopped-uar.pth.tar" \
+--batchsize 64 \
+--topN 2 \
+--out results_lime-bert-subword-mlit \
+2>&1 | tee results/results_lime-bert-subword-mlit.log
+
+2020-08-21 07:51:30,867 - main - INFO - {
+  "test": "datasets/mlit/04-test.txt",
+  "pretrained": "cl-tohoku/bert-base-japanese-whole-word-masking",
+  "model": "results_bert-4-mlt/early_stopped-uar.pth.tar",
+  "batchsize": 64,
+  "topN": 2,
+  "out": "results_lime-bert-subword-mlit"
+}
+
+Linear(in_features=768, out_features=16, bias=True)
+2020-08-21 07:52:21,185 - load_data - INFO - Loading dataset ... done.
+2020-08-21 07:52:21,186 - main - DEBUG - ['ダッシュ ##ボード が 溶け て ベ ##ト ##ベト し て いる 。', 'NO ##X センサー の 不良 により 、 エンジン 警告 灯 が 点 ##き っ ##ぱ ##なし に なっ た 。', '電動 オープン の ルー ##フ を 閉じる とき に 、 エラー ##メッセ ##ージ が 出 て 幌 が 閉 ##まら なく なっ た 。']
+2020-08-21 07:52:21,187 - main - DEBUG - [6, 3, 6]
+# test  X: 5197, y: 5197, class: 16
+
+Enter document ID [0..5197]=> 0
+Document id: 0
+True class: 車枠・車体
+Probability (車枠・車体) = 0.871476
+Probability (乗車装置) = 0.092782
+
+Explanation of document id 0 for class 車枠・車体
+('ボード', 0.5319475699273315)
+('いる', 0.16350428116925098)
+('ベ', 0.1198598983893719)
+('ダッシュ', -0.09467334673550995)
+('て', 0.08459260780356471)
+('が', -0.07742958854689783)
+('し', -0.0444915403293281)
+('ト', -0.04122271503574596)
+('溶け', 0.04102362816418765)
+('ベト', -0.028252250025748566)
+
+Explanation of document id 0 for class 乗車装置
+('ボード', -0.21920380921004942)
+('ダッシュ', 0.14143110765333594)
+('が', 0.07171206685385868)
+('溶け', 0.04524682789971206)
+('ベト', -0.036533317109689004)
+('し', 0.024203641701843935)
+('ベ', -0.02047974956688656)
+('て', -0.011450973202305084)
+('いる', 0.005466010772075001)
+('ト', -0.003695830917293938)
+
+Enter document ID [0..5197]=> 
+```
+
+|LIME output (rt-polarity, docid=0)|
+|---|
+|![](results/results_lime-bert-subword-rt/exp_show-docid_0.png)|
+
+|LIME output (mlit, docid=0)|
+|---|
+|![](results/results_lime-bert-subword-mlt/exp_show-docid_0.png)|
+
+
+- for rt-polarity datasets (subword, en)
 
 ```
 python lime_bert-word.py \
@@ -261,7 +407,7 @@ Explanation of document id 0 for class 1
 Enter document ID [0..1066]=> 
 ```
 
-- for mlit datasets (for Japanese)
+- for mlit datasets (subword, ja)
 
 ```
 python lime_bert-word.py \
