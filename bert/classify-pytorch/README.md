@@ -195,7 +195,7 @@ See also: [other classification experiments](/classify)
 pip install lime
 ```
 
-- for rt-polarity datasets (subword, en)
+- for rt-polarity datasets (for English, subword)
 
 ```
 python lime_bert-subword.py \
@@ -272,7 +272,7 @@ Explanation of document id 0 for class 1
 Enter document ID [0..1066]=> 
 ```
 
-- for mlit datasets (subword, ja)
+- for mlit datasets (for Japanese, subword)
 
 ```
 python lime_bert-subword.py \
@@ -341,7 +341,7 @@ Enter document ID [0..5197]=>
 |![](results/results_lime-bert-subword-mlt/exp_show-docid_0.png)|
 
 
-- for rt-polarity datasets (subword, en)
+- for rt-polarity datasets (for English, word)
 
 ```
 python lime_bert-word.py \
@@ -407,7 +407,7 @@ Explanation of document id 0 for class 1
 Enter document ID [0..1066]=> 
 ```
 
-- for mlit datasets (subword, ja)
+- for mlit datasets (for Japanese, subword)
 
 ```
 python lime_bert-word.py \
