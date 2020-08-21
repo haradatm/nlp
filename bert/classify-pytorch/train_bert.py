@@ -95,7 +95,7 @@ def main():
     parser.add_argument('--batchsize', '-b', default=64, type=int, help='learning batchsize size')
     parser.add_argument('--learnrate', '-l', type=float, default=2e-5, help='value of learning rate')
     parser.add_argument('--epoch', '-e', default=4, type=int, help='number of epochs to learn')
-    parser.add_argument('--out', '-o', default='results_bert-3', type=str, help='output directory')
+    parser.add_argument('--out', '-o', default='results_bert', type=str, help='output directory')
     parser.add_argument('--noplot', action='store_true', help='disable PlotReport extension')
     args = parser.parse_args()
     # args = parser.parse_args(args=[])
